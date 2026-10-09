@@ -26,8 +26,8 @@ DOM_PILLAR = {
     "governance_compliance": "governance",
     "continuity": "continuity",
 }
-# Catalogue pillar_id -> the pillar panel's heading id. The interface kept the
-# exemplar's original ids, so Assets & Backing is still "pillar-reserves".
+# Catalogue pillar_id -> the pillar panel's heading id. The v0.3 interface kept
+# its original ids, so Assets & Backing is still "pillar-reserves".
 PILLAR_HEADING = {
     "control": "pillar-control",
     "backing": "pillar-reserves",

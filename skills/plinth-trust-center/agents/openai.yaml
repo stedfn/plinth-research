@@ -1,4 +1,4 @@
 interface:
   display_name: "Plinth Trust Center"
-  short_description: "Turn verified evidence into a two-mode Trust Center"
-  default_prompt: "Use $plinth-trust-center to assess this evidence pack and create a static v0.3 two-mode allocator-facing Trust Center."
+  short_description: "Turn a compiler-accepted run into a two-mode Trust Center"
+  default_prompt: "Use $plinth-trust-center to turn this compiler-accepted Plinth run into a static v0.3 two-mode allocator-facing Trust Center."

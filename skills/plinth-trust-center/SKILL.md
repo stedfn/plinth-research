@@ -1,124 +1,165 @@
 ---
 name: plinth-trust-center
-description: Create a static Plinth Framework v0.2 Trust Center from an already gathered evidence pack. Use when the task is to assess the 63 checks, preserve evidence lineage and unresolved questions, author allocator-facing synthesis, and render the approved v0.3 two-mode HTML interface. Do not use for open-ended source discovery or live evidence acquisition.
+description: Turn one compiler-accepted Plinth run (its accepted documentary-evidence.json and assessment.json) into a static Plinth Framework v0.2 Trust Center in the v0.3 two-mode interface. Use after `plinth verify` reports ASSESSMENT_ACCEPTED, to author the allocator-facing synthesis and the HTML. Do not use it for source discovery, evidence intake, or assessment; the compiler pipeline in the repository README does those.
 ---
 
 # Plinth Trust Center
 
-Turn supplied evidence into one lossless research package with a human-optimized presentation layer.
+Turn one accepted research run into a human-readable Trust Center in which every fact
+resolves to the run's canonical records.
 
-## Boundary
+## Where this skill sits
 
-This is a downstream assessment and delivery skill. It may inspect supplied files and open direct source URLs named in the evidence pack to verify exact content. It must not run broad web searches, discover substitute sources, refresh chain state, or silently repair the evidence campaign.
+This skill lives in `skills/plinth-trust-center/` of the plinth-research repository. Every
+path below is relative to the repository root. That root is two directories above this
+file's real location, so the paths still hold when the skill is reached through a symlink.
 
-If the input is only a Deep Research report, treat it as a lead catalogue. Run the evidence preflight and explain which underlying records must be supplied or verified. Do not promote the report's synthesis into observations merely because it cites a source.
+The compiler produces the canonical records, and this skill presents them:
+
+1. The `plinth` CLI runs research intake, evidence ingestion and assessment, as described
+   in `README.md` (stages C1–C5). Discovering and acquiring sources happens there, within
+   the campaign's declared routes.
+2. This skill starts only when `plinth verify RUN_ID --runs-root RUNS` reports
+   `ASSESSMENT_ACCEPTED`. From then on, do not search for, acquire or add evidence,
+   observations or assessment results. If the accepted records are thin, say so in the
+   Trust Center, or return to intake with a new run.
+
+## Inputs
+
+- The run's accepted `documentary-evidence.json` and `assessment.json`: content authority.
+- `inputs/catalogue.json`, `inputs/plinth-framework-v0.2-working.md` and
+  `inputs/trust-center-output-contract-v0.1.md`: framework authority.
+- `skills/plinth-trust-center/assets/v0.3-two-mode-shell.html`: UI authority.
+
+Never modify these files.
 
 ## Required reading
 
-Before assessing evidence:
+Before authoring, read:
 
-1. Read [references/input-contract.md](references/input-contract.md).
-2. Read the complete [references/plinth-framework-v0.2.md](references/plinth-framework-v0.2.md).
-3. Read the complete [references/trust-center-output-contract-v0.1.md](references/trust-center-output-contract-v0.1.md).
-4. Read [references/assessment-and-authoring.md](references/assessment-and-authoring.md).
+1. `inputs/plinth-framework-v0.2-working.md`, complete.
+2. `inputs/trust-center-output-contract-v0.1.md`, complete.
+3. [references/assessment-and-authoring.md](references/assessment-and-authoring.md).
+4. [references/two-mode-interface-contract.md](references/two-mode-interface-contract.md).
+5. The `<body>` of the shell. Do not read its `<head>`, which is 240 KB of CSS and embedded
+   fonts that is copied, never edited.
 
-Before authoring HTML, read [references/two-mode-interface-contract.md](references/two-mode-interface-contract.md), inspect the actual [assets/v0.3-two-mode-interface-reference.html](assets/v0.3-two-mode-interface-reference.html), and use [assets/v0.3-two-mode-composition-skeleton.html](assets/v0.3-two-mode-composition-skeleton.html) as the product-neutral DOM checklist. The exemplar is UI authority only. Every OUSG fact, identifier, count, date, source, state, and conclusion inside it is untrusted for a different subject.
-
-When the installed `reference-html-presenter` skill is available, use it for the HTML transposition phase. The interface contract and bundled exemplar remain authoritative if that skill is unavailable.
+[references/input-contract.md](references/input-contract.md) is the guidance for building the
+evidence pack. Read it if you also run the research stage.
 
 ## Workflow
 
-### 1. Establish authority and preserve inputs
+### 1. Record the inputs
 
 Record:
 
-- the assessment subject and complete product perimeter;
-- evidence cutoff and whether the pack is public-only or privately enriched;
-- framework and output-contract versions;
-- content-authority files and source records;
-- the v0.3 two-mode exemplar as UI authority;
-- output paths and immutable inputs.
+- the run ID and runs root;
+- the accepted evidence and assessment hashes that `plinth verify` prints;
+- the catalogue hash;
+- the evidence cutoff;
+- whether the campaign is public-only (`bounded_public_evidence`).
 
-Hash important input artifacts before editing. Never modify the framework, supplied evidence pack, source archive, deterministic snapshot, research dossier, or UI exemplar.
+Content authority is the accepted records plus the catalogue. UI authority is the shell.
 
-### 2. Run the evidence preflight
+### 2. Verify the run
 
-Apply the input contract. Distinguish acquired evidence, blocked or absent routes, deterministic records, and discovery notes.
-
-Proceed when the product identity, assessment perimeter, cutoff, source provenance, and usable evidence locations are sufficiently explicit to make bounded observations. If an essential ambiguity would change the review subject, stop and request the missing decision. Otherwise preserve the limitation in the assessment.
-
-### 3. Build the canonical assessment
-
-Use the exact 63 v0.2 check IDs and questions. Work check-first:
-
-1. Decide provisional applicability and the facts required by the complete proposition.
-2. Inspect only relevant supplied evidence.
-3. Create reusable factual observations with exact source locators, scope, time, acquisition mode, and derived lineage where applicable.
-4. Assign final applicability and evidence coverage independently of whether the finding is favorable.
-5. Write a neutral finding or complete six-field gap.
-6. Preserve conflicts when explicit scope, precedence, supersession, versioning, or freshness does not resolve them.
-
-Do not let external scores or ratings determine Plinth coverage. Do not infer legal rights, custody, operating effectiveness, current capacity, or current availability from adjacent or historical evidence.
-
-Run `scripts/check_assessment.py` before composing the report.
-
-### 4. Author the Trust Center
-
-Write the report from the reconciled assessment—not from raw research notes. Keep the assessment separate from presentation.
-
-The executive layer should answer in a two-to-three-minute read:
-
-- what the product is and who is behind it;
-- what the holder is stated to hold;
-- what backs it;
-- how value enters, accrues, and exits;
-- what Plinth can establish;
-- what remains unresolved;
-- what public or supplied evidence says about disruption and failure.
-
-Then provide five pillar views, evidence gaps, factual coverage, source register, methodology, technical appendix, and the complete check register. Every factual synthesis must resolve to observation and source records.
-
-### 5. Transpose into the v0.3 two-mode interface
-
-Start from a byte copy of the bundled exemplar. Transpose the new subject into that file in place; do not recreate the page from remembered CSS tokens or component names. Preserve its two-mode shell, six-block Executive composition, Analyst navigation, typography, layout, visual tokens, layered disclosure, responsive behavior, print treatment, and static/offline model. Replace every content-bearing record and the embedded payload.
-
-Use the product-neutral skeleton to check the executive sequence, the five pillar pattern, the claim-versus-service separation, and the supporting panel order. Product-specific factual displays may vary, but the reading hierarchy must not.
-
-The HTML must carry both:
-
-- human synthesis with named evidence links; and
-- an inert public-safe canonical research projection for agents.
-
-Executive is a centered two-to-three-minute read with no sidebar or visible evidence machinery. Analyst contains the complete research interface and canonical records. Do not expose internal materiality or add risk labels, grades, rankings, recommendations, aggregate status, monitoring claims, or a live-AI implication. The “Ask Plinth” control may remain only in Analyst as the exemplar's clearly labelled static preview.
-
-### 6. Review and verify
-
-Perform a separate evidence-semantics pass over the assessment and final prose. Challenge source authority, subject, scope, time, proposition completeness, conflicts, and language that sounds like a Plinth judgment.
-
-From the skill directory, run:
-
-```bash
-python3 scripts/check_assessment.py <framework.md> <assessment.json>
-python3 scripts/check_morphed_html.py <output.html> --reference assets/v0.3-two-mode-interface-reference.html
+```sh
+plinth verify RUN_ID --runs-root RUNS
 ```
 
-Also run any product-specific lineage or source-manifest verifier supplied with the evidence pack. Browser-check desktop, mobile, direct fragments, cross-panel links, back/forward behavior, JavaScript-disabled reading, print expansion, and zero runtime network requests.
+Stop unless it reports `ASSESSMENT_ACCEPTED`.
+
+### 3. Prefill the mechanical parts
+
+```sh
+python3 skills/plinth-trust-center/scripts/prefill_shell.py --product "PRODUCT NAME" \
+  --assessment RUNS/RUN_ID/assessment.json \
+  --evidence RUNS/RUN_ID/documentary-evidence.json \
+  --catalogue inputs/catalogue.json --out trust-centers/SLUG/index.html
+```
+
+This copies the shell and renders every region marked `data-fill`:
+
+- the canonical check, observation, source and locator records;
+- the pillar check registers, evidence requests and methodology counts;
+- the Executive framework figures and open-evidence partition;
+- the escaped payload and the product name.
+
+It marks each pillar whose checks cite no observations with `data-pillar-sources="none"`,
+and it lists the placeholders left for you.
+
+### 4. Author the narrative
+
+Replace every remaining `{{PLACEHOLDER}}` in `index.html` from the accepted records. Follow
+[references/assessment-and-authoring.md](references/assessment-and-authoring.md) and
+[references/two-mode-interface-contract.md](references/two-mode-interface-contract.md). This
+covers:
+
+- the six Executive blocks. Together they are a two-to-three-minute read covering:
+  - what the product is and who is behind it;
+  - what the holder is stated to hold, and what backs it;
+  - how value enters, accrues and exits;
+  - what Plinth can establish and what remains unresolved;
+  - the evidence boundary;
+- for each pillar: the narrative, the boundary between what is supported and what is not
+  established, a product-specific factual display, and named source links;
+- the claim-structure, legal, quantity, gap, technical-state and methodology panels.
+
+Rules while authoring:
+
+- Every factual statement resolves to observations and sources in the run.
+- Repeat a component by copying the example the shell gives, and delete examples you do not
+  need.
+- In a pillar marked `data-pillar-sources="none"`, delete the example citations.
+- Leave the canonical records, the payload and every region prefill rendered exactly as it
+  wrote them.
+- Do not expose internal materiality.
+- Do not add risk labels, grades, rankings, recommendations, aggregate status, monitoring
+  claims, or anything implying a live AI.
+- "Ask Plinth" remains the static preview, in Analyst only.
+
+### 5. Review and verify
+
+Make a separate evidence-semantics pass over the prose. Challenge each statement's source
+authority, subject, scope, time and proposition completeness, check that conflicts are
+preserved, and remove language that sounds like a Plinth judgment. Then run:
+
+```sh
+plinth verify RUN_ID --runs-root RUNS
+python3 skills/plinth-trust-center/scripts/check_morphed_html.py trust-centers/SLUG/index.html \
+  --reference skills/plinth-trust-center/assets/v0.3-two-mode-shell.html \
+  --assessment RUNS/RUN_ID/assessment.json \
+  --evidence RUNS/RUN_ID/documentary-evidence.json \
+  --catalogue inputs/catalogue.json
+```
+
+Fix every `FAIL`. Fix each `WARN`, or justify it in `review.md`.
+
+Then check the page in a browser:
+
+- desktop and mobile, in both modes;
+- direct fragments, cross-panel links, back and forward, and a malformed fragment;
+- keyboard focus, JavaScript disabled, and print;
+- zero runtime network requests.
 
 ## Deliverables
 
-Unless the user narrows the request, create:
-
 ```text
-reviews/<subject-slug>-trust-center/
-├── assessment.json
+trust-centers/<subject-slug>/
+├── index.html
 ├── report.md
-├── review.md
-└── verify.py
-
-site/
-└── <subject-slug>-trust-center.html
+└── review.md
 ```
 
-The review record identifies authorities, input hashes, unresolved evidence or methodology divergences, verification results, artifact hashes, and pending human publication approval.
+`trust-centers/` is gitignored.
 
-Open the final HTML for review when useful. Never describe a draft as published or approved.
+- `report.md` is the plain-text report, using the report structure in
+  [references/assessment-and-authoring.md](references/assessment-and-authoring.md).
+- `review.md` records:
+  - the run ID;
+  - the accepted evidence and assessment hashes, and the catalogue hash;
+  - the checker output, including warnings;
+  - any unresolved methodology divergences;
+  - the pending human publication approval.
+
+Never describe a draft as published or approved.

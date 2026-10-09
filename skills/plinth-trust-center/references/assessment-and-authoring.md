@@ -1,37 +1,41 @@
 # Assessment and authoring procedure
 
-This reference preserves the non-obvious decisions learned from the OUSG calibration while remaining product-neutral.
+This reference preserves the non-obvious decisions learned from earlier calibration work. It
+is product-neutral.
+
+The compiler owns the assessment. The assessor follows the prompt embedded in the
+assessment packet (`prompts/assessment.md`), and `plinth check assessment` and
+`plinth ingest assessment` enforce the compiler's rules.
+
+This reference has two roles:
+
+- **Before ingestion:** the sections from "Canonical records" through "Complete gap
+  contract" are the criteria for the manual adversarial preflight.
+- **After ingestion:** the remaining sections govern authoring the Trust Center.
 
 ## Canonical records
 
-Keep assessment and presentation separate. The assessment contains two canonical collections:
+Keep assessment and presentation separate. A run holds two accepted documents, both
+validated by the compiler. Their schemas are in `src/plinth/models.py`.
 
-```text
-observations[]
-checks[]
-```
+- `documentary-evidence.json` (`EvidencePack`): the campaign, sources, acquisitions,
+  artifacts, locators, observations and routes.
+  - An observation states a proposition about a subject.
+  - It records its time or effective period.
+  - It is backed either by source locators or by parent observations together with a
+    versioned derivation rule.
+- `assessment.json` (`Assessment`): one record per catalogue check, in catalogue order. Each
+  record has:
+  - applicability, with its basis and observations;
+  - coverage, with its basis;
+  - the neutral finding and its observations;
+  - exclusions;
+  - any contradiction;
+  - the six-field gap when one is required.
 
-An observation records:
-
-- stable ID;
-- factual statement;
-- subject and scope;
-- relevant time, effective period, or deterministic anchor;
-- documentary, deterministic, or derived acquisition mode;
-- source IDs and exact locators;
-- optional parent observations and a derivation explanation.
-
-Each check records:
-
-- exact Framework ID, pillar, and question;
-- applicability;
-- coverage;
-- supporting observation IDs;
-- searched routes and whether the required search was completed;
-- neutral factual finding;
-- complete gap where required.
-
-Names and file shapes may follow an established project convention, but the semantics above must remain explicit.
+A check's pillar and question come from `inputs/catalogue.json`, not from the assessment.
+Checks carry no searched-route or search-completion fields; route status lives in the
+evidence pack's `routes`.
 
 ## Applicability and coverage
 
@@ -45,7 +49,7 @@ Coverage:
 
 - `EVIDENCED`: the complete bounded proposition is supported by qualifying evidence.
 - `PARTIAL`: qualifying evidence supports only part of the proposition.
-- `MISSING`: no qualifying evidence was found after every required in-scope route was completed.
+- `MISSING`: no qualifying evidence was found after every required in-scope route was completed. The compiler rejects `MISSING` (rule X11) until route completion is trustworthy, so record an unfinished required route as `NOT_ASSESSED`.
 - `NOT_ASSESSED`: a required route was access-controlled, excluded, unavailable, or otherwise incomplete.
 - `CONTRADICTORY`: qualifying evidence conflicts and no explicit precedence rule resolves it.
 - `NOT_APPLICABLE`: used only with positively supported `DOES_NOT_APPLY`.
