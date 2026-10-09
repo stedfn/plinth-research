@@ -56,3 +56,27 @@ a byte-identical import of both; every later commit is an edit on top of it, so
   finished Trust Center for a real product. It was used only as the input from which the
   product-neutral `assets/v0.3-two-mode-shell.html` was derived; none of its content is in
   this repository's history.
+
+## Derived shell
+
+`skills/plinth-trust-center/assets/v0.3-two-mode-shell.html` was produced from that
+exemplar by a one-off script that is not part of this repository, because it needs the
+exemplar as input. What the script preserved and changed:
+
+- `<head>` is the exemplar's, byte for byte, except two things. The `<title>` is now
+  `{{PRODUCT}} · Plinth Trust Center v0.3`. Product names inside CSS comments were replaced
+  by neutral words.
+- The four embedded font data URIs and the `<style id="v03-skin">` block are byte-identical
+  to the exemplar's. The SHA-256 of the `v03-skin` inner CSS is
+  `8792c57c991bd44c40154fa876ea148385d3b6c91a6f50d63983c3df6953d11a`.
+- The navigation script is the exemplar's with one fix. Fragment decoding is wrapped in a
+  `try`/`catch`, so a malformed link falls back to Executive mode instead of stranding the
+  page.
+- The body keeps one neutral example of every component, together with the structural
+  counts the router and checker rely on. All product text became `{{UPPER_CASE}}`
+  placeholders. Identifiers and links became placeholders or `https://example.invalid/`.
+  Regions that are rendered mechanically from accepted records are empty and marked
+  `data-fill`.
+- Before commit, the script checked that the shell contains none of the exemplar's
+  product names or record identifiers, and that every attribute value is either
+  structural or a placeholder.
