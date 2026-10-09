@@ -72,6 +72,9 @@ exemplar as input. What the script preserved and changed:
 - The navigation script is the exemplar's with one fix. Fragment decoding is wrapped in a
   `try`/`catch`, so a malformed link falls back to Executive mode instead of stranding the
   page.
+- One style block, `<style data-purpose="shell-fixes">`, is added after the exemplar's
+  styles. Below 760px the exemplar made record badges full-width without letting the summary
+  row wrap, so every record title collapsed to zero width. The added rule wraps that row.
 - The body keeps one neutral example of every component, together with the structural
   counts the router and checker rely on. All product text became `{{UPPER_CASE}}`
   placeholders. Identifiers and links became placeholders or `https://example.invalid/`.

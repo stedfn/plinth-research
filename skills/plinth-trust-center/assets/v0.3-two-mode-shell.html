@@ -1395,6 +1395,11 @@ a:focus-visible,button:focus-visible,summary:focus-visible{outline:3px solid rgb
 }
 </style>
 <noscript><style>.v3-view,.panel{display:block!important}.analyst-sidebar{display:none!important}.mobile-analyst-nav{display:block!important;position:static!important}</style></noscript>
+<style data-purpose="shell-fixes">
+/* Below 760px .record-badges is width:100%, and .record>summary does not wrap,
+   so every record title collapsed to zero width. Let the badges wrap below it. */
+@media(max-width:760px){.record>summary{flex-wrap:wrap}}
+</style>
 </head>
 
         <body class="mode-executive">

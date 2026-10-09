@@ -312,6 +312,14 @@ def test_shell_keeps_the_exemplar_theme_and_fixes_fragment_decoding():
     assert "var id=decodeURIComponent(" not in SHELL_TEXT
 
 
+def test_shell_keeps_record_titles_readable_on_narrow_screens():
+    # Inherited defect: below 760px the badges take the full row and the summary
+    # did not wrap, so every record title collapsed to zero width.
+    fixes = re.search(r'<style data-purpose="shell-fixes">(.*?)</style>', SHELL_TEXT, re.S)
+    assert fixes and "@media(max-width:760px){.record>summary{flex-wrap:wrap}}" in fixes.group(1)
+    assert SHELL_TEXT.index('data-purpose="shell-fixes"') > SHELL_TEXT.index('<style id="v03-skin">')
+
+
 def test_shell_has_every_structure_the_checker_and_router_need():
     index = checker.Index()
     index.feed(SHELL_TEXT)
