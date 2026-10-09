@@ -1,0 +1,32 @@
+{
+  "schema_version": "plinth.assessment/1",
+  "meta": {
+    "campaign_run_id": "ousg-2026-09-06",
+    "framework_version": "v0.2-working",
+    "catalogue_sha256": "5555555555555555555555555555555555555555555555555555555555555555",
+    "evidence_pack_sha256": "6b6b303b778c453a1ce4326c44f6d20df91078b2c2e93f98e727d04758aaf5a8",
+    "generated_at": "2026-09-02T11:00:00Z"
+  },
+  "checks": [
+    {
+      "check_id": "PF-BACKING-006",
+      "applicability": "APPLIES",
+      "applicability_basis": "The product declares a reserve held with a third-party custodian, so the question of where and with whom each holding is kept has a structural subject.",
+      "applicability_observation_ids": ["OBS_CUSTODY_001"],
+      "coverage": "PARTIAL",
+      "coverage_basis": "One custody relationship is evidenced by a bounded custodian record; the completeness of the reserve perimeter across all holdings is not.",
+      "finding_observation_ids": ["OBS_CUSTODY_002", "OBS_CUSTODY_003"],
+      "finding": "One custody relationship is evidenced: a custodian record shows a closing balance of USD 42,000,000.00 in the named account on 31 August 2026. Whether that account is the complete reserve perimeter is not established by the reviewed evidence.",
+      "exclusions": [],
+      "gap": {
+        "question": "Where and with whom is each material OUSG reserve holding kept, and which bounded holding record confirms that relationship?",
+        "what_is_known": "A custodian record covering one named account shows a closing balance of USD 42,000,000.00 on 31 August 2026, and the issuer states that reserve assets are held with that custodian in a segregated account.",
+        "what_remains_unresolved": "Whether the single evidenced account is the complete set of material reserve holdings; no record covering holdings outside that account was identified within the declared campaign scope.",
+        "what_this_means": "Plinth cannot establish from the reviewed evidence that the named custodian holds all assets represented by the outstanding tokens as of the snapshot date.",
+        "what_would_close_it": "A current custody record covering the defined asset and account perimeter, or an issuer-bound enumeration of every account in which reserve assets are held together with a holding record for each.",
+        "evidence": "The custodian holding statement of 31 August 2026 supports the balance in one account, and states on its face that it covers one account only, so it does not address holdings elsewhere.",
+        "evidence_observation_ids": ["OBS_CUSTODY_002"]
+      }
+    }
+  ]
+}

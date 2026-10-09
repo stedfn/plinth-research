@@ -1,0 +1,172 @@
+{
+  "schema_version": "plinth.evidence/1",
+  "campaign": {
+    "run_id": "ousg-2026-09-06",
+    "subject": "OUSG",
+    "subject_description": "Ondo Short-Term US Government Treasuries (OUSG): the token deployments, the issuing entities, the reserve holdings and the service relationships needed to answer a framework question about backing.",
+    "cutoff": "2026-09-01T00:00:00Z",
+    "declared_acquisition_modes": ["HTTP_DOWNLOAD", "BROWSER_CAPTURE"],
+    "declared_scope_note": "Public documentary evidence only. No private records, personnel access or workpapers were requested.",
+    "bounded_public_evidence": true
+  },
+  "sources": [
+    {
+      "source_id": "src-ondo-docs",
+      "title": "OUSG product documentation",
+      "source_type": "issuer_documentation",
+      "url": "https://example.invalid/ousg/docs",
+      "author": "Ondo Finance",
+      "publisher": "Ondo Finance",
+      "relationship_to_subject": "Issuer of the reviewed product.",
+      "research_posture": "self_attestation",
+      "publication_date": "2026-07-15T00:00:00Z",
+      "stated_limitations": ["Describes intended operation rather than observed operation."],
+      "disposition": "IN_SCOPE"
+    },
+    {
+      "source_id": "src-custodian-statement",
+      "title": "Custodian holding statement, August 2026",
+      "source_type": "custodian_record",
+      "url": "https://example.invalid/custodian/2026-08",
+      "author": "Example Trust Company",
+      "publisher": "Example Trust Company",
+      "relationship_to_subject": "Custodian of record for the reserve account.",
+      "research_posture": "independent_assurance",
+      "publication_date": "2026-08-31T00:00:00Z",
+      "stated_methodology_scope": "Balances held in the named account as of the statement date.",
+      "stated_limitations": ["Covers one account; says nothing about holdings elsewhere."],
+      "disposition": "IN_SCOPE"
+    }
+  ],
+  "acquisitions": [
+    {
+      "acquisition_id": "acq-ondo-docs",
+      "source_id": "src-ondo-docs",
+      "acquisition_mode": "HTTP_DOWNLOAD",
+      "outcome": "ACQUIRED",
+      "attempted_at": "2026-09-02T09:00:00Z",
+      "retrieved_at": "2026-09-02T09:00:04Z",
+      "artifact_sha256": "1111111111111111111111111111111111111111111111111111111111111111",
+      "request_detail": "GET https://example.invalid/ousg/docs"
+    },
+    {
+      "acquisition_id": "acq-custodian-statement",
+      "source_id": "src-custodian-statement",
+      "acquisition_mode": "HTTP_DOWNLOAD",
+      "outcome": "ACQUIRED",
+      "attempted_at": "2026-09-02T09:05:00Z",
+      "retrieved_at": "2026-09-02T09:05:02Z",
+      "artifact_sha256": "2222222222222222222222222222222222222222222222222222222222222222",
+      "request_detail": "GET https://example.invalid/custodian/2026-08"
+    }
+  ],
+  "artifacts": [
+    {
+      "sha256": "1111111111111111111111111111111111111111111111111111111111111111",
+      "media_type": "application/pdf",
+      "byte_length": 418233,
+      "filename": "1111111111111111111111111111111111111111111111111111111111111111.pdf",
+      "original_filename": "ousg-product-documentation.pdf",
+      "page_count": 24,
+      "text_extraction_tool": "pdftotext 24.02.0",
+      "text_sha256": "3333333333333333333333333333333333333333333333333333333333333333",
+      "archived_at": "2026-09-02T09:00:05Z"
+    },
+    {
+      "sha256": "2222222222222222222222222222222222222222222222222222222222222222",
+      "media_type": "application/pdf",
+      "byte_length": 88104,
+      "filename": "2222222222222222222222222222222222222222222222222222222222222222.pdf",
+      "original_filename": "custodian-statement-2026-08.pdf",
+      "page_count": 6,
+      "text_extraction_tool": "pdftotext 24.02.0",
+      "text_sha256": "4444444444444444444444444444444444444444444444444444444444444444",
+      "archived_at": "2026-09-02T09:05:03Z"
+    }
+  ],
+  "locator_catalog": [
+    {
+      "locator_id": "loc-ondo-custody-section",
+      "artifact_sha256": "1111111111111111111111111111111111111111111111111111111111111111",
+      "locator_type": "document_section",
+      "section": "Reserve custody",
+      "quoted_text": "Reserve assets are held with Example Trust Company in a segregated account."
+    },
+    {
+      "locator_id": "loc-custodian-balance",
+      "artifact_sha256": "2222222222222222222222222222222222222222222222222222222222222222",
+      "locator_type": "pdf_page",
+      "page": 3,
+      "quoted_text": "Closing balance, 31 August 2026: USD 42,000,000.00"
+    }
+  ],
+  "observations": [
+    {
+      "observation_id": "OBS_CUSTODY_001",
+      "proposition": "The issuer states that OUSG reserve assets are held with Example Trust Company in a segregated account.",
+      "subject": "OUSG reserve custody relationship",
+      "evidence_as_of": "2026-07-15T00:00:00Z",
+      "supports": [
+        {
+          "acquisition_id": "acq-ondo-docs",
+          "locator_id": "loc-ondo-custody-section"
+        }
+      ],
+      "authority_limitations": [
+        "Issuer self-attestation is authoritative for declared terms, not for actual custody."
+      ]
+    },
+    {
+      "observation_id": "OBS_CUSTODY_002",
+      "proposition": "The named custodian account held a closing balance of USD 42,000,000.00 on 31 August 2026.",
+      "subject": "Example Trust Company account holding the OUSG reserve",
+      "value": "42000000.00",
+      "unit": "USD",
+      "observation_time": "2026-08-31T23:59:59Z",
+      "evidence_as_of": "2026-08-31T00:00:00Z",
+      "supports": [
+        {
+          "acquisition_id": "acq-custodian-statement",
+          "locator_id": "loc-custodian-balance"
+        }
+      ],
+      "authority_limitations": [
+        "Authoritative for the bounded account balance, not for the completeness of the reserve perimeter."
+      ]
+    },
+    {
+      "observation_id": "OBS_CUSTODY_003",
+      "proposition": "One custody relationship is evidenced for the OUSG reserve, covering USD 42,000,000.00 as of 31 August 2026.",
+      "subject": "OUSG reserve custody perimeter",
+      "value": 1,
+      "unit": "holding relationships",
+      "effective_period_start": "2026-08-31T00:00:00Z",
+      "effective_period_end": "2026-08-31T23:59:59Z",
+      "parent_observation_ids": ["OBS_CUSTODY_001", "OBS_CUSTODY_002"],
+      "derivation_rule_id": "custody-relationship-count",
+      "derivation_rule_version": "1",
+      "qualifications": [
+        "Counts only relationships evidenced by the declared routes; it is not a perimeter completeness claim."
+      ]
+    }
+  ],
+  "routes": [
+    {
+      "route_id": "route-issuer-documentation",
+      "description": "Retrieve the issuer's published product documentation and reserve disclosures.",
+      "acquisition_mode": "HTTP_DOWNLOAD",
+      "status": "COMPLETED",
+      "required_for_check_ids": ["PF-BACKING-006"],
+      "source_ids": ["src-ondo-docs"]
+    },
+    {
+      "route_id": "route-custodian-records",
+      "description": "Retrieve published custodian holding records for the named reserve account.",
+      "acquisition_mode": "HTTP_DOWNLOAD",
+      "status": "COMPLETED",
+      "required_for_check_ids": ["PF-BACKING-006"],
+      "source_ids": ["src-custodian-statement"]
+    }
+  ],
+  "generated_at": "2026-09-02T10:00:00Z"
+}

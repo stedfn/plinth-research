@@ -1,0 +1,104 @@
+<!doctype html>
+<!--
+  Product-neutral DOM checklist for the Plinth v0.3 two-mode Trust Center.
+
+  Do not render this file directly. Copy the full v0.3 interface reference so
+  its embedded fonts, CSS, router, responsive rules, print rules, and static
+  preview are preserved. Replace every placeholder with assessment-backed data.
+-->
+<html lang="en">
+<head><meta charset="utf-8"><title>{{PRODUCT}} — Plinth Trust Center</title></head>
+<body class="mode-executive">
+  <a class="skip-link" href="#executive">Skip to content</a>
+
+  <header class="v3-top">
+    <div class="v3-top-inner">
+      <div class="v3-brand">{{PRODUCT IDENTITY}}</div>
+      <nav class="mode-tabs" aria-label="Reading mode">
+        <a href="#executive" data-mode="executive">Executive</a>
+        <a href="#pillar-control" data-mode="analyst">Analyst</a>
+      </nav>
+      <div class="v3-top-spacer" aria-hidden="true"></div>
+    </div>
+  </header>
+
+  <div class="v3-view is-active" id="v3-executive">
+    <main class="executive-main" id="executive">
+      <section class="exec-block" data-exec-block="1" data-origin="derived-presentation">
+        {{PRODUCT ORIENTATION, CUTOFF, PARTICIPATION, PERIMETER}}
+      </section>
+
+      <section class="exec-block" data-exec-block="2" data-origin="derived-presentation">
+        <h2>What the holder holds</h2>
+        <div class="holds">
+          <div class="claim-track">
+            {{HOLDER}}
+            {{RECORDED INTEREST}}
+            {{LEGAL CLAIM OR EXPLICIT UNRESOLVED LINK}}
+            {{ISSUING VEHICLE OR EXPLICIT UNRESOLVED LINK}}
+            {{ECONOMIC ASSET ENDPOINT}}
+          </div>
+          <div class="service-branch">{{SERVICE, CONTROL, AND INFRASTRUCTURE PARTIES}}</div>
+        </div>
+      </section>
+
+      <section class="exec-block" data-exec-block="3" data-origin="derived-presentation">
+        <h2>How value moves</h2>
+        <div class="flow">{{ENTER}}{{ACCRUE}}{{EXIT}}</div>
+      </section>
+
+      <section class="exec-block" data-exec-block="4" data-origin="derived-presentation">
+        <h2>Five trust pillars</h2>
+        {{FIVE PLAIN-LANGUAGE CONCLUSIONS AND ANALYST LINKS}}
+      </section>
+
+      <section class="exec-block" data-exec-block="5" data-origin="derived-presentation">
+        <h2>What remains open</h2>
+        <div class="framework-strip">{{ASSESSMENT-DERIVED FRAMEWORK COUNTS}}</div>
+        <div class="open-groups">{{FIVE GROUPS PARTITIONING EVERY CHECK ONCE}}</div>
+      </section>
+
+      <section class="exec-block" data-exec-block="6" data-origin="derived-presentation">
+        <h2>Evidence boundary</h2>
+        {{BOUNDED EVIDENCE LIMIT AND ANALYST ROUTE}}
+      </section>
+    </main>
+  </div>
+
+  <div class="v3-view" id="v3-analyst">
+    <details class="mobile-analyst-nav">
+      <summary>Analyst sections</summary>
+      <nav class="analyst-nav mobile-nav">{{ALL ANALYST PANELS}}</nav>
+    </details>
+
+    <div class="analyst-layout">
+      <aside class="analyst-sidebar">
+        <nav class="analyst-nav desktop-nav">{{ALL ANALYST PANELS}}</nav>
+      </aside>
+
+      <div class="analyst-main" id="analyst-main">
+        <div class="panel" data-mode-panel="analyst" data-panel-role="control">{{CONTROL}}</div>
+        <div class="panel" data-mode-panel="analyst" data-panel-role="backing">{{ASSETS & BACKING}}</div>
+        <div class="panel" data-mode-panel="analyst" data-panel-role="economics">{{ECONOMICS}}</div>
+        <div class="panel" data-mode-panel="analyst" data-panel-role="governance-compliance">{{GOVERNANCE & COMPLIANCE}}</div>
+        <div class="panel" data-mode-panel="analyst" data-panel-role="continuity">{{CONTINUITY}}</div>
+        <div class="panel" data-mode-panel="analyst" data-panel-role="claim-structure">{{CLAIM AND PARTY STRUCTURE}}</div>
+        <div class="panel" data-mode-panel="analyst" data-panel-role="legal-structure">{{LEGAL AND OPERATING STRUCTURE}}</div>
+        <div class="panel" data-mode-panel="analyst" data-panel-role="quantity-boundaries">{{QUANTITY BOUNDARIES}}</div>
+        <div class="panel" data-mode-panel="analyst" data-panel-role="gaps">{{EVIDENCE GAPS}}</div>
+        <div class="panel" data-mode-panel="analyst" data-panel-role="requests">{{EVIDENCE REQUESTS}}</div>
+        <div class="panel" data-mode-panel="analyst" data-panel-role="sources">{{EVIDENCE REGISTRY}}</div>
+        <div class="panel" data-mode-panel="analyst" data-panel-role="technical-state">{{OBSERVED TECHNICAL STATE}}</div>
+        <div class="panel" data-mode-panel="analyst" data-panel-role="methodology">{{METHODOLOGY AND INDEPENDENCE}}</div>
+        <div class="panel" data-mode-panel="analyst" data-panel-role="technical-appendix">
+          {{FULL RESEARCH RECORD: CHECKS, OBSERVATIONS, SOURCES, GAPS}}
+        </div>
+      </div>
+    </div>
+
+    <details class="ai-dock">{{STATIC ASK PLINTH PREVIEW}}</details>
+  </div>
+
+  <script type="application/json" id="plinth-research-state">{{PUBLIC-SAFE CANONICAL PROJECTION}}</script>
+</body>
+</html>

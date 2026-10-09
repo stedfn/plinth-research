@@ -1,0 +1,35 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "plinth"
+version = "0.1.0"
+description = "Local, auditable research compiler for tokenized-product diligence."
+requires-python = ">=3.11"          # enum.StrEnum
+
+# Exact, not a range, and there is no lockfile. `canonical_bytes` is
+# `model_dump(mode="json")`, so a serialization change in pydantic moves the
+# digest that X4 pins an assessment to. CI installs fresh on every run while a
+# local .venv stays where it was created: a floating range means the two agree
+# until the day they silently do not. `plinth` is an application nothing
+# resolves against, so an exact pin costs no downstream solver anything and
+# makes every pydantic change a reviewed edit that reruns the suite.
+dependencies = ["pydantic==2.13.5"]
+
+[project.optional-dependencies]
+# A range is fine here: a test runner cannot alter a published artifact.
+dev = ["pytest>=8.0"]
+
+[project.scripts]
+plinth = "plinth.cli:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+# Deliberately scoped to this directory. At the repository root this would make
+# pytest's rootdir the repo, collection would reach mock/conftest.py, and that
+# file raises RuntimeError on import by design.
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-q --strict-markers"
