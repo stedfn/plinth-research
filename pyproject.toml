@@ -27,9 +27,8 @@ plinth = "plinth.cli:main"
 [tool.setuptools.packages.find]
 where = ["src"]
 
-# Deliberately scoped to this directory. At the repository root this would make
-# pytest's rootdir the repo, collection would reach mock/conftest.py, and that
-# file raises RuntimeError on import by design.
+# Collection is scoped to tests/: the skill's scripts are exercised from there,
+# by tests/test_trust_center_checker.py, rather than collected directly.
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 addopts = "-q --strict-markers"

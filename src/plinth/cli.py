@@ -3,8 +3,8 @@
 argparse rather than a CLI framework: the subcommands cost a few lines each here
 and add no second import surface to keep current.
 
-Exit codes are the same three everywhere, reusing the convention ``mock/check.py``
-already established rather than inventing a finer taxonomy no consumer reads:
+Exit codes are the same three everywhere, deliberately coarse rather than a finer
+taxonomy no consumer reads:
 
     0   what was asked for is true
     1   a failure, named on stderr
