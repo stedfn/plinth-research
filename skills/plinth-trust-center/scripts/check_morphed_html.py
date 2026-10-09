@@ -1,16 +1,38 @@
 #!/usr/bin/env python3
-"""Focused structural checker for the Plinth v0.3 two-mode Trust Center."""
+"""Checker for a Plinth v0.3 two-mode Trust Center built from compiler-accepted records.
+
+Usage::
+
+    python3 check_morphed_html.py OUTPUT.html --reference SHELL.html \\
+        --assessment RUN/assessment.json --evidence RUN/documentary-evidence.json \\
+        --catalogue inputs/catalogue.json
+
+It proves the page embeds exactly the run's accepted records, marks and
+displays every canonical record faithfully, and keeps the v0.3 interface
+structure. It does not prove the records themselves are valid: run
+``plinth verify`` for that first. Exit 0 prints PASS; exit 1 prints the first
+failure.
+"""
 
 from __future__ import annotations
 
 import argparse
 import json
 import re
-from collections import Counter, defaultdict
+import sys
+from collections import Counter
 from dataclasses import dataclass, field
 from html.parser import HTMLParser
 from pathlib import Path
 
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+from trust_center_records import (  # noqa: E402
+    PILLAR_ALIASES,
+    Inputs,
+    RecordError,
+    Records,
+    load_inputs,
+)
 
 PANEL_ROLE_ORDER = [
     "control",
@@ -29,6 +51,13 @@ PANEL_ROLE_ORDER = [
     "technical-appendix",
 ]
 PILLAR_ROLES = PANEL_ROLE_ORDER[:5]
+ROLE_PILLAR = {
+    "control": "control",
+    "backing": "backing",
+    "economics": "economics",
+    "governance-compliance": "governance_compliance",
+    "continuity": "continuity",
+}
 PANEL_HEADING_ROLES = {
     "pillar-control": "control",
     "pillar-reserves": "backing",
@@ -44,14 +73,6 @@ PANEL_HEADING_ROLES = {
     "changes-title": "technical-state",
     "methodology-title": "methodology",
     "technical-appendix": "technical-appendix",
-}
-PILLAR_ALIASES = {
-    "control": "control",
-    "backing": "backing",
-    "economics": "economics",
-    "governance": "gov",
-    "governance-compliance": "gov",
-    "continuity": "continuity",
 }
 REQUIRED_IDS = {
     "v3-executive", "executive", "v3-analyst", "analyst-main",
@@ -73,6 +94,11 @@ V03_THEME_VARS = {
     "amber-soft", "rust", "rust-soft", "blue", "blue-soft", "violet",
     "violet-soft", "top-h",
 }
+PAYLOAD_RE = re.compile(
+    r'<script\s+type="application/json"\s+id="plinth-research-state">(.*?)</script>', re.S
+)
+PLACEHOLDER_RE = re.compile(r"\{\{[A-Z][A-Z0-9_ &,./:'-]*\}\}")
+SAFE_HREF_RE = re.compile(r"^(#|https?://)", re.I)
 
 
 def fail(message: str) -> None:
@@ -114,21 +140,11 @@ def visible_text(element: Element) -> str:
     parts = list(element.text)
     for child in element.children:
         parts.append(visible_text(child))
-    return re.sub(r"\s+", " ", " ".join(parts)).strip()
+    return normalized(" ".join(parts))
 
 
-def collect_sources(value: object) -> list[dict]:
-    found: list[dict] = []
-    if isinstance(value, dict):
-        sources = value.get("sources")
-        if isinstance(sources, list) and all(isinstance(item, dict) for item in sources):
-            found.extend(sources)
-        for child in value.values():
-            found.extend(collect_sources(child))
-    elif isinstance(value, list):
-        for child in value:
-            found.extend(collect_sources(child))
-    return found
+def normalized(value: str) -> str:
+    return re.sub(r"\s+", " ", value).strip()
 
 
 class Index(HTMLParser):
@@ -139,9 +155,10 @@ class Index(HTMLParser):
         self.ids: Counter[str] = Counter()
         self.fragments: list[str] = []
         self.classes: set[str] = set()
-        self.records: list[dict[str, str]] = []
+        self.records: list[Element] = []
         self.mode_values: list[str] = []
         self.remote_runtime: list[str] = []
+        self.hrefs: list[str] = []
         self.has_noscript = False
 
     def handle_starttag(self, tag: str, attrs: list[tuple[str, str | None]]) -> None:
@@ -153,11 +170,13 @@ class Index(HTMLParser):
         if values.get("id"):
             self.ids[values["id"]] += 1
         self.classes.update(values.get("class", "").split())
+        if "href" in values:
+            self.hrefs.append(values["href"])
         href = values.get("href", "")
         if tag == "a" and href.startswith("#") and len(href) > 1:
             self.fragments.append(href[1:])
         if values.get("data-record-type"):
-            self.records.append(values)
+            self.records.append(element)
         if values.get("data-mode"):
             self.mode_values.append(values["data-mode"])
         runtime_attr = {
@@ -217,14 +236,46 @@ def v03_vars(raw_html: str) -> dict[str, str]:
     }
 
 
-def main() -> int:
-    parser = argparse.ArgumentParser()
-    parser.add_argument("html", type=Path)
-    parser.add_argument("--reference", type=Path, required=True)
-    args = parser.parse_args()
+def find_placeholders(raw_html: str) -> list[str]:
+    """Unfilled shell placeholders outside the payload, which may quote anything."""
+    outside = PAYLOAD_RE.sub("", raw_html)
+    return sorted(set(PLACEHOLDER_RE.findall(outside)))
 
-    raw_html = args.html.read_text(encoding="utf-8")
-    reference = args.reference.read_text(encoding="utf-8")
+
+def check_payload(raw_payload: str, inputs: Inputs) -> None:
+    """The payload is exactly the accepted records, escaped so it cannot end early."""
+    if "<" in raw_payload:
+        fail("embedded payload contains an unescaped '<'; write every '<' as \\u003c")
+    try:
+        payload = json.loads(raw_payload)
+    except ValueError as exc:
+        fail(f"embedded payload is not valid JSON: {exc}")
+    if not isinstance(payload, dict) or set(payload) != {"assessment", "evidence"}:
+        keys = sorted(payload) if isinstance(payload, dict) else type(payload).__name__
+        fail(f"embedded payload must have exactly the keys assessment and evidence; found {keys}")
+    if payload["assessment"] != inputs.assessment:
+        fail("embedded assessment differs from the accepted assessment.json")
+    if payload["evidence"] != inputs.evidence:
+        fail("embedded evidence differs from the accepted documentary-evidence.json")
+
+
+def check_document(raw_html: str, reference_html: str, inputs: Inputs,
+                   warnings: list[str] | None = None) -> str:
+    """Raise AssertionError on the first failure; return the PASS summary.
+
+    Non-fatal findings are appended to ``warnings``.
+    """
+    warnings = [] if warnings is None else warnings
+    records = Records(inputs)
+
+    leftover = find_placeholders(raw_html)
+    if leftover:
+        fail(f"unfilled placeholders remain: {leftover[:8]}")
+    if "data-fill=" in raw_html:
+        fail("unfilled prefill region (data-fill); run scripts/prefill_shell.py")
+    if "data-materiality" in raw_html:
+        fail("internal materiality appears in a data-materiality attribute")
+
     index = Index()
     index.feed(raw_html)
 
@@ -234,6 +285,9 @@ def main() -> int:
     missing_links = sorted(set(index.fragments) - set(index.ids))
     if missing_links:
         fail(f"unresolved internal links: {missing_links[:12]}")
+    unsafe = sorted({href for href in index.hrefs if not SAFE_HREF_RE.match(href)})
+    if unsafe:
+        fail(f"links must be #fragments or http(s) URLs: {unsafe[:5]}")
     if index.remote_runtime:
         fail(f"remote runtime assets found: {index.remote_runtime}")
     if not index.has_noscript:
@@ -285,76 +339,25 @@ def main() -> int:
         registers = descendants_with_class(panel, "pillar-checks")
         if len(registers) != 1 or registers[0].tag != "details" or "open" in registers[0].attrs:
             fail(f"{role} must contain one collapsed check register")
-        source_links = [
-            element for element in descendants_with_class(panel, "claim-source")
-            if element.tag == "a"
-            and element.attrs.get("href", "").startswith("#source-")
-            and visible_text(element)
-        ]
-        if not source_links:
-            fail(f"{role} has no named source links")
+        check_pillar_sources(role, panel, records, warnings)
 
-    payload_match = re.search(
-        r'<script\s+type="application/json"\s+id="plinth-research-state">(.*?)</script>',
-        raw_html,
-        re.S,
-    )
+    payload_match = PAYLOAD_RE.search(raw_html)
     if not payload_match:
         fail("missing inert #plinth-research-state payload")
-    if "internal_materiality" in payload_match.group(1):
-        fail("internal materiality appears in public embedded state")
-    payload = json.loads(payload_match.group(1))
-    assessment = payload.get("assessment")
-    if not isinstance(assessment, dict):
-        fail("embedded payload must contain assessment")
-    checks = assessment.get("checks")
-    observations = assessment.get("observations")
-    if not isinstance(checks, list) or len(checks) != 63 or not isinstance(observations, list):
-        fail("embedded assessment must contain 63 checks and observations[]")
-    source_value = assessment.get("sources")
-    if isinstance(source_value, list) and all(isinstance(item, dict) for item in source_value):
-        sources = source_value
-    else:
-        sources = collect_sources(payload.get("source_manifest", payload.get("source_manifests", {})))
+    check_payload(payload_match.group(1), inputs)
 
-    record_index = {
-        (record.get("data-record-type"), record.get("data-record-id")): record
-        for record in index.records
-    }
-    if len(record_index) != len(index.records):
-        fail("canonical DOM record markers are duplicated")
-    for check in checks:
-        marker = record_index.get(("check", check.get("id")))
-        expected = {
-            "data-origin": "canonical",
-            "data-applicability": check.get("applicability") or "",
-            "data-coverage": check.get("coverage") or "",
-            "data-search-completed": str(check.get("search_completed")).lower(),
-        }
-        if not marker or any(marker.get(field) != value for field, value in expected.items()):
-            fail(f"check marker mismatch: {check.get('id')}")
-    for observation in observations:
-        marker = record_index.get(("observation", observation.get("id")))
-        if not marker or marker.get("data-origin") != "canonical":
-            fail(f"missing canonical observation marker: {observation.get('id')}")
-    for source in sources:
-        marker = record_index.get(("source", source.get("source_id")))
-        if not marker or marker.get("data-origin") != "canonical":
-            fail(f"missing canonical source marker: {source.get('source_id')}")
+    check_markers(index, records)
 
-    total = len(checks)
-    applies = sum(check.get("applicability") == "APPLIES" for check in checks)
-    unresolved = sum(check.get("applicability") == "UNRESOLVED" for check in checks)
-    incomplete = sum(
-        check.get("applicability") == "APPLIES" and check.get("coverage") != "EVIDENCED"
-        for check in checks
-    )
-    expected_metrics = {
-        "total": total,
-        "applies": applies,
-        "applicability-unresolved": unresolved,
-        "applicable-not-fully-answered": incomplete,
-    }
+    known_checks = set(records.check_order)
+    for element in walk(index.root):
+        for name, known, kind in (("data-check-ids", known_checks, "check"),
+                                  ("data-observation-ids", set(records.observations), "observation")):
+            if name in element.attrs:
+                unknown = sorted(set(element.attrs[name].split()) - known)
+                if unknown:
+                    fail(f"{name} names unknown {kind} IDs: {unknown[:5]}")
+
+    expected_metrics = records.metrics()
     actual_metrics = {
         key: int(value)
         for key, value in re.findall(
@@ -364,23 +367,27 @@ def main() -> int:
     }
     if actual_metrics != expected_metrics:
         fail(f"Executive framework strip differs from assessment: {actual_metrics} != {expected_metrics}")
+    for cell in descendants_with_class(executive, "framework-cell"):
+        shown = [visible_text(child) for child in cell.children if "framework-n" in classes(child)]
+        if shown != [cell.attrs.get("data-value")]:
+            fail(f"framework figure shown for {cell.attrs.get('data-metric')} is {shown}, "
+                 f"expected {cell.attrs.get('data-value')}")
 
-    expected_by_pillar: dict[str, set[str]] = defaultdict(set)
-    for check in checks:
-        expected_by_pillar[check.get("pillar", "")].add(check.get("id"))
+    expected_by_pillar = {pillar: {check_id for check_id in records.check_order
+                                   if records.pillar_of[check_id] == pillar}
+                          for pillar in records.pillar_ids}
     open_rows = descendants_with_class(blocks[4], "open-row")
-    if len(open_rows) != 5:
-        fail("Executive must contain five open-evidence groups")
+    if len(open_rows) != len(records.pillar_ids):
+        fail(f"Executive must contain {len(records.pillar_ids)} open-evidence groups")
     seen: list[str] = []
     for row in open_rows:
-        canonical_pillar = PILLAR_ALIASES.get(row.attrs.get("data-pillar", ""))
+        pillar = PILLAR_ALIASES.get(row.attrs.get("data-pillar", ""))
         members = row.attrs.get("data-check-ids", "").split()
-        if canonical_pillar is None or set(members) != expected_by_pillar[canonical_pillar]:
+        if pillar is None or set(members) != expected_by_pillar[pillar]:
             fail(f"open-evidence group differs for {row.attrs.get('data-pillar')}")
         seen.extend(members)
-    check_ids = {check.get("id") for check in checks}
-    if len(seen) != 63 or len(set(seen)) != 63 or set(seen) != check_ids:
-        fail("open-evidence groups must partition all 63 checks exactly once")
+    if sorted(seen) != sorted(known_checks):
+        fail("open-evidence groups must partition every catalogue check exactly once")
 
     analyst = element_by_id(index, "v3-analyst")
     ai_dock = descendants_with_class(analyst, "ai-dock")
@@ -398,7 +405,7 @@ def main() -> int:
         fail("public materiality, score, ranking, or aggregate-status component found")
 
     output_vars = v03_vars(raw_html)
-    reference_vars = v03_vars(reference)
+    reference_vars = v03_vars(reference_html)
     for name in V03_THEME_VARS:
         if output_vars.get(name) != reference_vars.get(name):
             fail(f"v0.3 theme variable differs from reference: --{name}")
@@ -411,10 +418,103 @@ def main() -> int:
     if "@media print" not in raw_html or "@media(max-width:" not in raw_html.replace(" ", ""):
         fail("responsive or print rules are absent")
 
-    print(
-        f"PASS: v0.3 two-mode interface; 6 Executive blocks; 14 Analyst panels; "
-        f"{len(checks)} checks; {len(observations)} observations; {len(sources)} sources"
+    return (
+        f"PASS: v0.3 two-mode interface; 6 Executive blocks; {len(PANEL_ROLE_ORDER)} Analyst panels; "
+        f"{len(records.checks)} checks; {len(records.observations)} observations; "
+        f"{len(records.sources)} sources"
     )
+
+
+def check_pillar_sources(role: str, panel: Element, records: Records, warnings: list[str]) -> None:
+    """A pillar must cite at least one source behind its own checks, or be marked as having none."""
+    pillar = ROLE_PILLAR[role]
+    expected = records.pillar_sources(pillar)
+    section = next((child for child in panel.children if child.tag == "section"), panel)
+    marked_none = section.attrs.get("data-pillar-sources") == "none"
+    cited = [element.attrs.get("href", "")[len("#source-"):]
+             for element in descendants_with_class(panel, "claim-source")
+             if element.tag == "a" and element.attrs.get("href", "").startswith("#source-")
+             and visible_text(element)]
+    if not expected:
+        if not marked_none:
+            fail(f"{role} cites no observations, so its section must carry data-pillar-sources=\"none\"")
+        if cited:
+            fail(f"{role} cites no observations but links sources: {sorted(set(cited))[:5]}")
+        return
+    if marked_none:
+        fail(f"{role} cites observations, so it must not be marked data-pillar-sources=\"none\"")
+    if not set(cited) & expected:
+        fail(f"{role} links no source that supports its own checks; expected one of {sorted(expected)[:5]}")
+    unrelated = sorted(set(cited) - expected)
+    if unrelated:
+        warnings.append(f"{role} also links sources that support none of its checks: {unrelated[:5]}")
+
+
+def check_markers(index: Index, records: Records) -> None:
+    """Every canonical record is marked once, faithfully, and shows its key text."""
+    markers: dict[tuple[str, str], Element] = {}
+    for element in index.records:
+        key = (element.attrs.get("data-record-type", ""), element.attrs.get("data-record-id", ""))
+        if key in markers:
+            fail(f"canonical DOM record marker is duplicated: {key}")
+        markers[key] = element
+    known = {("check", cid) for cid in records.check_order}
+    known |= {("observation", oid) for oid in records.observations}
+    known |= {("source", sid) for sid in records.sources}
+    stray = sorted(set(markers) - known)
+    if stray:
+        fail(f"canonical markers name records the run does not have: {stray[:5]}")
+
+    for check_id in records.check_order:
+        check = records.checks[check_id]
+        marker = markers.get(("check", check_id))
+        expected = {
+            "data-origin": "canonical",
+            "data-applicability": check["applicability"],
+            "data-coverage": check.get("coverage") or "",
+        }
+        if marker is None or any(marker.attrs.get(name) != value for name, value in expected.items()):
+            fail(f"check marker mismatch: {check_id}")
+        shown = visible_text(marker)
+        if normalized(check["finding"]) not in shown:
+            fail(f"check {check_id} does not show its accepted finding")
+        if check.get("gap") and normalized(check["gap"]["question"]) not in shown:
+            fail(f"check {check_id} does not show its gap question")
+    for observation_id, observation in records.observations.items():
+        marker = markers.get(("observation", observation_id))
+        if marker is None or marker.attrs.get("data-origin") != "canonical":
+            fail(f"missing canonical observation marker: {observation_id}")
+        if normalized(observation["proposition"]) not in visible_text(marker):
+            fail(f"observation {observation_id} does not show its accepted proposition")
+    for source_id, source in records.sources.items():
+        marker = markers.get(("source", source_id))
+        if marker is None or marker.attrs.get("data-origin") != "canonical":
+            fail(f"missing canonical source marker: {source_id}")
+        if normalized(source["title"]) not in visible_text(marker):
+            fail(f"source {source_id} does not show its title")
+
+
+def main(argv: list[str] | None = None) -> int:
+    parser = argparse.ArgumentParser(description=__doc__.split("\n\n")[0])
+    parser.add_argument("html", type=Path, help="the Trust Center HTML to check")
+    parser.add_argument("--reference", type=Path, required=True,
+                        help="the shell the page was built from (assets/v0.3-two-mode-shell.html)")
+    parser.add_argument("--assessment", type=Path, required=True, help="the run's accepted assessment.json")
+    parser.add_argument("--evidence", type=Path, required=True,
+                        help="the run's accepted documentary-evidence.json")
+    parser.add_argument("--catalogue", type=Path, required=True, help="inputs/catalogue.json")
+    args = parser.parse_args(argv)
+    warnings: list[str] = []
+    try:
+        inputs = load_inputs(args.assessment, args.evidence, args.catalogue)
+        summary = check_document(args.html.read_text(encoding="utf-8"),
+                                 args.reference.read_text(encoding="utf-8"), inputs, warnings)
+    except (AssertionError, RecordError, OSError) as exc:
+        print(f"FAIL: {exc}", file=sys.stderr)
+        return 1
+    for warning in warnings:
+        print(f"WARN: {warning}", file=sys.stderr)
+    print(summary)
     return 0
 
 
