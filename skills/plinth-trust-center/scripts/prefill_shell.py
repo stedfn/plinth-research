@@ -14,7 +14,7 @@ It copies the v0.3 shell and fills every region marked ``data-fill``:
 - the Executive framework figures and open-evidence partition;
 - the embedded payload.
 
-It also sets ``{{PRODUCT}}`` everywhere and marks pillars whose checks cite no
+It also sets ``{{PRODUCT}}`` in the template and marks pillars whose checks cite no
 observations. Everything else stays a ``{{PLACEHOLDER}}`` for the author: the
 narrative, the citations inside it, and the Executive synthesis. Run
 ``check_morphed_html.py`` once those are written.
@@ -41,7 +41,11 @@ from trust_center_records import (  # noqa: E402
     payload_text,
 )
 
+from presentation import (utc_date, cutoff_text, executive_counts, source_reference_entries,
+                          render_source_references_html, render_source_references_md, render_gap_groups)
+
 DEFAULT_SHELL = Path(__file__).resolve().parent.parent / "assets" / "v0.3-two-mode-shell.html"
+EXECUTIVE_FRAGMENT = DEFAULT_SHELL.with_name("executive-questions12.html")
 VOID_TAGS = {"area", "base", "br", "col", "embed", "hr", "img", "input", "link", "meta",
              "param", "source", "track", "wbr"}
 PLACEHOLDER_RE = re.compile(r"\{\{[A-Z][A-Z0-9_ &,./:'-]*\}\}")
@@ -98,6 +102,34 @@ def elements_with(text: str, attribute: str) -> list[dict]:
 
 def without_fill(raw_start: str) -> str:
     return re.sub(r'\s+data-fill="[^"]*"', "", raw_start)
+
+
+def executive_shell(shell: str) -> str:
+    """Insert the only supported Executive layout, or accept a complete custom one."""
+    if 'data-exec-block=' in shell:
+        raise RecordError("six-block shells are no longer supported; use the twelve-question shell")
+    views = [n for n in elements_with(shell, "id") if n["attrs"]["id"] == "v3-executive"]
+    if len(views) != 1:
+        raise RecordError("the shell must have one #v3-executive")
+    view = views[0]
+    layout = view["attrs"].get("data-executive-layout")
+    if layout not in (None, "questions12"):
+        raise RecordError("the shell's Executive layout must be questions12")
+    slots = elements_with(shell, "data-executive-slot")
+    if slots:
+        if len(slots) != 1 or not (view["inner_start"] <= slots[0]["start"] < view["inner_end"]):
+            raise RecordError("the shell must have exactly one Executive slot inside #v3-executive")
+        if re.search(r'id=[\"\']q\d+[\"\']', shell):
+            raise RecordError("the shell contains both an Executive slot and question cards")
+        slot = slots[0]
+        shell = shell[:slot["start"]] + EXECUTIVE_FRAGMENT.read_text(encoding="utf-8") + shell[slot["end"]:]
+    elif layout != "questions12" or re.findall(r'<article\b[^>]*\bid="q(\d+)"', shell) != [str(n) for n in range(1, 13)]:
+        raise RecordError("custom shells need an Executive slot or twelve ordered questions12 cards")
+    if layout is None:
+        shell = shell[:view["start"]] + view["raw_start"][:-1] + ' data-executive-layout="questions12">' + shell[view["inner_start"]:]
+    return shell
+
+
 
 
 # ---------------------------------------------------------------------------
@@ -239,7 +271,7 @@ def render_source(records: Records, source: dict) -> str:
     if source.get("url"):
         rows.append(("URL", url_text(source["url"])))
     if source.get("publication_date"):
-        rows.append(("Published", esc(source["publication_date"])))
+        rows.append(("Published (UTC date)", esc(utc_date(source["publication_date"]))))
     disposition = source.get("disposition", "IN_SCOPE")
     if disposition == "EXCLUDED":
         disposition_text = f"EXCLUDED: {esc(source.get('excluded_reason') or 'no reason recorded')}"
@@ -257,15 +289,15 @@ def render_source(records: Records, source: dict) -> str:
     if attempts:
         items = []
         for attempt in attempts:
-            parts = [attempt["acquisition_mode"], attempt["outcome"], f"attempted {attempt['attempted_at']}"]
+            parts = [attempt["acquisition_mode"], attempt["outcome"], f"attempted {utc_date(attempt['attempted_at'])}"]
             if attempt.get("retrieved_at"):
-                parts.append(f"retrieved {attempt['retrieved_at']}")
+                parts.append(f"retrieved {utc_date(attempt['retrieved_at'])}")
             if attempt.get("failure_reason"):
                 parts.append(f"failure: {attempt['failure_reason']}")
             if attempt.get("artifact_sha256"):
                 parts.append(f"artifact sha256 {attempt['artifact_sha256'][:16]}…")
             items.append(f"<li>{esc(attempt['acquisition_id'])}: {esc(', '.join(parts))}</li>")
-        rows.append(("Acquisitions", f'<ul class="fact-list">{"".join(items)}</ul>'))
+        rows.append(("Acquisitions (UTC dates)", f'<ul class="fact-list">{"".join(items)}</ul>'))
     else:
         rows.append(("Acquisitions", "None recorded"))
     state = source_state(records, source)
@@ -370,6 +402,14 @@ def render_distribution(records: Records) -> str:
 # filling
 # ---------------------------------------------------------------------------
 def fill(shell: str, records: Records, payload: str, product: str) -> tuple[str, list[str]]:
+    shell = executive_shell(shell)
+    snapshot = "Fixed evidence snapshot · " + utc_date(records.campaign["cutoff"])
+    cutoff = "Evidence cutoff: " + cutoff_text(records.campaign["cutoff"])
+    presentation_values = {"{{SNAPSHOT LABEL}}": esc(snapshot),
+                           "{{METHODOLOGY_CAMPAIGN_BOUNDARY}}": esc(cutoff + "; " + records.campaign["declared_scope_note"]),
+                           "{{PRODUCT}}": esc(product)}
+    # Substitute only template text, before any accepted records are rendered or embedded.
+    shell = PLACEHOLDER_RE.sub(lambda match: presentation_values.get(match[0], match[0]), shell)
     notes: list[str] = []
     edits: list[tuple[int, int, str]] = []
     counts = {pillar: Records.counts(records.checks_in(pillar)) for pillar in records.pillar_ids}
@@ -380,7 +420,18 @@ def fill(shell: str, records: Records, payload: str, product: str) -> tuple[str,
         start_tag = without_fill(node["raw_start"])
         inner = shell[node["inner_start"]:node["inner_end"]]
         kind, _, arg = region.partition(":")
-        if kind == "framework-strip":
+        if kind == "snapshot-date":
+            inner = esc(snapshot)
+        elif kind == "cutoff":
+            inner = esc(cutoff)
+        elif kind == "declared-scope":
+            inner = ("Declared scope: public evidence only" if records.campaign["bounded_public_evidence"]
+                     else "Declared scope: not limited to public evidence")
+        elif kind == "executive-coverage":
+            inner = "".join(f'<span class="coverage-count" data-coverage-count="{esc(label)}" '
+                            f'data-value="{value}">{esc(label)}: {value}</span>'
+                            for label, value in executive_counts(records).items())
+        elif kind == "framework-strip":
             def cell(match):
                 value = metrics[match.group("metric")]
                 return f'{match.group("open")}{value}{match.group("mid")}{value}{match.group("close")}'
@@ -399,8 +450,12 @@ def fill(shell: str, records: Records, payload: str, product: str) -> tuple[str,
             inner = "\n" + render_pillar_rows(records, arg) + "\n"
         elif kind == "evidence-requests":
             inner = "\n" + render_requests(records) + "\n"
+        elif kind == "gap-groups":
+            inner = "\n" + render_gap_groups(records) + "\n"
         elif kind == "source-count":
             inner = f"{len(records.sources)} source records"
+        elif kind == "source-references":
+            inner = render_source_references_html(source_reference_entries(records))
         elif kind == "source-records":
             inner = "\n" + "\n".join(render_source(records, s) for s in records.sources.values()) + "\n"
         elif kind == "locator-records":
@@ -425,14 +480,16 @@ def fill(shell: str, records: Records, payload: str, product: str) -> tuple[str,
     for pillar, heading in PILLAR_HEADING.items():
         if records.pillar_sources(pillar):
             continue
-        marker = f'<section aria-labelledby="{heading}">'
-        position = shell.find(marker)
-        if position < 0:
+        sections = [node for node in elements_with(shell, "aria-labelledby")
+                    if node["tag"] == "section" and node["attrs"]["aria-labelledby"] == heading]
+        if len(sections) != 1:
             raise RecordError(f"the shell has no pillar section for {heading}")
-        edits.append((position, position + len(marker),
-                      f'<section aria-labelledby="{heading}" data-pillar-sources="none">'))
+        section = sections[0]
+        start_tag = re.sub(r'\s+data-pillar-sources="[^"]*"', "", section["raw_start"])
+        edits.append((section["start"], section["inner_start"],
+                      start_tag[:-1] + ' data-pillar-sources="none">'))
         notes.append(f"{records.pillar_label[pillar]} cites no observations: it is marked "
-                     "data-pillar-sources=\"none\"; delete its example claim-source links")
+                     "data-pillar-sources=\"none\"; leave its citation slots empty")
 
     for start, end, replacement in sorted(edits, key=lambda edit: edit[0], reverse=True):
         shell = shell[:start] + replacement + shell[end:]
@@ -442,7 +499,6 @@ def fill(shell: str, records: Records, payload: str, product: str) -> tuple[str,
         raise RecordError("the shell's payload placeholder was not found exactly once")
     shell = shell.replace(payload_marker,
                           f'<script type="application/json" id="plinth-research-state">{payload}</script>')
-    shell = shell.replace("{{PRODUCT}}", esc(product))
     return shell, notes
 
 
@@ -456,9 +512,15 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--out", type=Path, required=True, help="where to write the prefilled page")
     parser.add_argument("--shell", type=Path, default=DEFAULT_SHELL, help="the v0.3 shell (default: bundled)")
     parser.add_argument("--force", action="store_true", help="overwrite --out if it exists")
+    parser.add_argument("--source-references-md", type=Path,
+                        help="also write the same cited-source list as a Markdown report section")
     args = parser.parse_args(argv)
-    if args.out.exists() and not args.force:
-        print(f"FAIL: {args.out} exists; pass --force to overwrite", file=sys.stderr)
+    for target in (args.out, args.source_references_md):
+        if target and target.exists() and not args.force:
+            print(f"FAIL: {target} exists; pass --force to overwrite", file=sys.stderr)
+            return 1
+    if args.source_references_md and args.source_references_md.resolve() == args.out.resolve():
+        print("FAIL: HTML and Markdown outputs must be different paths", file=sys.stderr)
         return 1
     try:
         inputs = load_inputs(args.assessment, args.evidence, args.catalogue)
@@ -469,6 +531,10 @@ def main(argv: list[str] | None = None) -> int:
         return 1
     args.out.parent.mkdir(parents=True, exist_ok=True)
     args.out.write_text(page, encoding="utf-8")
+    if args.source_references_md:
+        args.source_references_md.parent.mkdir(parents=True, exist_ok=True)
+        args.source_references_md.write_text(render_source_references_md(source_reference_entries(Records(inputs))),
+                                            encoding="utf-8")
     remaining = sorted(set(PLACEHOLDER_RE.findall(
         re.sub(r'<script type="application/json" id="plinth-research-state">.*?</script>', "", page, flags=re.S))))
     print(f"wrote {args.out}")

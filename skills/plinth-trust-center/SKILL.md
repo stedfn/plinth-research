@@ -29,7 +29,8 @@ The compiler produces the canonical records, and this skill presents them:
 - The run's accepted `documentary-evidence.json` and `assessment.json`: content authority.
 - `inputs/catalogue.json`, `inputs/plinth-framework-v0.2-working.md` and
   `inputs/trust-center-output-contract-v0.1.md`: framework authority.
-- `skills/plinth-trust-center/assets/v0.3-two-mode-shell.html`: UI authority.
+- `skills/plinth-trust-center/assets/v0.3-two-mode-shell.html` and
+  `assets/executive-questions12.html`: UI authority.
 
 Never modify these files.
 
@@ -41,7 +42,9 @@ Before authoring, read:
 2. `inputs/trust-center-output-contract-v0.1.md`, complete.
 3. [references/assessment-and-authoring.md](references/assessment-and-authoring.md).
 4. [references/two-mode-interface-contract.md](references/two-mode-interface-contract.md).
-5. The `<body>` of the shell. Do not read its `<head>`, which is 240 KB of CSS and embedded
+5. [references/authoring-slots.md](references/authoring-slots.md), which maps named slots to
+   compiler records and explains empty citation slots and optional components.
+6. The `<body>` of the shell. Do not read its `<head>`, which is 240 KB of CSS and embedded
    fonts that is copied, never edited.
 
 [references/input-contract.md](references/input-contract.md) is the guidance for building the
@@ -58,6 +61,11 @@ Record:
 - the catalogue hash;
 - the evidence cutoff;
 - whether the campaign is public-only (`bounded_public_evidence`).
+
+The snapshot chip uses a UTC calendar date; the evidence boundary shows the cutoff to
+the minute with UTC labelled. Publication and retrieval dates are distinct UTC calendar
+dates. Neutral headings work for either declared scope. Disclose actual protected material
+from source records; the scope flag alone does not establish that it was supplied.
 
 Content authority is the accepted records plus the catalogue. UI authority is the shell.
 
@@ -78,12 +86,18 @@ python3 skills/plinth-trust-center/scripts/prefill_shell.py --product "PRODUCT N
   --catalogue inputs/catalogue.json --out trust-centers/SLUG/index.html
 ```
 
-This copies the shell and renders every region marked `data-fill`:
+This inserts the twelve-question Executive fragment and renders every region marked `data-fill`.
+Custom `--shell` files require the insertion slot or complete marked twelve-question markup.
+The former six-block layout is unsupported. The generated regions include:
 
 - the canonical check, observation, source and locator records;
-- the pillar check registers, evidence requests and methodology counts;
-- the Executive framework figures and open-evidence partition;
-- the escaped payload and the product name.
+- the pillar check registers, grouped gap summaries, evidence requests and methodology counts;
+- the Executive snapshot, scope, framework figures, coverage counts and open-evidence partition;
+- the cited-source reference list, escaped payload and product name.
+
+Use `--source-references-md PATH` to write the identical entries as a Markdown section for
+`report.md`. Published and captured dates stay distinct. The list follows observation
+supports; uncited and excluded sources remain in the complete registry.
 
 It marks each pillar whose checks cite no observations with `data-pillar-sources="none"`,
 and it lists the placeholders left for you.
@@ -95,12 +109,12 @@ Replace every remaining `{{PLACEHOLDER}}` in `index.html` from the accepted reco
 [references/two-mode-interface-contract.md](references/two-mode-interface-contract.md). This
 covers:
 
-- the six Executive blocks. Together they are a two-to-three-minute read covering:
-  - what the product is and who is behind it;
-  - what the holder is stated to hold, and what backs it;
-  - how value enters, accrues and exits;
-  - what Plinth can establish and what remains unresolved;
-  - the evidence boundary;
+- the twelve Executive questions in five fixed groups, using the bundled warm paper
+  presentation, coloured documentary labels and clear native disclosures;
+- the claim path beneath Q1, Q5's custody/asset-owner explanation, the value-movement
+  summary and visible unresolved/coverage sections. Mark unsupported relationships unresolved;
+- each question's answer label, supporting observations and Basis & limitations links,
+  following the interface contract's category rules rather than deriving labels from coverage;
 - for each pillar: the narrative, the boundary between what is supported and what is not
   established, a product-specific factual display, and named source links;
 - the claim-structure, legal, quantity, gap, technical-state and methodology panels.
@@ -110,7 +124,7 @@ Rules while authoring:
 - Every factual statement resolves to observations and sources in the run.
 - Repeat a component by copying the example the shell gives, and delete examples you do not
   need.
-- In a pillar marked `data-pillar-sources="none"`, delete the example citations.
+- In a pillar marked `data-pillar-sources="none"`, leave its citation slots empty.
 - Leave the canonical records, the payload and every region prefill rendered exactly as it
   wrote them.
 - Do not expose internal materiality.
@@ -135,12 +149,23 @@ python3 skills/plinth-trust-center/scripts/check_morphed_html.py trust-centers/S
 
 Fix every `FAIL`. Fix each `WARN`, or justify it in `review.md`.
 
+Build the empty-evidence preview as shown in README to compare the interface without
+inventing or importing product content. The registry field-layout example uses bracketed
+placeholders and is never added to compiler records. The grouped gap questions are generated
+from the accepted gaps even in an empty-evidence preview. Use the section-specific slot guide for real runs. Preserve the 960px paper column, title hierarchy, rounded white cards,
+warm documentary labels, inset limitations and clear Expand / Collapse controls. Check a
+realistic expanded disclosure as well as the collapsed reading layer.
+
 Then check the page in a browser:
 
 - desktop and mobile, in both modes;
 - direct fragments, cross-panel links, back and forward, and a malformed fragment;
 - keyboard focus, JavaScript disabled, and print;
 - zero runtime network requests.
+
+Save four screenshots: Executive and Analyst at desktop and mobile widths. If browser
+access is blocked, record NOT RUN with the reason and require a human browser pass before
+merge. Never substitute static checks for a claimed browser pass.
 
 ## Deliverables
 

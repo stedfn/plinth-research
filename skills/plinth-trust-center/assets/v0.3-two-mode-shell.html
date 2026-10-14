@@ -1394,11 +1394,220 @@ a:focus-visible,button:focus-visible,summary:focus-visible{outline:3px solid rgb
   .v3-top,.analyst-sidebar,.mobile-analyst-nav,.ai-dock,.skip-link{display:none!important}.v3-view,.js .v3-view,.js .v3-view.is-active{display:block!important}.executive-main{max-width:none;padding:0}.analyst-layout{display:block}.analyst-main .panel{display:block!important;padding:28px 0;break-before:page}.analyst-main details,.analyst-main details>*{display:block!important}.analyst-main details>summary{list-style:none}.analyst-footer{padding:24px 0}.exec-block{break-inside:avoid}.open-row{break-inside:avoid}body{background:#fff}
 }
 </style>
-<noscript><style>.v3-view,.panel{display:block!important}.analyst-sidebar{display:none!important}.mobile-analyst-nav{display:block!important;position:static!important}</style></noscript>
+<noscript><style>.v3-view,.panel{display:block!important}.analyst-sidebar{display:none!important}.analyst-layout{grid-template-columns:minmax(0,1fr)}.mobile-analyst-nav{display:block!important;position:static!important}</style></noscript>
 <style data-purpose="shell-fixes">
 /* Below 760px .record-badges is width:100%, and .record>summary does not wrap,
    so every record title collapsed to zero width. Let the badges wrap below it. */
 @media(max-width:760px){.record>summary{flex-wrap:wrap}}
+</style>
+<style data-purpose="questions12-presentation">
+html:not(.js){scroll-behavior:auto}@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+html:not(.js) #v3-executive .rail,html:not(.js) #v3-executive #prog{display:none}
+#v3-executive{
+  --paper:#F7F5F0;--paper-2:#FCFBF8;--panel:#FFFFFF;--ink:#15150F;
+  --ink-2:#3A3A33;--ink-3:#61605A;--muted:#6E6B62;--hint:#777369;
+  --line:#EAE7DE;--line-2:#DFDBD0;--sage:#5F7A5A;--sage-bg:#EFF3EE;
+  --amber:#A0731C;--amber-bg:#F7F1E4;--rust:#A3543A;--rust-bg:#F8EFEB;
+  --shadow-sm:0 1px 2px rgba(21,21,15,.04);
+  --shadow:0 1px 2px rgba(21,21,15,.04),0 10px 30px -18px rgba(21,21,15,.22);
+  --shadow-lift:0 1px 2px rgba(21,21,15,.05),0 20px 45px -22px rgba(21,21,15,.28);
+  --r:18px;--col:960px;--gut:32px;
+  color:var(--ink);background:var(--paper);
+  background-image:radial-gradient(1100px 520px at 50% -6%,#FFFDF9 0%,rgba(255,253,249,0) 66%);
+  font-family:Inter,-apple-system,BlinkMacSystemFont,sans-serif;font-size:15px;line-height:1.6;
+  -webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;
+  font-feature-settings:"cv05" 1,"ss01" 1;
+}
+#v3-executive *{box-sizing:border-box;margin:0;padding:0}
+#v3-executive a{color:inherit;text-decoration:none}
+#v3-executive button{font:inherit;cursor:pointer;border:0;background:none;color:inherit}
+#v3-executive a:focus-visible,#v3-executive button:focus-visible,#v3-executive summary:focus-visible{outline:2px solid var(--sage);outline-offset:4px}
+#v3-executive .kiid-col{width:100%;max-width:var(--col);margin-left:auto;margin-right:auto;padding-left:var(--gut);padding-right:var(--gut)}
+#v3-executive .kiid-main{padding-top:66px;padding-bottom:90px;overflow-wrap:anywhere}
+#v3-executive #prog{position:fixed;top:0;left:0;height:2px;width:0;background:var(--ink);z-index:100;transition:width .1s linear}
+#v3-executive .rail{position:fixed;top:50%;transform:translateY(-50%);left:calc(50% - (var(--col) / 2) - 76px);z-index:30;display:flex;flex-direction:column;gap:0}
+#v3-executive .rl{display:flex;align-items:center;gap:11px;height:33px;opacity:.4;transition:opacity .25s;cursor:pointer}
+#v3-executive .rl:hover{opacity:.9}#v3-executive .rl.on{opacity:1}
+#v3-executive .rl-n{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--muted);width:18px;letter-spacing:-.02em;transition:color .25s}
+#v3-executive .rl.on .rl-n{color:var(--ink);font-weight:500}
+#v3-executive .rl-b{height:3px;border-radius:3px;width:16px;transition:width .3s cubic-bezier(.2,.8,.2,1)}
+#v3-executive .rl.on .rl-b{width:34px}#v3-executive .b-part{background:var(--amber)}
+#v3-executive .eyebrow{font-size:10.5px;letter-spacing:.17em;text-transform:uppercase;color:var(--muted);font-weight:500}
+#v3-executive .h1{font-size:64px;font-weight:300;letter-spacing:-.045em;line-height:1;margin:18px 0 22px}
+#v3-executive .lede{font-size:18.5px;line-height:1.58;color:var(--ink-2);font-weight:350;letter-spacing:-.011em}
+#v3-executive .chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:26px}
+#v3-executive .chip{display:inline-flex;align-items:center;gap:8px;padding:6px 13px;background:var(--panel);border:1px solid var(--line);border-radius:100px;font-size:12px;color:var(--ink-3);box-shadow:var(--shadow-sm);font-family:inherit;text-transform:none;letter-spacing:normal}
+#v3-executive .chip b{font-weight:500;color:var(--ink-2)}
+#v3-executive .context{margin-top:30px;background:var(--panel);border:1px solid var(--line);border-radius:18px;padding:23px 26px;box-shadow:var(--shadow-sm)}
+#v3-executive .context p{font-size:13px;color:var(--ink-3);line-height:1.65}#v3-executive .context p+p{margin-top:10px}
+#v3-executive .context strong{font-weight:550;color:var(--ink-2)}
+#v3-executive .context .labels{display:flex;flex-wrap:wrap;gap:9px;margin:15px 0 10px}
+#v3-executive .overlay-link{display:inline-flex;align-items:center;gap:7px;text-decoration:underline;text-underline-offset:3px;color:var(--ink-2)}
+#v3-executive .sec-h{margin:48px 0 22px;display:flex;align-items:baseline;justify-content:space-between;gap:20px;flex-wrap:wrap;font-family:inherit;font-size:inherit;text-transform:none;letter-spacing:normal;color:inherit}
+#v3-executive .sec-t{font-size:26px;font-weight:350;letter-spacing:-.03em}#v3-executive .sec-s{font-size:13px;color:var(--muted)}
+#v3-executive .grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:9px}
+#v3-executive .card{background:var(--panel);border:1px solid var(--line);border-radius:13px;padding:14px 15px;cursor:pointer;transition:transform .22s cubic-bezier(.2,.8,.2,1),box-shadow .22s,border-color .22s;display:flex;flex-direction:column;gap:8px;box-shadow:var(--shadow-sm);min-height:103px}
+#v3-executive .card:hover{transform:translateY(-3px);box-shadow:var(--shadow-lift);border-color:var(--line-2)}
+#v3-executive .c-top{display:flex;align-items:flex-start;justify-content:space-between;gap:8px}
+#v3-executive .c-n{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--muted)}
+#v3-executive .c-q{font-size:13px;line-height:1.4;color:var(--ink);letter-spacing:-.009em}
+#v3-executive .index-status{font-size:10px;color:var(--ink-3)}
+#v3-executive .pill{display:inline-flex;align-items:center;gap:6px;padding:4px 8px;border-radius:100px;font-size:10px;font-weight:500;white-space:nowrap;margin:0}
+#v3-executive .p-part{background:var(--amber-bg);color:var(--amber)}#v3-executive .p-no{background:var(--rust-bg);color:var(--rust)}
+#v3-executive .grp{margin-top:38px}#v3-executive .grp-h{display:flex;align-items:center;gap:14px;margin-bottom:16px}
+#v3-executive .grp-n{font-family:'JetBrains Mono',monospace;font-size:10.5px;color:var(--panel);background:var(--ink);width:22px;height:22px;border-radius:7px;display:grid;place-items:center;flex-shrink:0}
+#v3-executive .grp-t{font-size:18px;font-weight:450;letter-spacing:-.025em}
+#v3-executive .q{background:var(--panel);border:1px solid var(--line);border-radius:var(--r);padding:28px 30px;margin-bottom:12px;box-shadow:var(--shadow);scroll-margin-top:100px;opacity:1;transform:none;transition:none}
+#v3-executive .q-top{display:flex;align-items:flex-start;justify-content:space-between;gap:24px;margin-bottom:10px}
+#v3-executive .q-t{font-size:22px;font-weight:350;letter-spacing:-.031em;line-height:1.28;max-width:560px}
+#v3-executive .q-n{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--hint);display:block;margin-bottom:9px;letter-spacing:.04em}
+#v3-executive .q-pill{font-size:10px;letter-spacing:.11em;text-transform:uppercase;color:var(--ink-3);margin-bottom:18px}
+#v3-executive .q-a{font-size:15.5px;color:var(--ink-2);line-height:1.68;font-weight:400;letter-spacing:-.006em}
+#v3-executive .q-a p+p{margin-top:12px}#v3-executive .q-a strong{color:var(--ink);font-weight:550}
+#v3-executive .bound{margin-top:18px;padding:13px 16px;background:var(--rust-bg);border-radius:12px;border:1px solid rgba(163,84,58,.13)}
+#v3-executive .b-k{font-size:10px;letter-spacing:.07em;text-transform:uppercase;color:var(--rust);font-weight:600;margin-bottom:7px}
+#v3-executive .b-t{font-size:13.2px;color:var(--ink-2);line-height:1.62}
+#v3-executive .evidence{margin-top:16px;border-top:1px solid var(--line);padding-top:12px}
+#v3-executive .evidence summary{font-size:12px;color:var(--ink-3);cursor:pointer;padding:5px 0;list-style-position:inside}
+#v3-executive .evidence p{font-size:12.5px;line-height:1.65;color:var(--ink-3);margin-top:10px}
+#v3-executive .evidence a{text-decoration:underline;text-underline-offset:3px}
+#v3-executive .route{display:flex;flex-wrap:wrap;gap:7px;align-items:center;margin-top:18px;font-size:12px;color:var(--ink-3)}
+#v3-executive .route b{font-weight:500;background:var(--paper-2);border:1px solid var(--line);padding:7px 10px;border-radius:8px}
+#v3-executive .exit{margin-top:16px;border-left:2px solid var(--line-2);padding-left:15px;font-size:14px;color:var(--ink-2)}
+#v3-executive .scope{margin-top:38px;border-top:1px solid var(--line-2);padding-top:25px;scroll-margin-top:100px}
+#v3-executive .scope h2{font-size:20px;font-weight:450;margin-bottom:12px}#v3-executive .scope p{font-size:12.5px;color:var(--ink-3);margin-top:10px}
+#v3-executive .scope a{text-decoration:underline}#v3-executive .close{margin-top:30px;padding-top:26px;border-top:1px solid var(--line);display:flex;justify-content:space-between;align-items:flex-start;gap:24px;font-size:11.5px;color:var(--muted);line-height:1.65}
+#v3-executive .q-back{text-decoration:underline;text-underline-offset:3px;white-space:nowrap}
+@media(max-width:1120px){#v3-executive .rail{display:none}}
+@media(max-width:900px){#v3-executive .grid{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:760px){
+  #v3-executive{--gut:20px}#v3-executive .kiid-main{padding-top:38px;padding-bottom:60px}
+  #v3-executive .h1{font-size:43px}#v3-executive .lede{font-size:16.5px}#v3-executive .grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+  #v3-executive .q{padding:23px 20px}#v3-executive .q-t{font-size:21px}#v3-executive .q-top{gap:10px}
+  #v3-executive .context{padding:19px}#v3-executive .grp-h{gap:10px}#v3-executive .close{flex-direction:column;align-items:flex-start;gap:14px}
+}
+@media(max-width:380px){#v3-executive .grid{grid-template-columns:1fr}}
+@media(prefers-reduced-motion:reduce){#v3-executive *,#v3-executive *::before,#v3-executive *::after{transition:none!important;animation:none!important}}
+@media print{
+  @page{margin:16mm}.v3-top,#v3-executive .rail,#v3-executive #prog,.skip-link{display:none!important}
+  #v3-executive,.js #v3-executive,.js #v3-executive.is-active{display:block!important;background:#fff;font-size:11pt}
+  #v3-executive .kiid-main{max-width:none;padding:0}#v3-executive .grid,#v3-executive .sec-h,#v3-executive .q-back{display:none!important}
+  #v3-executive .h1{font-size:32pt;margin:12px 0}#v3-executive .lede{font-size:12pt}#v3-executive .chips{margin-top:15px}#v3-executive .chip{font-size:9pt}
+  #v3-executive .context{margin-top:20px;box-shadow:none}#v3-executive .grp{margin-top:22px}
+  #v3-executive .q{opacity:1!important;transform:none!important;box-shadow:none;break-inside:avoid;padding:18px;margin-bottom:12px}
+  #v3-executive .q-t{font-size:16pt}#v3-executive .q-a{font-size:10.5pt}#v3-executive .bound{padding:10px}#v3-executive .b-t,#v3-executive .evidence p{font-size:9pt}
+  #v3-executive .scope,#v3-executive .close{break-inside:avoid}#v3-executive .close{font-size:8pt}
+}
+
+
+#v3-executive .rl{min-height:36px}#v3-executive .rl-b{background:var(--ink-3)}
+#v3-executive .evidence summary{min-height:44px;display:flex;align-items:center;gap:8px}
+#v3-executive .framework-strip{margin-top:16px}#v3-executive .framework-cell{padding:16px}
+#v3-executive .framework-n{font-size:24px}#v3-executive .framework-l{font-size:12px}#v3-executive .framework-s{font-size:11px}
+#v3-executive .open-row{padding:16px}#v3-executive .open-m{margin-top:8px}#v3-executive .open-ref{margin-top:8px}
+@media print{#v3-analyst{display:block!important}#v3-executive .context{break-inside:avoid}.mode-tabs{display:none!important}}
+
+
+#v3-executive .pill.p-part,#v3-executive .index-status.p-part{background:#F7F1E4;color:#775615;border-color:#E8D6AA}
+#v3-executive .pill.p-no,#v3-executive .index-status.p-no{background:#F8EFEB;color:#8F4531;border-color:#EACABD}
+#v3-executive .evidence>summary{display:flex;align-items:center;gap:10px;min-height:48px;padding:8px 5px;list-style:none;border-radius:8px;transition:background .15s,color .15s}
+#v3-executive .evidence>summary:hover{background:var(--cream-2);color:var(--ink)}
+#v3-executive .evidence>summary::-webkit-details-marker{display:none}
+#v3-executive .evidence>summary::marker{content:''}
+#v3-executive .disclosure-cue{display:inline-flex;align-items:center;gap:6px;margin-left:auto;flex:none;font-size:10px;font-weight:500;color:var(--ink-3)}
+#v3-executive .when-open{display:none}
+#v3-executive .evidence[open]>summary .when-closed{display:none}
+#v3-executive .evidence[open]>summary .when-open{display:inline}
+#v3-executive .disclosure-chevron{transition:transform .15s}
+#v3-executive .evidence[open]>summary .disclosure-chevron{transform:rotate(90deg)}
+@media(max-width:420px){#v3-executive .evidence>summary{gap:7px;font-size:11px}#v3-executive .disclosure-cue{gap:3px}#v3-executive .pill{padding:4px 7px!important}}
+@media(prefers-reduced-motion:reduce){#v3-executive .evidence>summary,#v3-executive .disclosure-chevron{transition:none}}
+@media print{#v3-executive .disclosure-cue{display:none}}
+
+#v3-executive .bound{background:var(--paper-2);border-color:var(--line-2)}
+#v3-executive .b-k{color:var(--ink-3)}
+#v3-executive .pill,#v3-executive .index-status{border:1px solid var(--line-2);padding:4px 8px;border-radius:100px;font-size:10px;font-weight:500;white-space:nowrap;line-height:1.4}
+#v3-executive .c-top{align-items:center}
+#v3-executive .rail{opacity:0;visibility:hidden;pointer-events:none}
+#v3-executive .rail.is-visible{opacity:1;visibility:visible;pointer-events:auto}
+#v3-executive .route p{margin:0 0 8px;width:100%;overflow-wrap:anywhere}
+#v3-executive .route b{display:inline-block;white-space:normal}
+#v3-executive .coverage-counts{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
+#v3-executive .coverage-count{background:var(--panel);border:1px solid var(--line);border-radius:9px;padding:8px 12px;font-size:12px}
+@media print{#v3-executive details,#v3-executive details>*{display:block!important}#v3-executive details>summary{list-style:none}}
+</style>
+
+<style data-purpose="source-references-presentation">
+.source-reference-section{margin:22px 0 26px;padding:20px 23px;background:var(--panel);border-radius:12px}
+.source-reference-section>h3{font-size:20px;font-weight:500;letter-spacing:-.02em;margin:0 0 12px;scroll-margin-top:100px}
+.source-reference-section>p{font-size:12px;line-height:1.65;color:var(--ink-3);margin:0 0 14px}
+.source-reference-list{list-style:disc;padding:0 0 0 20px;margin:0}
+.source-reference-list>li{padding:5px 0;font-size:13px;line-height:1.65;overflow-wrap:anywhere}
+.source-reference-list a{color:var(--ink-2);text-decoration:underline;text-underline-offset:3px}
+.source-reference-detail,.source-reference-note{font-size:10px;line-height:1.6;color:var(--muted);margin-left:9px}
+@media(max-width:760px){.source-reference-section{padding:18px}.source-reference-detail,.source-reference-note{display:block;margin-left:0}}
+@media print{.source-reference-section{background:#fff}.source-reference-list li{break-inside:avoid}}
+</style>
+<style data-purpose="shared-presentation-fixes">
+.analyst-main .request-stack{display:grid;gap:12px}
+.analyst-main .alert-ledger:not(:has(>div+div)){grid-template-columns:1fr}
+</style>
+<style data-purpose="analyst-content-layout">
+.analyst-main .factual-grid,.analyst-main .legal-grid{grid-template-columns:repeat(auto-fit,minmax(min(100%,260px),1fr));gap:12px}
+.analyst-main .pillar-delivery{display:grid;gap:16px;margin:20px 0 24px}
+.analyst-main .pillar-delivery>.factual-grid{margin:0}
+.analyst-main .pillar-delivery>.subsection-title{margin:0}
+.analyst-main .factual-grid>article{display:flex;flex-direction:column;gap:8px;overflow-wrap:anywhere}
+.analyst-main .factual-grid>article>strong,.analyst-main .factual-grid>article>p{margin:0}
+.analyst-main .factual-grid>article>.claim-citations{margin-top:auto;padding-top:8px}
+.analyst-main .legal-cell .state{max-width:100%;white-space:normal;overflow-wrap:anywhere;line-height:1.5}
+.analyst-main .structure-note{margin:18px 0 24px;color:var(--ink-3);font-size:13px;line-height:1.65}
+.analyst-main .report-table th,.analyst-main .report-table td{overflow-wrap:anywhere}
+.analyst-main .panel>.section-lede{margin-bottom:20px}
+@media(max-width:760px){.analyst-main .factual-grid,.analyst-main .legal-grid{grid-template-columns:1fr}}
+</style>
+<style data-purpose="gap-and-registry-layout">
+.analyst-main .gap-groups{display:grid;gap:12px;margin:24px 0 28px}
+.analyst-main .gap-group{background:var(--panel);border-radius:12px;overflow:hidden}
+.analyst-main .gap-group>summary{display:flex;align-items:center;gap:12px;min-height:58px;padding:18px 22px;list-style:none;cursor:pointer;color:var(--ink);font-size:15px}
+.analyst-main .gap-group>summary::-webkit-details-marker{display:none}
+.analyst-main .gap-group>summary:hover{background:var(--cream-2)}
+.analyst-main .gap-group>summary:focus-visible,.registry-field-preview>summary:focus-visible{outline:2px solid var(--ink-3);outline-offset:-3px}
+.analyst-main .gap-number{font:11px/1.4 var(--mono);color:var(--muted)}
+.analyst-main .gap-group-title{flex:1;min-width:0}
+.analyst-main .gap-group-count{font-size:11px;color:var(--muted)}
+.analyst-main .gap-toggle{font-size:20px;color:var(--muted);width:16px;text-align:center}
+.analyst-main .gap-group[open] .gap-toggle{font-size:0}
+.analyst-main .gap-group[open] .gap-toggle::after{content:'−';font-size:20px}
+.analyst-main .gap-group-body{padding:0 22px 20px}
+.analyst-main .gap-summary{padding:20px 0;border-top:1px solid var(--line)}
+.analyst-main .gap-summary:last-child{padding-bottom:0}
+.analyst-main .gap-summary h4{font-size:14px;font-weight:500;line-height:1.55;margin:0 0 14px;color:var(--ink)}
+.analyst-main .gap-facts{display:grid;gap:12px;margin:0}
+.analyst-main .gap-facts>div{display:grid;grid-template-columns:155px minmax(0,1fr);gap:18px}
+.analyst-main .gap-facts dt{font-size:12px;font-weight:500;color:var(--muted)}
+.analyst-main .gap-facts dd{font-size:13px;line-height:1.6;color:var(--ink-2);margin:0;overflow-wrap:anywhere}
+.analyst-main .gap-record-link{display:inline-flex;min-height:32px;margin-top:14px;font-size:11px;text-decoration:underline;text-underline-offset:3px;color:var(--ink-3)}
+.analyst-main .technical-limitations{background:var(--panel);border:0;border-radius:12px;margin-top:28px}
+.analyst-main .technical-limitations .section-head{margin:0;padding:18px 22px;border-bottom:1px solid var(--line);align-items:center}
+.analyst-main .technical-limitations .section-head h3{font-size:15px;font-weight:500;letter-spacing:-.01em;margin:0}
+.analyst-main .technical-limitations .record-body{padding:18px 22px 20px}
+.analyst-main .technical-limitations .record-body p{font-size:13px;line-height:1.65;margin:0;color:var(--ink-3)}
+.analyst-main .preview-layout-note{font-size:12px;line-height:1.6;color:var(--muted);margin:0 0 14px}
+.registry-layout-example{margin:24px 0 28px;padding:22px;background:var(--panel);border-radius:12px}
+.registry-layout-example h3{font-size:20px;letter-spacing:-.02em;font-weight:500;margin:0 0 12px}
+.registry-layout-example>p{font-size:12px;line-height:1.65;color:var(--muted);margin:0 0 16px}
+.registry-layout-example .source-reference-list>li{padding:12px 0}
+.source-reference-placeholder-link{color:var(--ink-2);text-decoration:underline;text-underline-offset:3px}
+.registry-field-preview{margin-top:20px;border-top:1px solid var(--line);padding-top:16px}
+.registry-field-preview>summary{cursor:pointer;min-height:44px;display:flex;align-items:center;gap:10px;font-size:13px;color:var(--ink-2)}
+.registry-field-preview>summary::after{content:'+';margin-left:auto}
+.registry-field-preview[open]>summary::after{content:'−'}
+.registry-field-preview dl{display:grid;grid-template-columns:150px minmax(0,1fr);gap:10px 18px;font-size:12px;line-height:1.6;margin:12px 0 0}
+.registry-field-preview dt{font-weight:500;color:var(--muted)}
+.registry-field-preview dd{margin:0;color:var(--ink-3);overflow-wrap:anywhere}
+@media(max-width:760px){.analyst-main .gap-group>summary{padding:16px;gap:8px}.analyst-main .gap-group-count{font-size:10px}.analyst-main .gap-group-body{padding:0 16px 16px}.analyst-main .gap-facts>div{grid-template-columns:1fr;gap:3px}.registry-layout-example{padding:18px}.registry-field-preview dl{grid-template-columns:1fr;gap:3px}.registry-field-preview dd{margin-bottom:9px}}
+@media print{.gap-group,.gap-group>*{display:block!important}.gap-toggle{display:none!important}.gap-summary{break-inside:avoid}}
 </style>
 </head>
 
@@ -1411,79 +1620,8 @@ a:focus-visible,button:focus-visible,summary:focus-visible{outline:3px solid rgb
             <div class="v3-top-spacer" aria-hidden="true"></div>
           </div>
         </header>
-        <div class="v3-view is-active" id="v3-executive">
-<main class="executive-main" id="executive" aria-label="{{PRODUCT}} executive summary">
-  <section class="exec-block" id="executive-orientation" data-exec-block="1" data-origin="derived-presentation" data-check-ids="{{CHECK_IDS}}" data-observation-ids="{{OBSERVATION_IDS}}">
-    <div class="hero-tick">{{SUBJECT KICKER}}</div>
-    <div class="hero-name">{{SUBJECT NAME}}</div>
-    <p class="hero-what">{{SUBJECT SUMMARY}}</p>
-    <div class="facts">
-      <div><div class="fact-k">{{FACT LABEL}}</div><div class="fact-v">{{FACT VALUE}}</div><div class="fact-s">Fixed public snapshot</div></div>
-      <div><div class="fact-k">{{FACT LABEL}}</div><div class="fact-v">{{FACT VALUE}}</div><div class="fact-s">{{FACT NOTE}}</div></div>
-      <div><div class="fact-k">{{FACT LABEL}}</div><div class="fact-v">{{FACT VALUE}}</div><div class="fact-s">{{FACT NOTE}}</div></div>
-    </div>
-  </section>
-
-  <section class="exec-block" id="executive-holdings" data-exec-block="2" data-origin="derived-presentation" data-check-ids="{{CHECK_IDS}}" data-observation-ids="{{OBSERVATION_IDS}}">
-    <h2 class="sec-h">What the holder is stated to hold</h2>
-    <div class="holds">
-      <p class="holds-lede">{{HOLDINGS LEDE}} <strong>{{HOLDINGS LEDE}}</strong> {{HOLDINGS LEDE}}</p>
-      <div class="claim-track" aria-label="Holder to asset structure">
-        <div class="claim-step"><b>Holder</b><span>{{CLAIM STEP}}</span></div><div class="claim-arrow" aria-hidden="true">→</div>
-        <div class="claim-step"><b>Recorded interest</b><span>{{CLAIM STEP}}</span></div><div class="claim-arrow" aria-hidden="true">→</div>
-        <div class="claim-step unresolved"><b>Legal claim</b><span>{{CLAIM STEP}}</span></div><div class="claim-arrow" aria-hidden="true">→</div>
-        <div class="claim-step"><b>Issuing vehicle</b><span>{{CLAIM STEP}}</span></div><div class="claim-arrow" aria-hidden="true">→</div>
-        <div class="claim-step"><b>Economic asset</b><span>{{CLAIM STEP}}</span></div>
-      </div>
-      <div class="service-branch"><strong>Separate service and control branch:</strong> {{SERVICE BRANCH}}</div>
-      <p class="claim-limit">{{CLAIM LIMIT}}</p>
-    </div>
-  </section>
-
-  <section class="exec-block" id="executive-value" data-exec-block="3" data-origin="derived-presentation" data-check-ids="{{CHECK_IDS}}" data-observation-ids="{{OBSERVATION_IDS}}">
-    <h2 class="sec-h">How value moves</h2>
-    <div class="flow">
-      <article class="flow-c"><div class="flow-k">{{FLOW STAGE}}</div><div class="flow-v">{{FLOW VALUE}}</div><div class="flow-d">{{FLOW DETAIL}}</div></article>
-      <article class="flow-c"><div class="flow-k">{{FLOW STAGE}}</div><div class="flow-v">{{FLOW VALUE}}</div><div class="flow-d">{{FLOW DETAIL}}</div></article>
-      <article class="flow-c"><div class="flow-k">{{FLOW STAGE}}</div><div class="flow-v">{{FLOW VALUE}}</div><div class="flow-d">{{FLOW DETAIL}}</div></article>
-    </div>
-  </section>
-
-  <section class="exec-block" id="executive-pillars" data-exec-block="4" data-origin="derived-presentation" data-check-ids="{{CHECK_IDS}}">
-    <h2 class="sec-h">Five trust pillars</h2>
-    <article class="pill"><div class="pill-top"><div class="pill-name"><i class="pillar-dot pillar-control"></i>Control</div></div><p class="pill-text">{{PILLAR CONCLUSION}}</p><div class="pill-more"><div class="pill-open"><span>Still unresolved:</span> {{PILLAR OPEN BOUNDARY}}</div><a class="pill-link" href="#pillar-control">See the evidence →</a></div></article>
-    <article class="pill"><div class="pill-top"><div class="pill-name"><i class="pillar-dot pillar-backing"></i>Assets &amp; Backing</div></div><p class="pill-text">{{PILLAR CONCLUSION}}</p><div class="pill-more"><div class="pill-open"><span>Still unresolved:</span> {{PILLAR OPEN BOUNDARY}}</div><a class="pill-link" href="#pillar-reserves">See the evidence →</a></div></article>
-    <article class="pill"><div class="pill-top"><div class="pill-name"><i class="pillar-dot pillar-economics"></i>Economics</div></div><p class="pill-text">{{PILLAR CONCLUSION}}</p><div class="pill-more"><div class="pill-open"><span>Still unresolved:</span> {{PILLAR OPEN BOUNDARY}}</div><a class="pill-link" href="#pillar-economics">See the evidence →</a></div></article>
-    <article class="pill"><div class="pill-top"><div class="pill-name"><i class="pillar-dot pillar-governance"></i>Governance &amp; Compliance</div></div><p class="pill-text">{{PILLAR CONCLUSION}}</p><div class="pill-more"><div class="pill-open"><span>Still unresolved:</span> {{PILLAR OPEN BOUNDARY}}</div><a class="pill-link" href="#pillar-governance-compliance">See the evidence →</a></div></article>
-    <article class="pill"><div class="pill-top"><div class="pill-name"><i class="pillar-dot pillar-continuity"></i>Continuity</div></div><p class="pill-text">{{PILLAR CONCLUSION}}</p><div class="pill-more"><div class="pill-open"><span>Still unresolved:</span> {{PILLAR OPEN BOUNDARY}}</div><a class="pill-link" href="#pillar-continuity">See the evidence →</a></div></article>
-  </section>
-
-  <section class="exec-block" id="executive-open" data-exec-block="5" data-origin="derived-presentation" data-check-ids="{{CHECK_IDS}}">
-    <h2 class="sec-h">What remains open</h2>
-    <div class="framework-strip" aria-label="Framework question accounting" data-fill="framework-strip">
-      <div class="framework-cell" data-metric="total" data-value="{{VALUE}}"><div class="framework-n">{{VALUE}}</div><div class="framework-l">Fixed questions</div><div class="framework-s">Framework v0.2</div></div>
-      <div class="framework-cell" data-metric="applies" data-value="{{VALUE}}"><div class="framework-n">{{VALUE}}</div><div class="framework-l">Currently apply</div><div class="framework-s">Structural condition established</div></div>
-      <div class="framework-cell" data-metric="applicability-unresolved" data-value="{{VALUE}}"><div class="framework-n">{{VALUE}}</div><div class="framework-l">Applicability unresolved</div><div class="framework-s">More structural evidence needed</div></div>
-      <div class="framework-cell" data-metric="applicable-not-fully-answered" data-value="{{VALUE}}"><div class="framework-n">{{VALUE}}</div><div class="framework-l">Not fully answered</div><div class="framework-s">Among applicable questions</div></div>
-    </div>
-    <div class="open-groups">
-      <a class="open-row" href="#checks-control" data-pillar="control" data-check-ids="{{CHECK_IDS}}" data-fill="open-row"><div class="open-top"><div class="open-q">{{PILLAR OPEN QUESTION}}</div><div class="open-arrow">→</div></div><div class="open-m">{{OPEN SUMMARY}}</div><div class="open-ref"><span class="open-pill">Control</span><span class="open-ids">{{CHECK ID RANGE}}</span></div></a>
-      <a class="open-row" href="#checks-backing" data-pillar="backing" data-check-ids="{{CHECK_IDS}}" data-fill="open-row"><div class="open-top"><div class="open-q">{{PILLAR OPEN QUESTION}}</div><div class="open-arrow">→</div></div><div class="open-m">{{OPEN SUMMARY}}</div><div class="open-ref"><span class="open-pill">Assets &amp; Backing</span><span class="open-ids">{{CHECK ID RANGE}}</span></div></a>
-      <a class="open-row" href="#checks-economics" data-pillar="economics" data-check-ids="{{CHECK_IDS}}" data-fill="open-row"><div class="open-top"><div class="open-q">{{PILLAR OPEN QUESTION}}</div><div class="open-arrow">→</div></div><div class="open-m">{{OPEN SUMMARY}}</div><div class="open-ref"><span class="open-pill">Economics</span><span class="open-ids">{{CHECK ID RANGE}}</span></div></a>
-      <a class="open-row" href="#checks-governance" data-pillar="governance" data-check-ids="{{CHECK_IDS}}" data-fill="open-row"><div class="open-top"><div class="open-q">{{PILLAR OPEN QUESTION}}</div><div class="open-arrow">→</div></div><div class="open-m">{{OPEN SUMMARY}}</div><div class="open-ref"><span class="open-pill">Governance &amp; Compliance</span><span class="open-ids">{{CHECK ID RANGE}}</span></div></a>
-      <a class="open-row" href="#checks-continuity" data-pillar="continuity" data-check-ids="{{CHECK_IDS}}" data-fill="open-row"><div class="open-top"><div class="open-q">{{PILLAR OPEN QUESTION}}</div><div class="open-arrow">→</div></div><div class="open-m">{{OPEN SUMMARY}}</div><div class="open-ref"><span class="open-pill">Continuity</span><span class="open-ids">{{CHECK ID RANGE}}</span></div></a>
-    </div>
-  </section>
-
-  <section class="exec-block" id="executive-boundary" data-exec-block="6" data-origin="derived-presentation" data-check-ids="{{CHECK_IDS}}">
-    <h2 class="sec-h">Where public evidence stops</h2>
-    <div class="boundary-card">
-      <div class="boundary-k">Bounded public-evidence assessment</div>
-      <p>{{EVIDENCE BOUNDARY TEXT}}</p>
-      <div class="exec-cta"><span>Analyst mode contains the evidence, complete questions, source lineage and exact requirements that would close each gap.</span><a href="#pillar-control">See the full evidence →</a></div>
-    </div>
-  </section>
-</main>
+        <div class="v3-view is-active" id="v3-executive" data-executive-layout="questions12">
+<div data-executive-slot></div>
 </div>
         <div class="v3-view" id="v3-analyst">
           <details class="mobile-analyst-nav"><summary>Analyst sections</summary><nav class="analyst-nav mobile-nav" aria-label="Analyst sections"><div class="analyst-nav-label">Trust pillars</div><a href="#pillar-control" data-mobile-target="pillar-control"><span class="nav-name"><i class="nav-dot pillar-control"></i><span>Control</span></span><span class="nav-count">8 checks</span></a><a href="#pillar-reserves" data-mobile-target="pillar-reserves"><span class="nav-name"><i class="nav-dot pillar-backing"></i><span>Assets &amp; Backing</span></span><span class="nav-count">13 checks</span></a><a href="#pillar-economics" data-mobile-target="pillar-economics"><span class="nav-name"><i class="nav-dot pillar-economics"></i><span>Economics</span></span><span class="nav-count">14 checks</span></a><a href="#pillar-governance-compliance" data-mobile-target="pillar-governance-compliance"><span class="nav-name"><i class="nav-dot pillar-governance"></i><span>Governance &amp; Compliance</span></span><span class="nav-count">16 checks</span></a><a href="#pillar-continuity" data-mobile-target="pillar-continuity"><span class="nav-name"><i class="nav-dot pillar-continuity"></i><span>Continuity</span></span><span class="nav-count">12 checks</span></a><div class="analyst-nav-label">Structure</div><a href="#chain-of-title" data-mobile-target="chain-of-title"><span class="nav-name"><i class="nav-dot"></i><span>Claim and parties</span></span></a><a href="#legal-structure" data-mobile-target="legal-structure"><span class="nav-name"><i class="nav-dot"></i><span>Legal structure</span></span></a><a href="#supply-by-chain" data-mobile-target="supply-by-chain"><span class="nav-name"><i class="nav-dot"></i><span>Quantity boundaries</span></span></a><div class="analyst-nav-label">Evidence</div><a href="#gaps-title" data-mobile-target="gaps-title"><span class="nav-name"><i class="nav-dot"></i><span>Evidence gaps</span></span></a><a href="#requests-title" data-mobile-target="requests-title"><span class="nav-name"><i class="nav-dot"></i><span>Evidence requests</span></span></a><a href="#sources-title" data-mobile-target="sources-title"><span class="nav-name"><i class="nav-dot"></i><span>Evidence registry</span></span></a><a href="#changes-title" data-mobile-target="changes-title"><span class="nav-name"><i class="nav-dot"></i><span>Observed technical state</span></span></a><div class="analyst-nav-label">Reference</div><a href="#methodology-title" data-mobile-target="methodology-title"><span class="nav-name"><i class="nav-dot"></i><span>Methodology</span></span></a><a href="#technical-appendix" data-mobile-target="technical-appendix"><span class="nav-name"><i class="nav-dot"></i><span>Full research record</span></span></a></nav></details>
@@ -1493,20 +1631,16 @@ a:focus-visible,button:focus-visible,summary:focus-visible{outline:3px solid rgb
               <nav class="analyst-nav desktop-nav" aria-label="Analyst sections"><div class="analyst-nav-label">Trust pillars</div><a href="#pillar-control" data-target="pillar-control"><span class="nav-name"><i class="nav-dot pillar-control"></i><span>Control</span></span><span class="nav-count">8 checks</span></a><a href="#pillar-reserves" data-target="pillar-reserves"><span class="nav-name"><i class="nav-dot pillar-backing"></i><span>Assets &amp; Backing</span></span><span class="nav-count">13 checks</span></a><a href="#pillar-economics" data-target="pillar-economics"><span class="nav-name"><i class="nav-dot pillar-economics"></i><span>Economics</span></span><span class="nav-count">14 checks</span></a><a href="#pillar-governance-compliance" data-target="pillar-governance-compliance"><span class="nav-name"><i class="nav-dot pillar-governance"></i><span>Governance &amp; Compliance</span></span><span class="nav-count">16 checks</span></a><a href="#pillar-continuity" data-target="pillar-continuity"><span class="nav-name"><i class="nav-dot pillar-continuity"></i><span>Continuity</span></span><span class="nav-count">12 checks</span></a><div class="analyst-nav-label">Structure</div><a href="#chain-of-title" data-target="chain-of-title"><span class="nav-name"><i class="nav-dot"></i><span>Claim and parties</span></span></a><a href="#legal-structure" data-target="legal-structure"><span class="nav-name"><i class="nav-dot"></i><span>Legal structure</span></span></a><a href="#supply-by-chain" data-target="supply-by-chain"><span class="nav-name"><i class="nav-dot"></i><span>Quantity boundaries</span></span></a><div class="analyst-nav-label">Evidence</div><a href="#gaps-title" data-target="gaps-title"><span class="nav-name"><i class="nav-dot"></i><span>Evidence gaps</span></span></a><a href="#requests-title" data-target="requests-title"><span class="nav-name"><i class="nav-dot"></i><span>Evidence requests</span></span></a><a href="#sources-title" data-target="sources-title"><span class="nav-name"><i class="nav-dot"></i><span>Evidence registry</span></span></a><a href="#changes-title" data-target="changes-title"><span class="nav-name"><i class="nav-dot"></i><span>Observed technical state</span></span></a><div class="analyst-nav-label">Reference</div><a href="#methodology-title" data-target="methodology-title"><span class="nav-name"><i class="nav-dot"></i><span>Methodology</span></span></a><a href="#technical-appendix" data-target="technical-appendix"><span class="nav-name"><i class="nav-dot"></i><span>Full research record</span></span></a></nav>
             </aside>
             <div class="analyst-main" id="analyst-main"><div class="panel active" data-mode-panel="analyst">
-<section aria-labelledby="pillar-control">
-  <div class="section-head">
-    <h2 id="pillar-control">Control</h2>
-    <div class="section-tag">Trust pillar</div>
-  </div>
-  <p class="panel-note">{{PANEL NOTE}}</p>
-<h3 class="subsection-title">{{SUBSECTION TITLE}}</h3>
-<p>{{NARRATIVE}} <span class="inline-citations" data-origin="derived-presentation" data-observation-ids="{{OBSERVATION_IDS}}"><a class="claim-source inline-source" href="#source-{{SOURCE_ID}}" data-evidence-class="{{EVIDENCE_CLASS}}">{{SOURCE TITLE}}</a></span> </p>
-<div class="pillar-delivery" data-origin="derived-presentation" data-check-ids="{{CHECK_IDS}}" data-observation-ids="{{OBSERVATION_IDS}}">
-<div class="evidence-boundary-pair"><article><span>Public evidence supports</span><p>{{BOUNDARY STATEMENT}}</p></article><article><span>Public evidence does not establish</span><p>{{BOUNDARY STATEMENT}}</p></article></div>
-<h3 class="subsection-title">{{SUBSECTION TITLE}}</h3>
-<div class="factual-grid network-grid">
-<article><strong>{{FACT}}</strong><p>{{FACT}}</p><span class="claim-citations" data-origin="derived-presentation" data-observation-ids="{{OBSERVATION_IDS}}"><a class="claim-source" href="#source-{{SOURCE_ID}}" data-evidence-class="{{EVIDENCE_CLASS}}">{{SOURCE TITLE}}</a></span></article>
-</div></div>
+<section aria-labelledby="pillar-control" data-authoring-section="control">
+<div class="section-head"><h2 id="pillar-control">Control</h2><div class="section-tag">Trust pillar</div></div>
+<p class="section-lede">{{CONTROL_INTRO}}</p>
+<p>{{CONTROL_NARRATIVE}} {{CONTROL_CITATIONS}}</p>
+<div class="pillar-delivery" data-origin="derived-presentation" data-check-ids="{{CONTROL_CHECK_IDS}}" data-observation-ids="{{CONTROL_OBSERVATION_IDS}}">
+<div class="evidence-boundary-pair"><article><span>Evidence supports</span><p>{{CONTROL_KNOWN}}</p></article><article><span>Evidence does not establish</span><p>{{CONTROL_UNRESOLVED}}</p></article></div>
+<div class="factual-grid"><article><strong>Authorization</strong><p>{{CONTROL_AUTHORIZATION}}</p>{{CONTROL_AUTHORIZATION_CITATIONS}}</article>
+<article><strong>Execution</strong><p>{{CONTROL_EXECUTION}}</p>{{CONTROL_EXECUTION_CITATIONS}}</article>
+<article><strong>Changes and restrictions</strong><p>{{CONTROL_CHANGES}}</p>{{CONTROL_CHANGES_CITATIONS}}</article></div>
+</div>
 <details class="pillar-checks" id="checks-control"><summary data-fill="pillar-count:control">View {{CHECK COUNT}} framework checks</summary>
 <div class="check-index check-index-control">
 <h3 class="subsection-title">Check-level results</h3>
@@ -1517,18 +1651,15 @@ a:focus-visible,button:focus-visible,summary:focus-visible{outline:3px solid rgb
 </details>
 </section>
 </div><div class="panel" data-mode-panel="analyst">
-<section aria-labelledby="pillar-reserves">
-  <div class="section-head">
-    <h2 id="pillar-reserves">Assets &amp; Backing</h2>
-    <div class="section-tag">Trust pillar</div>
-  </div>
-  <p class="panel-note">{{PANEL NOTE}}</p>
-<h3 class="subsection-title">{{SUBSECTION TITLE}}</h3>
-<p>{{NARRATIVE}} <span class="inline-citations" data-origin="derived-presentation" data-observation-ids="{{OBSERVATION_IDS}}"><a class="claim-source inline-source" href="#source-{{SOURCE_ID}}" data-evidence-class="{{EVIDENCE_CLASS}}">{{SOURCE TITLE}}</a></span> </p>
-<div class="pillar-delivery" data-origin="derived-presentation" data-check-ids="{{CHECK_IDS}}" data-observation-ids="{{OBSERVATION_IDS}}">
-<div class="evidence-boundary-pair"><article><span>Public evidence supports</span><p>{{BOUNDARY STATEMENT}}</p></article><article><span>Public evidence does not establish</span><p>{{BOUNDARY STATEMENT}}</p></article></div>
-<div class="factual-grid"><article><strong>{{FACT}}</strong><p>{{FACT}}</p><span class="claim-citations" data-origin="derived-presentation" data-observation-ids="{{OBSERVATION_IDS}}"><a class="claim-source" href="#source-{{SOURCE_ID}}" data-evidence-class="{{EVIDENCE_CLASS}}">{{SOURCE TITLE}}</a></span></article></div>
-<article class="contradiction-card" data-origin="derived-presentation" data-check-ids="{{CHECK_IDS}}" data-observation-ids="{{OBSERVATION_IDS}}"><span>{{CONTRADICTION}}</span><h3>{{CONTRADICTION}}</h3><p>{{CONTRADICTION}}</p><span class="claim-citations" data-origin="derived-presentation" data-observation-ids="{{OBSERVATION_IDS}}"><span class="source-prefix">{{SOURCE PREFIX}}</span> <a class="claim-source" href="#source-{{SOURCE_ID}}" data-evidence-class="{{EVIDENCE_CLASS}}">{{SOURCE TITLE}}</a></span></article>
+<section aria-labelledby="pillar-reserves" data-authoring-section="backing">
+<div class="section-head"><h2 id="pillar-reserves">Assets &amp; Backing</h2><div class="section-tag">Trust pillar</div></div>
+<p class="section-lede">{{BACKING_INTRO}}</p>
+<p>{{BACKING_NARRATIVE}} {{BACKING_CITATIONS}}</p>
+<div class="pillar-delivery" data-origin="derived-presentation" data-check-ids="{{BACKING_CHECK_IDS}}" data-observation-ids="{{BACKING_OBSERVATION_IDS}}">
+<div class="evidence-boundary-pair"><article><span>Evidence supports</span><p>{{BACKING_KNOWN}}</p></article><article><span>Evidence does not establish</span><p>{{BACKING_UNRESOLVED}}</p></article></div>
+<div class="factual-grid"><article><strong>Asset population</strong><p>{{BACKING_ASSETS}}</p>{{BACKING_ASSETS_CITATIONS}}</article>
+<article><strong>Custody and title</strong><p>{{BACKING_CUSTODY}}</p>{{BACKING_CUSTODY_CITATIONS}}</article>
+<article><strong>Verification</strong><p>{{BACKING_VERIFICATION}}</p>{{BACKING_VERIFICATION_CITATIONS}}</article></div>
 </div>
 <details class="pillar-checks" id="checks-backing"><summary data-fill="pillar-count:backing">View {{CHECK COUNT}} framework checks</summary>
 <div class="check-index check-index-backing">
@@ -1540,18 +1671,15 @@ a:focus-visible,button:focus-visible,summary:focus-visible{outline:3px solid rgb
 </details>
 </section>
 </div><div class="panel" data-mode-panel="analyst">
-<section aria-labelledby="pillar-economics">
-  <div class="section-head">
-    <h2 id="pillar-economics">Economics</h2>
-    <div class="section-tag">Trust pillar</div>
-  </div>
-  <p class="panel-note">{{PANEL NOTE}}</p>
-<h3 class="subsection-title">{{SUBSECTION TITLE}}</h3>
-<p>{{NARRATIVE}} <span class="inline-citations" data-origin="derived-presentation" data-observation-ids="{{OBSERVATION_IDS}}"><a class="claim-source inline-source" href="#source-{{SOURCE_ID}}" data-evidence-class="{{EVIDENCE_CLASS}}">{{SOURCE TITLE}}</a></span> </p>
-<div class="pillar-delivery" data-origin="derived-presentation" data-check-ids="{{CHECK_IDS}}" data-observation-ids="{{OBSERVATION_IDS}}">
-<div class="evidence-boundary-pair"><article><span>Public evidence supports</span><p>{{BOUNDARY STATEMENT}}</p></article><article><span>Public evidence does not establish</span><p>{{BOUNDARY STATEMENT}}</p></article></div>
-<div class="factual-grid"><article><strong>{{FACT}}</strong><p>{{FACT}}</p><span class="claim-citations" data-origin="derived-presentation" data-observation-ids="{{OBSERVATION_IDS}}"><a class="claim-source" href="#source-{{SOURCE_ID}}" data-evidence-class="{{EVIDENCE_CLASS}}">{{SOURCE TITLE}}</a></span></article></div>
-<article class="contradiction-card" data-origin="derived-presentation" data-check-ids="{{CHECK_IDS}}" data-observation-ids="{{OBSERVATION_IDS}}"><span>{{CONTRADICTION}}</span><h3>{{CONTRADICTION}}</h3><p>{{CONTRADICTION}}</p><span class="claim-citations" data-origin="derived-presentation" data-observation-ids="{{OBSERVATION_IDS}}"><span class="source-prefix">{{SOURCE PREFIX}}</span> <a class="claim-source" href="#source-{{SOURCE_ID}}" data-evidence-class="{{EVIDENCE_CLASS}}">{{SOURCE TITLE}}</a></span></article>
+<section aria-labelledby="pillar-economics" data-authoring-section="economics">
+<div class="section-head"><h2 id="pillar-economics">Economics</h2><div class="section-tag">Trust pillar</div></div>
+<p class="section-lede">{{ECONOMICS_INTRO}}</p>
+<p>{{ECONOMICS_NARRATIVE}} {{ECONOMICS_CITATIONS}}</p>
+<div class="pillar-delivery" data-origin="derived-presentation" data-check-ids="{{ECONOMICS_CHECK_IDS}}" data-observation-ids="{{ECONOMICS_OBSERVATION_IDS}}">
+<div class="evidence-boundary-pair"><article><span>Evidence supports</span><p>{{ECONOMICS_KNOWN}}</p></article><article><span>Evidence does not establish</span><p>{{ECONOMICS_UNRESOLVED}}</p></article></div>
+<div class="factual-grid"><article><strong>Entry and settlement</strong><p>{{ECONOMICS_ENTRY}}</p>{{ECONOMICS_ENTRY_CITATIONS}}</article>
+<article><strong>Value and costs</strong><p>{{ECONOMICS_VALUE}}</p>{{ECONOMICS_VALUE_CITATIONS}}</article>
+<article><strong>Exit mechanics</strong><p>{{ECONOMICS_EXIT}}</p>{{ECONOMICS_EXIT_CITATIONS}}</article></div>
 </div>
 <details class="pillar-checks" id="checks-economics"><summary data-fill="pillar-count:economics">View {{CHECK COUNT}} framework checks</summary>
 <div class="check-index check-index-economics">
@@ -1563,17 +1691,15 @@ a:focus-visible,button:focus-visible,summary:focus-visible{outline:3px solid rgb
 </details>
 </section>
 </div><div class="panel" data-mode-panel="analyst">
-<section aria-labelledby="pillar-governance-compliance">
-  <div class="section-head">
-    <h2 id="pillar-governance-compliance">Governance &amp; Compliance</h2>
-    <div class="section-tag">Trust pillar</div>
-  </div>
-  <p class="panel-note">{{PANEL NOTE}}</p>
-<h3 class="subsection-title">{{SUBSECTION TITLE}}</h3>
-<p>{{NARRATIVE}} <span class="inline-citations" data-origin="derived-presentation" data-observation-ids="{{OBSERVATION_IDS}}"><a class="claim-source inline-source" href="#source-{{SOURCE_ID}}" data-evidence-class="{{EVIDENCE_CLASS}}">{{SOURCE TITLE}}</a></span> </p>
-<div class="pillar-delivery" data-origin="derived-presentation" data-check-ids="{{CHECK_IDS}}" data-observation-ids="{{OBSERVATION_IDS}}">
-<div class="evidence-boundary-pair"><article><span>Public evidence supports</span><p>{{BOUNDARY STATEMENT}}</p></article><article><span>Public evidence does not establish</span><p>{{BOUNDARY STATEMENT}}</p></article></div>
-<div class="factual-grid"><article><strong>{{FACT}}</strong><p>{{FACT}}</p><span class="claim-citations" data-origin="derived-presentation" data-observation-ids="{{OBSERVATION_IDS}}"><a class="claim-source" href="#source-{{SOURCE_ID}}" data-evidence-class="{{EVIDENCE_CLASS}}">{{SOURCE TITLE}}</a></span></article></div>
+<section aria-labelledby="pillar-governance-compliance" data-authoring-section="governance">
+<div class="section-head"><h2 id="pillar-governance-compliance">Governance &amp; Compliance</h2><div class="section-tag">Trust pillar</div></div>
+<p class="section-lede">{{GOVERNANCE_INTRO}}</p>
+<p>{{GOVERNANCE_NARRATIVE}} {{GOVERNANCE_CITATIONS}}</p>
+<div class="pillar-delivery" data-origin="derived-presentation" data-check-ids="{{GOVERNANCE_CHECK_IDS}}" data-observation-ids="{{GOVERNANCE_OBSERVATION_IDS}}">
+<div class="evidence-boundary-pair"><article><span>Evidence supports</span><p>{{GOVERNANCE_KNOWN}}</p></article><article><span>Evidence does not establish</span><p>{{GOVERNANCE_UNRESOLVED}}</p></article></div>
+<div class="factual-grid"><article><strong>Issuer and holder claim</strong><p>{{GOVERNANCE_CLAIM}}</p>{{GOVERNANCE_CLAIM_CITATIONS}}</article>
+<article><strong>Eligibility</strong><p>{{GOVERNANCE_ELIGIBILITY}}</p>{{GOVERNANCE_ELIGIBILITY_CITATIONS}}</article>
+<article><strong>Party roles</strong><p>{{GOVERNANCE_PARTIES}}</p>{{GOVERNANCE_PARTIES_CITATIONS}}</article></div>
 </div>
 <details class="pillar-checks" id="checks-governance"><summary data-fill="pillar-count:governance_compliance">View {{CHECK COUNT}} framework checks</summary>
 <div class="check-index check-index-governance">
@@ -1585,17 +1711,15 @@ a:focus-visible,button:focus-visible,summary:focus-visible{outline:3px solid rgb
 </details>
 </section>
 </div><div class="panel" data-mode-panel="analyst">
-<section aria-labelledby="pillar-continuity">
-  <div class="section-head">
-    <h2 id="pillar-continuity">Continuity</h2>
-    <div class="section-tag">Trust pillar</div>
-  </div>
-  <p class="panel-note">{{PANEL NOTE}}</p>
-<h3 class="subsection-title">{{SUBSECTION TITLE}}</h3>
-<p>{{NARRATIVE}} <span class="inline-citations" data-origin="derived-presentation" data-observation-ids="{{OBSERVATION_IDS}}"><a class="claim-source inline-source" href="#source-{{SOURCE_ID}}" data-evidence-class="{{EVIDENCE_CLASS}}">{{SOURCE TITLE}}</a></span> </p>
-<div class="pillar-delivery" data-origin="derived-presentation" data-check-ids="{{CHECK_IDS}}" data-observation-ids="{{OBSERVATION_IDS}}">
-<div class="evidence-boundary-pair"><article><span>Public evidence supports</span><p>{{BOUNDARY STATEMENT}}</p></article><article><span>Public evidence does not establish</span><p>{{BOUNDARY STATEMENT}}</p></article></div>
-<div class="factual-grid"><article><strong>{{FACT}}</strong><p>{{FACT}}</p><span class="claim-citations" data-origin="derived-presentation" data-observation-ids="{{OBSERVATION_IDS}}"><a class="claim-source" href="#source-{{SOURCE_ID}}" data-evidence-class="{{EVIDENCE_CLASS}}">{{SOURCE TITLE}}</a></span></article></div>
+<section aria-labelledby="pillar-continuity" data-authoring-section="continuity">
+<div class="section-head"><h2 id="pillar-continuity">Continuity</h2><div class="section-tag">Trust pillar</div></div>
+<p class="section-lede">{{CONTINUITY_INTRO}}</p>
+<p>{{CONTINUITY_NARRATIVE}} {{CONTINUITY_CITATIONS}}</p>
+<div class="pillar-delivery" data-origin="derived-presentation" data-check-ids="{{CONTINUITY_CHECK_IDS}}" data-observation-ids="{{CONTINUITY_OBSERVATION_IDS}}">
+<div class="evidence-boundary-pair"><article><span>Evidence supports</span><p>{{CONTINUITY_KNOWN}}</p></article><article><span>Evidence does not establish</span><p>{{CONTINUITY_UNRESOLVED}}</p></article></div>
+<div class="factual-grid"><article><strong>Normal exit</strong><p>{{CONTINUITY_NORMAL_EXIT}}</p>{{CONTINUITY_NORMAL_EXIT_CITATIONS}}</article>
+<article><strong>Disruption</strong><p>{{CONTINUITY_DISRUPTION}}</p>{{CONTINUITY_DISRUPTION_CITATIONS}}</article>
+<article><strong>Record reconciliation</strong><p>{{CONTINUITY_RECONCILIATION}}</p>{{CONTINUITY_RECONCILIATION_CITATIONS}}</article></div>
 </div>
 <details class="pillar-checks" id="checks-continuity"><summary data-fill="pillar-count:continuity">View {{CHECK COUNT}} framework checks</summary>
 <div class="check-index check-index-continuity">
@@ -1607,100 +1731,69 @@ a:focus-visible,button:focus-visible,summary:focus-visible{outline:3px solid rgb
 </details>
 </section>
 </div><div class="panel" data-mode-panel="analyst">
-<section aria-labelledby="chain-of-title">
-  <div class="section-head">
-    <h2 id="chain-of-title">Claim and party structure</h2>
-    <div class="section-tag">Claim and service-provider architecture</div>
-  </div>
-
-<p class="section-lede">{{SECTION LEDE}}</p>
-<h3 class="subsection-title">{{SUBSECTION TITLE}}</h3>
-<div class="table-wrap"><table class="report-table"><thead><tr><th>Layer</th><th>What the public record supports</th><th>What remains unresolved</th></tr></thead><tbody>
-<tr><th>Holder</th><td>{{TABLE CELL}} <span class="inline-citations" data-origin="derived-presentation" data-observation-ids="{{OBSERVATION_IDS}}"><a class="claim-source inline-source" href="#source-{{SOURCE_ID}}" data-evidence-class="{{EVIDENCE_CLASS}}">{{SOURCE TITLE}}</a></span> </td><td>{{TABLE CELL}}</td></tr>
-</tbody></table></div>
-<ul class="fact-list">
-<li><strong>{{FACT}}</strong> {{FACT}} <span class="inline-citations" data-origin="derived-presentation" data-observation-ids="{{OBSERVATION_IDS}}"><a class="claim-source inline-source" href="#source-{{SOURCE_ID}}" data-evidence-class="{{EVIDENCE_CLASS}}">{{SOURCE TITLE}}</a></span> </li>
-</ul>
+<section aria-labelledby="chain-of-title" data-authoring-section="claim">
+<div class="section-head"><h2 id="chain-of-title">Claim and party structure</h2><div class="section-tag">Records and unresolved links</div></div>
+<p class="section-lede">{{CLAIM_INTRO}}</p>
+<div class="table-wrap"><table class="report-table"><thead><tr><th>Layer</th><th>What acquired records support</th><th>What remains unresolved</th></tr></thead><tbody><tr><th>Holder and recorded interest</th><td>{{CLAIM_HOLDER_KNOWN}} {{CLAIM_HOLDER_CITATIONS}}</td><td>{{CLAIM_HOLDER_UNRESOLVED}}</td></tr>
+<tr><th>Issuer / vehicle</th><td>{{CLAIM_ISSUER_KNOWN}} {{CLAIM_ISSUER_CITATIONS}}</td><td>{{CLAIM_ISSUER_UNRESOLVED}}</td></tr>
+<tr><th>Holder claim</th><td>{{CLAIM_CLAIM_KNOWN}} {{CLAIM_CLAIM_CITATIONS}}</td><td>{{CLAIM_CLAIM_UNRESOLVED}}</td></tr>
+<tr><th>Asset owner</th><td>{{CLAIM_ASSET_OWNER_KNOWN}} {{CLAIM_ASSET_OWNER_CITATIONS}}</td><td>{{CLAIM_ASSET_OWNER_UNRESOLVED}}</td></tr>
+<tr><th>Custodian</th><td>{{CLAIM_CUSTODIAN_KNOWN}} {{CLAIM_CUSTODIAN_CITATIONS}}</td><td>{{CLAIM_CUSTODIAN_UNRESOLVED}}</td></tr>
+<tr><th>Underlying asset</th><td>{{CLAIM_ASSET_KNOWN}} {{CLAIM_ASSET_CITATIONS}}</td><td>{{CLAIM_ASSET_UNRESOLVED}}</td></tr></tbody></table></div>
+<p class="structure-note">{{CLAIM_LIMITATION}}</p>
 </section>
 </div><div class="panel" data-mode-panel="analyst">
-<section aria-labelledby="legal-structure">
-  <div class="section-head">
-    <h2 id="legal-structure">Legal and operating structure</h2>
-    <div class="section-tag">{{SECTION TAG}}</div>
-  </div>
-
-<p class="section-lede">{{SECTION LEDE}}</p>
-<div class="legal-grid">
-  <div class="legal-cell"><h3>{{LEGAL TOPIC}}</h3><span class="state state-partial">{{STATE LABEL}}</span><p class="legal-value">{{LEGAL FACT}} <span class="inline-citations" data-origin="derived-presentation" data-observation-ids="{{OBSERVATION_IDS}}"><a class="claim-source inline-source" href="#source-{{SOURCE_ID}}" data-evidence-class="{{EVIDENCE_CLASS}}">{{SOURCE TITLE}}</a></span> </p><p class="legal-limitation">{{LEGAL LIMITATION}}</p></div>
-  </div>
-<h3 class="subsection-title">{{SUBSECTION TITLE}}</h3>
-<div class="table-wrap"><table class="report-table"><thead><tr><th>Layer</th><th>What the public record supports</th><th>What remains unresolved</th></tr></thead><tbody>
-<tr><th>Holder</th><td>{{TABLE CELL}} <span class="inline-citations" data-origin="derived-presentation" data-observation-ids="{{OBSERVATION_IDS}}"><a class="claim-source inline-source" href="#source-{{SOURCE_ID}}" data-evidence-class="{{EVIDENCE_CLASS}}">{{SOURCE TITLE}}</a></span> </td><td>{{TABLE CELL}}</td></tr>
-</tbody></table></div>
-<ul class="fact-list">
-<li><strong>{{FACT}}</strong> {{FACT}} <span class="inline-citations" data-origin="derived-presentation" data-observation-ids="{{OBSERVATION_IDS}}"><a class="claim-source inline-source" href="#source-{{SOURCE_ID}}" data-evidence-class="{{EVIDENCE_CLASS}}">{{SOURCE TITLE}}</a></span> </li>
-</ul>
-
+<section aria-labelledby="legal-structure" data-authoring-section="legal">
+<div class="section-head"><h2 id="legal-structure">Legal and operating structure</h2><div class="section-tag">Records and unresolved links</div></div>
+<p class="section-lede">{{LEGAL_INTRO}}</p>
+<div class="table-wrap"><table class="report-table"><thead><tr><th>Layer</th><th>What acquired records support</th><th>What remains unresolved</th></tr></thead><tbody><tr><th>Issuer and jurisdiction</th><td>{{LEGAL_ISSUER_KNOWN}} {{LEGAL_ISSUER_CITATIONS}}</td><td>{{LEGAL_ISSUER_UNRESOLVED}}</td></tr>
+<tr><th>Governing instrument</th><td>{{LEGAL_INSTRUMENT_KNOWN}} {{LEGAL_INSTRUMENT_CITATIONS}}</td><td>{{LEGAL_INSTRUMENT_UNRESOLVED}}</td></tr>
+<tr><th>Ownership and segregation</th><td>{{LEGAL_OWNERSHIP_KNOWN}} {{LEGAL_OWNERSHIP_CITATIONS}}</td><td>{{LEGAL_OWNERSHIP_UNRESOLVED}}</td></tr>
+<tr><th>Operating agreements</th><td>{{LEGAL_AGREEMENTS_KNOWN}} {{LEGAL_AGREEMENTS_CITATIONS}}</td><td>{{LEGAL_AGREEMENTS_UNRESOLVED}}</td></tr></tbody></table></div>
+<p class="structure-note">{{LEGAL_LIMITATION}}</p>
 </section>
 </div><div class="panel" data-mode-panel="analyst">
-<section aria-labelledby="supply-by-chain">
-  <div class="section-head">
-    <h2 id="supply-by-chain">Quantity boundaries</h2>
-    <div class="section-tag">{{SECTION TAG}}</div>
-  </div>
-
-<p class="section-lede">{{SECTION LEDE}} <span class="inline-citations" data-origin="derived-presentation" data-observation-ids="{{OBSERVATION_IDS}}"><a class="claim-source inline-source" href="#source-{{SOURCE_ID}}" data-evidence-class="{{EVIDENCE_CLASS}}">{{SOURCE TITLE}}</a></span> </p>
-<div class="table-wrap"><table class="boundary-table"><thead><tr><th>Network</th><th>Issuer-published identifier</th><th>Observed ledger figure</th><th>Anchor and replayability</th></tr></thead><tbody><tr><th>{{TABLE CELL}}</th><td class="mono">{{IDENTIFIER}}</td><td><strong>{{TABLE CELL}}</strong><span class="cell-note">{{CELL NOTE}}</span></td><td><strong>{{TABLE CELL}}</strong><span class="cell-note">{{CELL NOTE}}</span></td></tr></tbody></table></div>
-<div class="caveat"><strong>{{CAVEAT}}</strong> {{CAVEAT}} <a href="#check-{{CHECK_ID}}">{{CHECK_ID}}</a> </div>
-
+<section aria-labelledby="supply-by-chain" data-authoring-section="quantity">
+<div class="section-head"><h2 id="supply-by-chain">Quantity boundaries</h2><div class="section-tag">Identifiers, quantities and scope</div></div>
+<p class="section-lede">{{QUANTITY_INTRO}}</p>
+<div class="table-wrap"><table class="report-table"><thead><tr><th>Record grouping</th><th>Supplied identifier</th><th>Recorded quantity</th><th>Date and scope</th></tr></thead><tbody>
+<tr><th>{{QUANTITY_GROUP}}</th><td>{{QUANTITY_IDENTIFIER}}</td><td>{{QUANTITY_VALUE}}</td><td>{{QUANTITY_SCOPE}}</td></tr>
+</tbody></table></div><p class="structure-note">{{QUANTITY_LIMITATION}} {{QUANTITY_CITATIONS}}</p></section>
+</div><div class="panel" data-mode-panel="analyst">
+<section aria-labelledby="gaps-title" data-authoring-section="gaps">
+<div class="section-head"><h2 id="gaps-title">Evidence gaps</h2><div class="section-tag">Unresolved propositions</div></div>
+<p class="section-lede">{{GAPS_INTRO}}</p>
+<div class="gap-groups" data-fill="gap-groups"></div>
+<section class="gap-clarifications"><h3 class="subsection-title">Documentation points to clarify</h3>
+<div class="table-wrap"><table class="report-table"><thead><tr><th>Topic</th><th>Descriptions in the acquired records</th><th>Clarification</th></tr></thead><tbody>{{GAPS_CLARIFICATION_ROWS}}</tbody></table></div></section>
+<section class="technical-limitations" id="technical-evidence-limitations"><div class="section-head"><h3>Technical evidence limitations</h3><div class="section-tag">Evidence boundary</div></div><div class="record-body"><p>{{GAPS_TECHNICAL_LIMITATION}} {{GAPS_TECHNICAL_CITATIONS}}</p></div></section>
 </section>
 </div><div class="panel" data-mode-panel="analyst">
-<section aria-labelledby="gaps-title">
-  <div class="section-head">
-    <h2 id="gaps-title">Evidence gaps</h2>
-    <div class="section-tag">{{GAP THEME COUNT}} neutral evidence-gap themes</div>
-  </div>
-  <p class="section-lede">{{SECTION LEDE}}</p><p>{{GAPS INTRODUCTION}}</p><div class="record-stack"><details class="pillar-deep" id="gap-theme-01"><summary><span class="mono">01</span>&nbsp; {{GAP THEME TITLE}}</summary><div class="record-body">
-<p>{{THEME TEXT}} <span class="inline-citations" data-origin="derived-presentation" data-observation-ids="{{OBSERVATION_IDS}}"><a class="claim-source inline-source" href="#source-{{SOURCE_ID}}" data-evidence-class="{{EVIDENCE_CLASS}}">{{SOURCE TITLE}}</a></span> </p>
-</div></details><details class="pillar-deep"><summary><span class="mono">{{IDENTIFIER}}</span>{{GAP THEME TITLE}}</summary><div class="record-body">
-<p>{{THEME TEXT}} <span class="inline-citations" data-origin="derived-presentation" data-observation-ids="{{OBSERVATION_IDS}}"><a class="claim-source inline-source" href="#source-{{SOURCE_ID}}" data-evidence-class="{{EVIDENCE_CLASS}}">{{SOURCE TITLE}}</a></span> </p>
-</div></details></div><section class="technical-limitations" id="technical-evidence-limitations">
-<div class="section-head"><h3>Technical evidence limitations</h3><div class="section-tag">Separate evidence boundary</div></div>
-<div class="record-body">
-<ul class="fact-list">
-<li><strong>{{FACT}}</strong> {{FACT}} <span class="inline-citations" data-origin="derived-presentation" data-observation-ids="{{OBSERVATION_IDS}}"><a class="claim-source inline-source" href="#source-{{SOURCE_ID}}" data-evidence-class="{{EVIDENCE_CLASS}}">{{SOURCE TITLE}}</a></span> </li>
-</ul></div></section>
-</section>
-</div><div class="panel" data-mode-panel="analyst">
-<section aria-labelledby="requests-title">
+<section aria-labelledby="requests-title" data-authoring-section="requests">
   <div class="section-head">
     <h2 id="requests-title">Evidence requests</h2>
     <div class="section-tag">What would close each unresolved route</div>
   </div>
-  <p class="section-lede">{{SECTION LEDE}}</p>
+  <p class="section-lede">{{REQUESTS_SECTION_LEDE}}</p>
 <div class="request-stack" data-fill="evidence-requests">
 <!-- evidence requests filled by scripts/prefill_shell.py -->
 </div>
 </section>
 </div><div class="panel" data-mode-panel="analyst">
-<section aria-labelledby="sources-title"><div class="section-head"><h2 id="sources-title">Evidence registry</h2><div class="section-tag" data-fill="source-count">{{SOURCE COUNT}} source records</div></div><p class="section-lede">{{SECTION LEDE}}</p><div class="record-stack" data-fill="source-records">
+<section aria-labelledby="sources-title" data-authoring-section="sources"><div class="section-head"><h2 id="sources-title">Evidence registry</h2><div class="section-tag" data-fill="source-count">{{SOURCE COUNT}} source records</div></div><p class="section-lede">{{SOURCES_SECTION_LEDE}}</p><section class="source-reference-section" id="source-references" data-fill="source-references"></section><div class="record-stack" data-fill="source-records">
 <!-- source records filled by scripts/prefill_shell.py -->
 </div></section>
 </div><div class="panel" data-mode-panel="analyst">
-<section aria-labelledby="changes-title">
-  <div class="section-head">
-    <h2 id="changes-title">Observed technical state</h2>
-    <div class="section-tag">{{SECTION TAG}}</div>
-  </div>
-
-<p class="section-lede">{{SECTION LEDE}}</p>
-<div class="alert-ledger"><div><span>{{STATE FACT}}</span><strong>{{STATE FACT}}</strong><small>{{STATE FACT}}</small></div></div>
-<p class="panel-note">{{PANEL NOTE}} <span class="inline-citations" data-origin="derived-presentation" data-observation-ids="{{OBSERVATION_IDS}}"><a class="claim-source inline-source" href="#source-{{SOURCE_ID}}" data-evidence-class="{{EVIDENCE_CLASS}}">{{SOURCE TITLE}}</a></span></p>
-<div class="table-wrap"><table class="recent-table"><thead><tr><th>Date</th><th>Event</th><th>Observed at</th><th>Address fragment</th><th>Transaction</th></tr></thead><tbody><tr><td>{{TABLE CELL}}</td><td>{{TABLE CELL}}</td><td>{{TABLE CELL}}</td><td class="mono">{{IDENTIFIER}}</td><td class="mono">{{IDENTIFIER}}</td></tr></tbody></table></div>
-
-</section>
+<section aria-labelledby="changes-title" data-authoring-section="technical">
+<div class="section-head"><h2 id="changes-title">Observed technical state</h2><div class="section-tag">Deployment and state evidence</div></div>
+<p class="section-lede">{{TECHNICAL_INTRO}}</p>
+<div class="alert-ledger"><div><span>Deployment evidence</span><strong>{{TECHNICAL_STATE}}</strong><small>{{TECHNICAL_SCOPE}}</small></div></div>
+<p class="structure-note">{{TECHNICAL_LIMITATION}} {{TECHNICAL_CITATIONS}}</p>
+<div class="table-wrap"><table class="report-table"><thead><tr><th>Record</th><th>What the record covers</th><th>What remains unresolved</th></tr></thead><tbody>
+<tr><th>{{TECHNICAL_RECORD_TITLE}}</th><td>{{TECHNICAL_RECORD_SCOPE}} {{TECHNICAL_RECORD_CITATIONS}}</td><td>{{TECHNICAL_RECORD_UNRESOLVED}}</td></tr>
+</tbody></table></div></section>
 </div><div class="panel" data-mode-panel="analyst">
-<section aria-labelledby="methodology-title">
+<section aria-labelledby="methodology-title" data-authoring-section="methodology">
   <div class="section-head">
     <h2 id="methodology-title">Methodology &amp; independence</h2>
     <div class="section-tag">Framework v0.2 semantics</div>
@@ -1733,10 +1826,10 @@ a:focus-visible,button:focus-visible,summary:focus-visible{outline:3px solid rgb
 <h3 class="subsection-title">Commissioning and commercial neutrality</h3>
 <p>Source records preserve authorship, publisher, commissioner, relationship to the subject, source type, scope, and limitations. Commissioned work is not excluded automatically, and a named institution is not sufficient for an unrelated proposition. Commercial participation and payment cannot change applicability, admissibility, sufficiency, coverage, or the findings displayed for otherwise identical eligible inputs.</p>
 <h3 class="subsection-title">Fixed campaign boundary</h3>
-<p>{{CAMPAIGN BOUNDARY}}</p>
+<p>{{METHODOLOGY_CAMPAIGN_BOUNDARY}}</p>
 </section>
 </div><div class="panel" data-mode-panel="analyst">
-<section aria-labelledby="technical-appendix"><div class="section-head"><h2 id="technical-appendix">Full research record</h2><div class="section-tag">Anchors, lineage and complete registers</div></div><p class="section-lede">{{SECTION LEDE}}</p><div class="technical-index" data-fill="technical-index"><a href="#technical-anchors">Anchors</a><a href="#technical-locators">{{LOCATOR COUNT}} locators</a><a href="#technical-observations">{{OBSERVATION COUNT}} observations</a><a href="#technical-checks">{{CHECK COUNT}} checks</a></div><h3 class="subsection-title" id="technical-anchors">Technical anchors</h3><div class="table-wrap"><table class="boundary-table"><thead><tr><th>Network</th><th>Anchor</th><th>Boundary</th></tr></thead><tbody><tr><th>{{TABLE CELL}}</th><td class="mono">{{IDENTIFIER}}</td><td>{{TABLE CELL}}</td></tr></tbody></table></div><div class="caveat"><strong>{{CAVEAT}}</strong> {{CAVEAT}}</div><h3 class="subsection-title" id="technical-locators">Locators</h3><div class="record-stack" data-fill="locator-records">
+<section aria-labelledby="technical-appendix" data-authoring-section="appendix"><div class="section-head"><h2 id="technical-appendix">Full research record</h2><div class="section-tag">Anchors, lineage and complete registers</div></div><p class="section-lede">{{APPENDIX_SECTION_LEDE}}</p><div class="technical-index" data-fill="technical-index"><a href="#technical-anchors">Anchors</a><a href="#technical-locators">{{LOCATOR COUNT}} locators</a><a href="#technical-observations">{{OBSERVATION COUNT}} observations</a><a href="#technical-checks">{{CHECK COUNT}} checks</a></div><h3 class="subsection-title" id="technical-anchors">Technical anchors</h3><div class="table-wrap"><table class="boundary-table"><thead><tr><th>Network</th><th>Anchor</th><th>Boundary</th></tr></thead><tbody><tr><th>{{APPENDIX_TABLE_CELL}}</th><td class="mono">{{APPENDIX_IDENTIFIER}}</td><td>{{APPENDIX_TABLE_CELL}}</td></tr></tbody></table></div><div class="caveat"><strong>{{APPENDIX_CAVEAT}}</strong> {{APPENDIX_CAVEAT}}</div><h3 class="subsection-title" id="technical-locators">Locators</h3><div class="record-stack" data-fill="locator-records">
 <!-- locator records filled by scripts/prefill_shell.py -->
 </div><h3 class="subsection-title" id="technical-observations">Observations</h3><div class="record-stack" data-fill="observation-records">
 <!-- observation records filled by scripts/prefill_shell.py -->
@@ -1823,6 +1916,32 @@ a:focus-visible,button:focus-visible,summary:focus-visible{outline:3px solid rgb
 }());
 </script>
 
-        </body>
+        <script data-purpose="questions12-navigation">
+(function(){
+  var view=document.getElementById('v3-executive');
+  var details=Array.prototype.slice.call(view.querySelectorAll('details'));
+  var saved=[];
+  window.addEventListener('beforeprint',function(){saved=details.map(function(d){return d.open});details.forEach(function(d){d.open=true})});
+  window.addEventListener('afterprint',function(){details.forEach(function(d,i){d.open=!!saved[i]})});
+  var progress=view.querySelector('#prog'), rail=view.querySelector('.rail');
+  var questions=Array.prototype.slice.call(view.querySelectorAll('article.q'));
+  var links=Array.prototype.slice.call(view.querySelectorAll('.rl'));
+  var scheduled=false;
+  function update(){
+    scheduled=false;
+    if(document.body.classList.contains('mode-analyst'))return;
+    var doc=document.documentElement, current='';
+    if(progress)progress.style.width=Math.max(0,Math.min(100,100*doc.scrollTop/(doc.scrollHeight-doc.clientHeight||1)))+'%';
+    if(rail)rail.classList.toggle('is-visible',!!questions.length&&questions[0].getBoundingClientRect().top<window.innerHeight-80&&questions[questions.length-1].getBoundingClientRect().bottom>100);
+    questions.forEach(function(q){if(q.getBoundingClientRect().top<=180)current=q.id});
+    links.forEach(function(link){var active=link.hash==='#'+current;link.classList.toggle('on',active);if(active)link.setAttribute('aria-current','location');else link.removeAttribute('aria-current')});
+  }
+  function queue(){if(scheduled)return;scheduled=true;requestAnimationFrame(update)}
+  ['scroll','resize','hashchange','popstate'].forEach(function(name){window.addEventListener(name,queue,{passive:true})});
+  document.addEventListener('click',queue);
+  queue();
+}());
+</script>
+</body>
 
 </html>

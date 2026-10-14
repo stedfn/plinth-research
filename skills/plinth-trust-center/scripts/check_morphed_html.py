@@ -33,6 +33,8 @@ from trust_center_records import (  # noqa: E402
     Records,
     load_inputs,
 )
+from executive_questions import QUESTIONS, GROUPS, LABELS
+from presentation import executive_counts, source_reference_entries, render_source_references_html, render_gap_groups
 
 PANEL_ROLE_ORDER = [
     "control",
@@ -80,10 +82,11 @@ REQUIRED_IDS = {
     "pillar-governance-compliance", "pillar-continuity", "chain-of-title",
     "gaps-title", "sources-title", "methodology-title", "technical-appendix",
     "plinth-research-state",
+    "source-references",
 }
 REQUIRED_CLASSES = {
-    "v3-top", "mode-tabs", "v3-view", "executive-main", "exec-block",
-    "facts", "claim-track", "service-branch", "flow", "pill",
+    "v3-top", "mode-tabs", "v3-view", "executive-main", "kiid-main",
+    "grid", "card", "q", "bound", "evidence", "pill", "disclosure-cue",
     "framework-strip", "open-groups", "analyst-layout", "analyst-sidebar",
     "mobile-analyst-nav", "analyst-main", "panel", "evidence-boundary-pair",
     "pillar-checks", "record", "ai-dock",
@@ -259,6 +262,115 @@ def check_payload(raw_payload: str, inputs: Inputs) -> None:
         fail("embedded evidence differs from the accepted documentary-evidence.json")
 
 
+def require_exposed(element: Element, description: str) -> None:
+    """Supporting disclosures may collapse; framework accounting must remain exposed."""
+    node = element
+    while node:
+        if node.tag == "details" and "open" not in node.attrs:
+            fail(f"{description} must not be inside a closed disclosure")
+        if "hidden" in node.attrs:
+            fail(f"{description} must remain visible")
+        node = node.parent
+
+
+def check_executive(index: Index, records: Records, warnings: list[str]) -> Element:
+    view = element_by_id(index, "v3-executive")
+    if view.attrs.get("data-executive-layout") != "questions12":
+        fail("Executive layout must be questions12")
+    if any("data-executive-slot" in e.attrs for e in walk(index.root)):
+        fail("unfinished Executive insertion slot")
+    executive = element_by_id(index, "executive")
+    if any("data-exec-block" in e.attrs or "exec-block" in classes(e) for e in walk(view)):
+        fail("legacy six-block Executive components are not supported")
+    if descendants_with_class(executive, "analyst-sidebar"):
+        fail("Executive must not contain the Analyst sidebar")
+    if any(e.attrs.get("data-record-type") for e in walk(view)):
+        fail("Executive must not expose canonical record cards")
+    forbidden = {"claim-source", "record-badge", "state", "pillar-checks"}
+    if any(classes(e) & forbidden or "data-evidence-class" in e.attrs for e in walk(view)):
+        fail("Executive exposes Analyst evidence machinery")
+    groups = descendants_with_class(executive, "grp")
+    if [g.attrs.get("data-question-group") for g in groups] != [g[0] for g in GROUPS]:
+        fail("Executive must contain the five ordered question groups")
+    cards = descendants_with_class(executive, "q")
+    if [card.attrs.get("id") for card in cards] != [f"q{n}" for n, _, _ in QUESTIONS]:
+        fail("Executive must contain exactly twelve ordered question cards")
+    for group, (_, title, first, last) in zip(groups, GROUPS):
+        if [c.attrs.get("id") for c in descendants_with_class(group, "q")] != [f"q{n}" for n in range(first, last + 1)]:
+            fail("Executive question grouping differs")
+        if visible_text(element_by_id(index, f"group-{group.attrs['data-question-group']}")) != title:
+            fail("Executive question group heading differs")
+    for card, (number, title, mapping) in zip(cards, QUESTIONS):
+        heading = element_by_id(index, f"title-{number}")
+        numbers = descendants_with_class(heading, "q-n")
+        if normalized(" ".join(heading.text)) != title or len(numbers) != 1 or visible_text(numbers[0]) != f"QUESTION {number:02}":
+            fail(f"Q{number} question heading differs")
+        answers = descendants_with_class(card, "q-a")
+        boundaries = descendants_with_class(card, "bound")
+        disclosures = descendants_with_class(card, "evidence")
+        if len(answers) != 1 or not visible_text(answers[0]):
+            fail(f"Q{number} requires a non-empty answer")
+        if len(boundaries) != 1 or not visible_text(boundaries[0]):
+            fail(f"Q{number} requires an unresolved evidence boundary")
+        if len(disclosures) != 1 or disclosures[0].tag != "details":
+            fail(f"Q{number} requires a Basis & limitations disclosure")
+        label = card.attrs.get("data-evidence-label")
+        if label not in LABELS:
+            fail(f"Q{number} has an unknown documentary answer label")
+        observation_ids = card.attrs.get("data-observation-ids", "").split()
+        if label == "source-described" and not observation_ids:
+            fail(f"Q{number} Source-described requires supporting observation IDs")
+        summary = [e for e in disclosures[0].children if e.tag == "summary"]
+        if len(summary) != 1 or not all(t in visible_text(summary[0]) for t in ("Basis & limitations", "Expand", "Collapse")):
+            fail(f"Q{number} disclosure requires clear Expand / Collapse cues")
+        pills = descendants_with_class(summary[0], "pill")
+        expected_text, expected_class = LABELS[label]
+        if len(pills) != 1 or visible_text(pills[0]) != expected_text or expected_class not in classes(pills[0]):
+            fail(f"Q{number} answer label and disclosure styling disagree")
+        # The index reflects the authored answer category, not a compiler coverage state.
+        index_links = [e for e in descendants_with_class(executive, "card") if e.attrs.get("href") == f"#q{number}"]
+        if len(index_links) != 1:
+            fail(f"Q{number} must have one question-index card")
+        labels = descendants_with_class(index_links[0], "index-status")
+        if len(labels) != 1 or visible_text(labels[0]) != expected_text or expected_class not in classes(labels[0]):
+            fail(f"Q{number} answer label and question index disagree")
+        cited = set(card.attrs.get("data-check-ids", "").split())
+        if not cited:
+            fail(f"Q{number} must name supporting check IDs")
+        outside = sorted((cited - set(mapping)) & set(records.checks))
+        if outside:
+            warnings.append(f"Q{number} cites checks outside its default mapping: {outside}; justify in review.md")
+        links = {e.attrs.get("href") for e in walk(disclosures[0]) if e.tag == "a"}
+        if any(f"#observation-{oid}" not in links for oid in observation_ids):
+            fail(f"Q{number} disclosure must link every supporting observation")
+    paths = [e for e in walk(cards[0]) if "data-claim-path" in e.attrs]
+    if len(paths) != 1 or not visible_text(paths[0]):
+        fail("Q1 requires a non-empty holder-to-asset claim path")
+    require_exposed(paths[0], "claim path")
+    sequence = ["executive-orientation", "q1", "q5", "executive-value-movement", "q7", "q12",
+                "executive-open", "executive-coverage", "scope"]
+    order = [e.attrs.get("id") for e in walk(executive)]
+    positions = [order.index(value) if value in order else -1 for value in sequence]
+    if -1 in positions or positions != sorted(positions):
+        fail("Executive must retain orientation, claim, value movement, unresolved, coverage and technical order")
+    for name in ("framework-strip", "open-row", "coverage-counts"):
+        for e in descendants_with_class(executive, name):
+            require_exposed(e, name)
+    if len(descendants_with_class(executive, "framework-strip")) != 1 or len(descendants_with_class(executive, "framework-cell")) != 4:
+        fail("Executive must have one complete visible framework strip")
+    actual_counts = {e.attrs["data-coverage-count"]: e.attrs.get("data-value")
+                     for e in walk(executive) if "data-coverage-count" in e.attrs}
+    expected_counts = {key: str(value) for key, value in executive_counts(records).items()}
+    if actual_counts != expected_counts:
+        fail("Executive coverage counts differ from the accepted assessment")
+    for e in walk(executive):
+        if "data-coverage-count" in e.attrs and visible_text(e) != f"{e.attrs['data-coverage-count']}: {e.attrs.get('data-value')}":
+            fail("Executive coverage count display differs")
+    if "Publication approval pending" not in visible_text(executive):
+        fail("Executive must disclose pending publication approval")
+    return executive
+
+
 def check_document(raw_html: str, reference_html: str, inputs: Inputs,
                    warnings: list[str] | None = None) -> str:
     """Raise AssertionError on the first failure; return the PASS summary.
@@ -267,6 +379,8 @@ def check_document(raw_html: str, reference_html: str, inputs: Inputs,
     """
     warnings = [] if warnings is None else warnings
     records = Records(inputs)
+    if any(check.get("coverage") == "MISSING" for check in records.checks.values()):
+        fail("MISSING coverage is disabled; use NOT_ASSESSED for unfinished work")
 
     leftover = find_placeholders(raw_html)
     if leftover:
@@ -304,24 +418,7 @@ def check_document(raw_html: str, reference_html: str, inputs: Inputs,
     if missing_classes:
         fail(f"required interface components missing: {missing_classes}")
 
-    executive = element_by_id(index, "executive")
-    if descendants_with_class(executive, "analyst-sidebar") or any(
-        element.tag in {"aside", "nav"} for element in walk(executive)
-    ):
-        fail("Executive must not contain a sidebar or navigation rail")
-    blocks = [element for element in executive.children if "exec-block" in classes(element)]
-    if [block.attrs.get("data-exec-block") for block in blocks] != ["1", "2", "3", "4", "5", "6"]:
-        fail("Executive must contain exactly six ordered blocks")
-    if any(element.attrs.get("data-record-type") for element in walk(executive)):
-        fail("Executive must not expose canonical record cards")
-    forbidden_exec_classes = {"claim-source", "record-badge", "state", "chip", "pillar-checks"}
-    visible_forbidden = sorted(
-        name for name in forbidden_exec_classes if descendants_with_class(executive, name)
-    )
-    if visible_forbidden:
-        fail(f"Executive exposes Analyst evidence machinery: {visible_forbidden}")
-    if len([element for element in walk(blocks[3]) if "pill" in classes(element)]) != 5:
-        fail("Executive must contain five pillar conclusions")
+    executive = check_executive(index, records, warnings)
 
     analyst_main = element_by_id(index, "analyst-main")
     panels = [
@@ -347,6 +444,31 @@ def check_document(raw_html: str, reference_html: str, inputs: Inputs,
     check_payload(payload_match.group(1), inputs)
 
     check_markers(index, records)
+
+    gap_section = next((e for e in walk(panels_by_role["gaps"])
+                        if e.attrs.get("aria-labelledby") == "gaps-title"), None)
+    if gap_section is None:
+        fail("gaps panel must contain the evidence gaps section")
+    expected_gaps = Index()
+    expected_gaps.feed(render_gap_groups(records))
+    gap_signature = lambda root: [(e.attrs["data-pillar"], e.attrs["data-gap-count"], visible_text(e),
+                                   [child.attrs.get("href") for child in walk(e) if child.tag == "a"])
+                                  for e in walk(root) if "gap-group" in classes(e)]
+    if gap_signature(gap_section) != gap_signature(expected_gaps.root):
+        fail("gap groups differ from the accepted check-level gap records")
+    if (records.sources or records.observations) and any("data-layout-example" in e.attrs for e in walk(index.root)):
+        fail("layout examples are preview-only; remove them when authoring real evidence")
+
+    references = element_by_id(index, "source-references")
+    expected_index = Index()
+    expected_index.feed(render_source_references_html(source_reference_entries(records)))
+    actual_entries = [e for e in walk(references) if "data-reference-source" in e.attrs]
+    expected_entries = [e for e in walk(expected_index.root) if "data-reference-source" in e.attrs]
+    signature = lambda entries: [(e.attrs["data-reference-source"], visible_text(e),
+                                  [link.attrs.get("href") for link in walk(e) if link.tag == "a"])
+                                 for e in entries]
+    if signature(actual_entries) != signature(expected_entries):
+        fail("source references differ from the observations' cited acquisitions")
 
     known_checks = set(records.check_order)
     for element in walk(index.root):
@@ -376,7 +498,7 @@ def check_document(raw_html: str, reference_html: str, inputs: Inputs,
     expected_by_pillar = {pillar: {check_id for check_id in records.check_order
                                    if records.pillar_of[check_id] == pillar}
                           for pillar in records.pillar_ids}
-    open_rows = descendants_with_class(blocks[4], "open-row")
+    open_rows = descendants_with_class(element_by_id(index, "executive-open"), "open-row")
     if len(open_rows) != len(records.pillar_ids):
         fail(f"Executive must contain {len(records.pillar_ids)} open-evidence groups")
     seen: list[str] = []
@@ -419,7 +541,7 @@ def check_document(raw_html: str, reference_html: str, inputs: Inputs,
         fail("responsive or print rules are absent")
 
     return (
-        f"PASS: v0.3 two-mode interface; 6 Executive blocks; {len(PANEL_ROLE_ORDER)} Analyst panels; "
+        f"PASS: v0.3 two-mode interface; 12 Executive questions; {len(PANEL_ROLE_ORDER)} Analyst panels; "
         f"{len(records.checks)} checks; {len(records.observations)} observations; "
         f"{len(records.sources)} sources"
     )

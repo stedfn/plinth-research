@@ -25,11 +25,12 @@ SKILL = ROOT / "skills" / "plinth-trust-center"
 SHELL = SKILL / "assets" / "v0.3-two-mode-shell.html"
 # Inner CSS of <style id="v03-skin">, byte-identical to the exemplar it was derived from.
 V03_SKIN_SHA256 = "8792c57c991bd44c40154fa876ea148385d3b6c91a6f50d63983c3df6953d11a"
-PRODUCT_RE = re.compile(r"(?i)(?<![a-z])(ousg|ondo|xauh|qmc|realfi|usdr)(?![a-z])")
+PRODUCT_RE = re.compile(r"(?i)(?<![a-z])(ousg|ondo|xauh|qmc|realfi|usdr|aru|acua|vantara|hawkrel|loomis|metlock|redstone|taipei)(?![a-z])")
 FILL_REGIONS = {
-    "framework-strip", "open-row", "evidence-requests", "source-count", "source-records",
+    "framework-strip", "open-row", "evidence-requests", "source-count", "source-records", "source-references",
     "methodology-distribution", "technical-index", "locator-records", "observation-records",
     "check-records", "footer-counts",
+    "snapshot-date", "cutoff", "declared-scope", "executive-coverage", "gap-groups",
 } | {f"pillar-{kind}:{pillar}" for kind in ("count", "table")
      for pillar in ("control", "backing", "economics", "governance_compliance", "continuity")}
 
@@ -257,21 +258,32 @@ def author(page: str, records) -> str:
         end = page.index("</section>", start)
         segment = page[start:end]
         sources = sorted(records.pillar_sources(pillar))
+        citation, oid = "", ""
         if sources:
             observations = [oid for oid in records.pillar_observation_ids(pillar)
                             if sources[0] in records.observation_sources(oid)]
-            segment = (segment.replace("{{SOURCE_ID}}", sources[0])
-                       .replace("{{OBSERVATION_IDS}}", observations[0])
-                       .replace("{{SOURCE TITLE}}", records.sources[sources[0]]["title"]))
-        else:
-            segment = re.sub(r'<a class="claim-source[^"]*"[^>]*>.*?</a>', "", segment)
-            segment = re.sub(r'<span class="source-prefix">.*?</span>', "", segment)
-            segment = segment.replace("{{OBSERVATION_IDS}}", "")
+            oid = observations[0]
+            citation = (f'<span class="inline-citations" data-observation-ids="{oid}">'
+                        f'<a class="claim-source inline-source" href="#source-{sources[0]}" '
+                        f'data-evidence-class="mixed">{prefill.esc(records.sources[sources[0]]["title"])}</a></span>')
+        segment = re.sub(r'\{\{[A-Z_]+_CITATIONS\}\}', lambda _: citation, segment)
+        segment = re.sub(r'\{\{[A-Z_]+_OBSERVATION_IDS\}\}', lambda _: oid, segment)
+        segment = re.sub(r'\{\{[A-Z_]+_CHECK_IDS\}\}',
+                         lambda _: " ".join(c["check_id"] for c in records.checks_in(pillar)), segment)
         page = page[:start] + segment + page[end:]
+    for number, _, _ in checker.QUESTIONS:
+        state = "source-described" if number == 5 else "answer-unresolved"
+        label, css = checker.LABELS[state]
+        oid = next(iter(records.observations))
+        for key, value in {"STATE": state, "LABEL": label, "CLASS": css,
+                           "OBSERVATION IDS": oid,
+                           "BASIS": f'<p><a href="#observation-{oid}">{oid}</a></p>'}.items():
+            page = page.replace(f"{{{{Q{number} {key}}}}}", value)
     parts = PAYLOAD_SPLIT.split(page)
     for i, part in enumerate(parts):
         if part.startswith('<script type="application/json"'):
             continue
+        part = re.sub(r'\{\{[A-Z_]+_CITATIONS\}\}', "", part)
         part = (part.replace("{{SOURCE_ID}}", next(iter(records.sources)))
                 .replace("{{OBSERVATION_IDS}}", next(iter(records.observations)))
                 .replace("{{CHECK_IDS}}", records.check_order[0])
@@ -291,18 +303,21 @@ def run_checker(tmp_path: Path, html: str, files) -> int:
 # the shell
 # ---------------------------------------------------------------------------
 SHELL_TEXT = SHELL.read_text(encoding="utf-8")
+COMPLETE_SHELL = prefill.executive_shell(SHELL_TEXT)
 
 
 def test_shell_contains_no_product_content():
-    outside_fonts = re.sub(r"url\(data:font[^)]*\)", "", SHELL_TEXT)
-    assert PRODUCT_RE.findall(outside_fonts) == []
-    body = SHELL_TEXT[SHELL_TEXT.index("<body"):]  # the head's CSS selectors name these values legitimately
+    for asset in (SKILL / "assets").glob("*"):
+        outside_fonts = re.sub(r"url\(data:font[^)]*\)", "", asset.read_text())
+        assert PRODUCT_RE.findall(outside_fonts) == [], asset
+    body = COMPLETE_SHELL[COMPLETE_SHELL.index("<body"):]
     assert "data-record-id" not in body, "canonical cards are rendered by prefill, never shipped"
     hrefs = set(re.findall(r'href="([^"]*)"', body))
     assert all(h.startswith("#") or h == "https://example.invalid/" for h in hrefs), hrefs
     for name in ("data-check-ids", "data-observation-ids", "data-evidence-class", "data-state"):
         values = set(re.findall(rf'{name}="([^"]*)"', body))
-        assert all(v.startswith("{{") for v in values), (name, values)
+        assert all(v.startswith("{{") or (name == "data-check-ids" and all(x.startswith("PF-") for x in v.split()))
+                   for v in values), (name, values)
 
 
 def test_shell_keeps_the_exemplar_theme_and_fixes_fragment_decoding():
@@ -320,9 +335,22 @@ def test_shell_keeps_record_titles_readable_on_narrow_screens():
     assert SHELL_TEXT.index('data-purpose="shell-fixes"') > SHELL_TEXT.index('<style id="v03-skin">')
 
 
+def test_executive_wraps_long_addresses_across_all_reading_regions():
+    # Inherited by answers, limitation boxes, the claim path and scope boundary.
+    rule = re.search(r'#v3-executive \.kiid-main\{([^}]+)\}', SHELL_TEXT)
+    assert rule and 'overflow-wrap:anywhere' in rule[1]
+
+
+def test_javascript_disabled_analyst_uses_the_full_grid_width():
+    fallback = next(style for style in re.findall(r'<noscript><style>(.*?)</style></noscript>', SHELL_TEXT, re.S)
+                    if '.analyst-sidebar' in style)
+    assert '.analyst-sidebar{display:none!important}' in fallback
+    assert '.analyst-layout{grid-template-columns:minmax(0,1fr)}' in fallback
+
+
 def test_shell_has_every_structure_the_checker_and_router_need():
     index = checker.Index()
-    index.feed(SHELL_TEXT)
+    index.feed(COMPLETE_SHELL)
     assert checker.REQUIRED_IDS <= set(index.ids)
     assert checker.REQUIRED_CLASSES - {"record"} <= index.classes
     panels = [element for element in checker.descendants_with_class(checker.element_by_id(index, "analyst-main"), "panel")
@@ -331,7 +359,7 @@ def test_shell_has_every_structure_the_checker_and_router_need():
     for selector_id in ("v3-executive", "v3-analyst", "executive"):
         assert index.ids[selector_id] == 1
     assert sorted(index.mode_values) == ["analyst", "executive"]
-    assert set(re.findall(r'data-fill="([^"]+)"', SHELL_TEXT)) == FILL_REGIONS
+    assert set(re.findall(r'data-fill="([^"]+)"', COMPLETE_SHELL)) == FILL_REGIONS
     for key in ("control", "backing", "economics", "governance", "continuity"):
         assert index.ids[f"checks-{key}"] == 1
 
@@ -349,6 +377,24 @@ def test_payload_is_the_accepted_records_with_every_angle_bracket_escaped(varied
     assert "<" not in text and "\\u003c/script>" in text
     assert json.loads(text) == {"assessment": varied.inputs.assessment, "evidence": varied.inputs.evidence}
     checker.check_payload(text, varied.inputs)
+
+
+def test_template_substitutions_never_rewrite_accepted_record_text(varied):
+    import copy
+    inputs = copy.deepcopy(varied.inputs)
+    proposition = 'Literal template syntax: {{PRODUCT}}, {{SNAPSHOT LABEL}}, {{METHODOLOGY_CAMPAIGN_BOUNDARY}}.'
+    inputs.evidence['observations'][0]['proposition'] = proposition
+    records = records_mod.Records(inputs)
+    payload = records_mod.payload_text(inputs)
+    page, _ = prefill.fill(SHELL_TEXT, records, payload, 'Generated product')
+    embedded = checker.PAYLOAD_RE.search(page)[1]
+    assert embedded == payload
+    checker.check_payload(embedded, inputs)
+    index = checker.Index()
+    index.feed(page)
+    record = checker.element_by_id(index, 'observation-OBS-1')
+    assert proposition in checker.visible_text(record)
+    assert '<title>Generated product' in page
 
 
 def _payload(value) -> str:
@@ -396,7 +442,7 @@ def test_prefilled_and_authored_page_passes(tmp_path, accepted, capsys):
     assert run_checker(tmp_path, page, accepted.files) == 0
     records = accepted.records
     assert capsys.readouterr().out == (
-        "PASS: v0.3 two-mode interface; 6 Executive blocks; 14 Analyst panels; 63 checks; "
+        "PASS: v0.3 two-mode interface; 12 Executive questions; 14 Analyst panels; 63 checks; "
         f"{len(records.observations)} observations; {len(records.sources)} sources\n")
 
 
@@ -409,7 +455,7 @@ def test_prefill_renders_every_record_state(tmp_path, varied):
     assert "SRC-A-blocked: HTTP_DOWNLOAD, ACCESS_BLOCKED" in page and "failure: HTTP 403" in page
     assert 'href="#observation-OBS-1">OBS-1</a>, <a href="#observation-obs-1">obs-1</a>' in page
     assert "same-period version 1" in page and "effective " in page
-    assert '<section aria-labelledby="pillar-continuity" data-pillar-sources="none">' in page
+    assert '<section aria-labelledby="pillar-continuity" data-authoring-section="continuity" data-pillar-sources="none">' in page
     assert page.count('aria-labelledby="pillar-control" data-pillar-sources') == 0
     assert "{{x}}" in page, "the quote survives inside the escaped payload"
 
@@ -468,7 +514,7 @@ MUTATIONS = [
     ("metric value", lambda p: p.replace('data-metric="total" data-value="63"', 'data-metric="total" data-value="62"'),
      "framework strip differs"),
     ("partition", _edit_open_row, "open-evidence group differs"),
-    ("placeholder", lambda p: p.replace('<div class="hero-name">', '<div class="hero-name">{{SUBJECT NAME}}', 1),
+    ("placeholder", lambda p: p.replace('<h1 class="h1">', '<h1 class="h1">{{SUBJECT NAME}}', 1),
      "unfilled placeholders"),
     ("fill marker", lambda p: p.replace('<footer class="analyst-footer">', '<footer class="analyst-footer" data-fill="x">'),
      "unfilled prefill region"),
@@ -477,12 +523,12 @@ MUTATIONS = [
      "links must be"),
     ("no related pillar source", lambda p: _retarget_pillar_links(p, "pillar-control", "src-a"),
      "links no source that supports its own checks"),
-    ("false no-source marker", lambda p: p.replace('<section aria-labelledby="pillar-control">',
-                                                   '<section aria-labelledby="pillar-control" data-pillar-sources="none">'),
+    ("false no-source marker", lambda p: p.replace('<section aria-labelledby="pillar-control" data-authoring-section="control">',
+                                                   '<section aria-labelledby="pillar-control" data-authoring-section="control" data-pillar-sources="none">'),
      "must not be marked"),
     ("source on empty pillar", lambda p: p.replace(
-        '<section aria-labelledby="pillar-continuity" data-pillar-sources="none">',
-        '<section aria-labelledby="pillar-continuity" data-pillar-sources="none">'
+        '<section aria-labelledby="pillar-continuity" data-authoring-section="continuity" data-pillar-sources="none">',
+        '<section aria-labelledby="pillar-continuity" data-authoring-section="continuity" data-pillar-sources="none">'
         '<a class="claim-source" href="#source-SRC-A">Custody statement</a>'),
      "cites no observations but links sources"),
     ("unknown observation id", lambda p: p.replace('data-observation-ids="OBS-1"', 'data-observation-ids="OBS-404"', 1),
@@ -511,3 +557,328 @@ def test_unrelated_pillar_source_is_a_warning_not_a_failure(tmp_path, varied, ca
     captured = capsys.readouterr()
     assert "WARN: control also links sources that support none of its checks: ['src-a']" in captured.err
     assert captured.out.startswith("PASS:")
+
+
+def _wrap_class(page, name):
+    node = next(n for n in prefill.elements_with(page, 'class') if name in n['attrs']['class'].split())
+    return page[:node['start']] + '<details><summary>More</summary>' + page[node['start']:node['end']] + '</details>' + page[node['end']:]
+
+
+def _clear_answer(page, number):
+    start = page.index(f'<article class="q" id="q{number}"')
+    stop = page.index('</article>', start)
+    segment = re.sub(r'<div class="q-a">.*?</div>', '<div class="q-a"></div>', page[start:stop], flags=re.S)
+    return page[:start] + segment + page[stop:]
+
+
+@pytest.mark.parametrize('mutate,message', [
+    (lambda p: p.replace('data-executive-layout="questions12"', 'data-executive-layout="six-blocks"'), 'layout must be questions12'),
+    (lambda p: p.replace('data-executive-layout="questions12"', ''), 'layout must be questions12'),
+    (lambda p: p.replace('<header id="executive-orientation">', '<header id="executive-orientation"><div data-exec-block="1"></div>'), 'legacy six-block'),
+    (lambda p: p.replace('<header id="executive-orientation">', '<header id="executive-orientation"><div data-executive-slot></div>'), 'unfinished Executive'),
+    (lambda p: p.replace('class="q" id="q12"', 'class="question" id="q12"'), 'exactly twelve'),
+    (lambda p: _clear_answer(p, 1), 'Q1 requires a non-empty answer'),
+    (lambda p: _clear_answer(p, 5), 'Q5 requires a non-empty answer'),
+    (lambda p: p.replace(' data-claim-path ', ' data-other-path '), 'claim path'),
+    (lambda p: _wrap_class(p, 'framework-strip'), 'closed disclosure'),
+    (lambda p: _wrap_class(p, 'open-groups'), 'closed disclosure'),
+    (lambda p: p.replace('data-evidence-label="source-described" data-check-ids="PF-BACKING-004 PF-BACKING-005 PF-BACKING-006 PF-BACKING-007 PF-BACKING-008 PF-BACKING-009" data-observation-ids="OBS-1"', 'data-evidence-label="source-described" data-check-ids="PF-BACKING-004 PF-BACKING-005 PF-BACKING-006 PF-BACKING-007 PF-BACKING-008 PF-BACKING-009" data-observation-ids=""'), 'requires supporting observation'),
+])
+def test_twelve_question_guards(tmp_path, varied, mutate, message):
+    page = author(prefilled(tmp_path, varied.files), varied.records)
+    changed = mutate(page)
+    assert changed != page
+    with pytest.raises(AssertionError, match=message):
+        checker.check_document(changed, SHELL_TEXT, varied.inputs)
+
+
+def test_default_question_mapping_uses_only_pinned_catalogue_checks():
+    catalogue = json.loads(cat.CATALOGUE_PATH.read_bytes())
+    known = {check['check_id'] for check in catalogue['checks']}
+    mapped = {cid for _, _, mapping in checker.QUESTIONS for cid in mapping}
+    assert mapped <= known, f'Question mapping names unknown checks: {sorted(mapped - known)}'
+
+
+def test_question_mapping_warns_for_known_outside_check(tmp_path, varied):
+    page = author(prefilled(tmp_path, varied.files), varied.records)
+    page = page.replace('data-check-ids="PF-GOV-001 PF-GOV-002 PF-GOV-003"',
+                        'data-check-ids="PF-GOV-001 PF-GOV-002 PF-GOV-003 PF-CONTROL-001"', 1)
+    warnings = []
+    assert checker.check_document(page, SHELL_TEXT, varied.inputs, warnings).startswith('PASS')
+    assert any('Q1 cites checks outside its default mapping' in w for w in warnings)
+
+
+def test_custom_shell_slot_or_complete_layout_only():
+    assert prefill.executive_shell(COMPLETE_SHELL) == COMPLETE_SHELL
+    assert prefill.executive_shell(SHELL_TEXT.replace(' data-executive-layout="questions12"', '')) == COMPLETE_SHELL
+    for invalid in (SHELL_TEXT.replace('data-executive-layout="questions12"', 'data-executive-layout="six-blocks"'),
+                    SHELL_TEXT.replace('<div data-executive-slot></div>', '<div data-exec-block="1"></div>'),
+                    COMPLETE_SHELL.replace('class="q" id="q12"', 'class="q" id="other"'),
+                    COMPLETE_SHELL.replace('</main>', '<div data-executive-slot></div></main>', 1)):
+        with pytest.raises(records_mod.RecordError):
+            prefill.executive_shell(invalid)
+
+
+def test_prefill_is_deterministic_and_keeps_analyst(tmp_path, varied):
+    page, _ = prefill.fill(SHELL_TEXT, varied.records, records_mod.payload_text(varied.inputs), 'Generated product')
+    again, _ = prefill.fill(SHELL_TEXT, varied.records, records_mod.payload_text(varied.inputs), 'Generated product')
+    assert page == again
+    custom, _ = prefill.fill(COMPLETE_SHELL, varied.records, records_mod.payload_text(varied.inputs), 'Generated product')
+    assert page == custom
+
+
+def test_checker_rejects_missing_coverage_before_rendering(varied):
+    import copy
+    inputs = copy.deepcopy(varied.inputs)
+    inputs.assessment['checks'][0]['coverage'] = 'MISSING'
+    with pytest.raises(AssertionError, match='MISSING coverage is disabled'):
+        checker.check_document('', SHELL_TEXT, inputs)
+
+
+def test_print_and_disclosure_rules():
+    assert '#v3-executive details,#v3-executive details>*{display:block!important}' in SHELL_TEXT
+    assert "window.addEventListener('beforeprint'" in SHELL_TEXT
+    assert "window.addEventListener('afterprint'" in SHELL_TEXT
+    assert 'min-height:48px' in SHELL_TEXT
+    assert '@media(prefers-reduced-motion:reduce)' in SHELL_TEXT
+    assert '--paper:#F7F5F0' in SHELL_TEXT and '--col:960px' in SHELL_TEXT
+
+
+def test_source_references_follow_cited_acquisitions_and_keep_superseded(varied):
+    import copy
+    from presentation import source_reference_entries
+    records = records_mod.Records(copy.deepcopy(varied.inputs))
+    records.sources['SRC-A'].update(disposition='SUPERSEDED', superseded_by_source_id='src-a', url=None,
+                                    publication_date='2026-06-23T00:00:00Z',
+                                    stated_limitations=['First complete limitation.', 'Second limitation.'])
+    first = records.observations['OBS-1']['supports'][0]['acquisition_id']
+    records.acquisitions[first]['retrieved_at'] = '2026-10-02T07:59:00+08:00'
+    records.acquisitions[first]['acquisition_mode'] = 'MANUAL_UPLOAD'
+    records.sources['UNCITED'] = {'source_id': 'UNCITED', 'title': 'Uncited in-scope document', 'disposition': 'IN_SCOPE'}
+    latest = dict(records.acquisitions[first], acquisition_id='UNCITED-LATEST', retrieved_at='2026-10-09T12:00:00Z')
+    records.acquisitions['UNCITED-LATEST'] = latest
+    records.acquisitions['CITED-SECOND'] = dict(latest, acquisition_id='CITED-SECOND', retrieved_at='2026-10-03T12:00:00Z')
+    records.observations['OBS-1']['supports'].append({'acquisition_id': 'CITED-SECOND', 'locator_id': 'loc-a'})
+    entries = source_reference_entries(records)
+    assert [e['source_id'] for e in entries] == ['SRC-A', 'src-a']
+    first_entry = entries[0]
+    assert first_entry['superseded_by'] == 'src-a'
+    assert first_entry['url'] is None
+    assert first_entry['published'] == '23 Jun 2026'
+    assert first_entry['captured'] == ['1 Oct 2026', '3 Oct 2026']
+    assert first_entry['limitation'] == 'First complete limitation. · Second limitation.'
+    from presentation import render_source_references_html, render_source_references_md
+    assert first_entry['limitation'] in render_source_references_html(entries)
+    assert first_entry['limitation'] in render_source_references_md(entries)
+
+
+def test_missing_gaps_section_has_a_clean_failure(tmp_path, varied):
+    page = author(prefilled(tmp_path, varied.files), varied.records)
+    page = page.replace('<div class="panel" data-mode-panel="analyst">\n<section aria-labelledby="gaps-title"',
+                        '<div class="panel" data-mode-panel="analyst" data-panel-role="gaps">\n<section aria-labelledby="executive"', 1)
+    with pytest.raises(AssertionError, match='gaps panel must contain the evidence gaps section'):
+        checker.check_document(page, SHELL_TEXT, varied.inputs)
+
+
+def test_source_reference_renderers_share_entries_and_escape(varied):
+    from presentation import source_reference_entries, render_source_references_html, render_source_references_md, markdown_text
+    entries = source_reference_entries(varied.records)
+    entries[0].update(title='Title <&" |[]*_', publisher='Publisher <&" |[]*_',
+                      limitation='Limit <&" |[]*_', url='https://example.com/report(a)?x=1&y=2',
+                      superseded_by='src-a')
+    html = render_source_references_html(entries)
+    md = render_source_references_md(entries)
+    assert 'Title &lt;&amp;&quot;' in html
+    assert 'Title <&"' not in html
+    assert 'href="https://example.com/report(a)?x=1&amp;y=2"' in html
+    assert 'https://example.com/report(a)?x=1&y=2>' in md
+    for entry in entries:
+        assert markdown_text(entry['title']) in md
+        assert entry['source_id'] in html
+        assert all(date in html and date in md for date in entry['captured'])
+    assert r'\|\[\]\*\_' in md
+    assert 'Superseded by' in md and 'Superseded by' in html
+
+
+def test_optional_markdown_output_is_shared_and_never_overwrites(tmp_path, varied):
+    from presentation import source_reference_entries, render_source_references_md
+    out = tmp_path / 'output.html'
+    md = tmp_path / 'references.md'
+    args = ['--product', 'Generated product', *file_args(varied.files), '--out', str(out), '--source-references-md', str(md)]
+    assert prefill.main(args) == 0
+    assert md.read_text() == render_source_references_md(source_reference_entries(varied.records))
+    assert prefill.main(args) == 1
+    assert prefill.main(args + ['--force']) == 0
+    assert prefill.main(args[:-1] + [str(out), '--force']) == 1
+
+
+def test_source_reference_dates_cannot_drift(tmp_path, varied):
+    page = author(prefilled(tmp_path, varied.files), varied.records)
+    start = page.index('id="source-references"')
+    stop = page.index('</section>', start)
+    changed = page[:start] + page[start:stop].replace('Captured:', 'Published:', 1) + page[stop:]
+    with pytest.raises(AssertionError, match='source references differ'):
+        checker.check_document(changed, SHELL_TEXT, varied.inputs)
+
+
+@pytest.mark.parametrize('value,date,cutoff', [
+    ('2026-10-13T00:00:00+08:00', '12 Oct 2026', '12 Oct 2026, 16:00 UTC'),
+    ('2026-10-13T00:00:01Z', '13 Oct 2026', '13 Oct 2026, 00:00 UTC'),
+    ('2026-10-12T23:59:59Z', '12 Oct 2026', '12 Oct 2026, 23:59 UTC'),
+])
+def test_utc_dates_are_explicit(value, date, cutoff):
+    from presentation import utc_date, cutoff_text
+    assert utc_date(value) == date
+    assert cutoff_text(value) == cutoff
+
+
+@pytest.mark.parametrize('public,line', [
+    (True, 'Declared scope: public evidence only'),
+    (False, 'Declared scope: not limited to public evidence'),
+])
+def test_scope_and_boundary_labels(varied, public, line):
+    import copy
+    inputs = copy.deepcopy(varied.inputs)
+    inputs.evidence['campaign']['bounded_public_evidence'] = public
+    page, _ = prefill.fill(SHELL_TEXT, records_mod.Records(inputs), records_mod.payload_text(inputs), 'Generated product')
+    outside = PAYLOAD_SPLIT.sub('', page)
+    assert line in outside
+    assert 'Evidence cutoff:' in outside and 'UTC' in outside
+    assert 'Fixed evidence snapshot' in outside
+    for old in ('Public evidence supports', 'Public evidence does not establish', 'What the public record supports'):
+        assert old not in outside
+    assert 'Evidence supports' in outside and 'What acquired records support' in outside
+    assert 'Published:' not in outside, 'capture dates must not be presented as publication dates'
+    assert json.loads(checker.PAYLOAD_RE.search(page)[1])['evidence'] == inputs.evidence
+
+
+def test_publication_date_is_structured_not_guessed(varied):
+    import copy
+    from presentation import source_reference_entries
+    records = records_mod.Records(copy.deepcopy(varied.inputs))
+    source = records.sources['SRC-A']
+    source['notes'] = 'Report dated 3 October 2026.'
+    source['publication_date'] = None
+    assert source_reference_entries(records)[0]['published'] is None
+    source['publication_date'] = '2026-10-13T00:00:00+08:00'
+    assert source_reference_entries(records)[0]['published'] == '12 Oct 2026'
+    rendered = prefill.render_source(records, source)
+    assert 'Published (UTC date)' in rendered and '12 Oct 2026' in rendered
+    assert source['publication_date'] == '2026-10-13T00:00:00+08:00'
+
+
+def test_spacing_and_single_panel_rules():
+    assert '.analyst-main .request-stack{display:grid;gap:12px}' in SHELL_TEXT
+    assert '.analyst-main .alert-ledger:not(:has(>div+div)){grid-template-columns:1fr}' in SHELL_TEXT
+    # The base grid remains available for multi-panel displays.
+    assert '.summary-ledger,.alert-ledger{display:grid;grid-template-columns:repeat(4,1fr)' in SHELL_TEXT
+
+
+def test_synthetic_example_has_no_reference_product_content():
+    example = (ROOT / 'examples' / 'build_presentation_demo.py').read_text()
+    assert PRODUCT_RE.findall(example) == []
+
+
+def test_analyst_defaults_use_named_slots_and_tables():
+    index = checker.Index()
+    index.feed(SHELL_TEXT)
+    analyst = checker.element_by_id(index, 'analyst-main')
+    sections = [e for e in checker.walk(analyst) if e.tag == 'section' and 'data-authoring-section' in e.attrs]
+    assert [e.attrs['data-authoring-section'] for e in sections] == [
+        'control', 'backing', 'economics', 'governance', 'continuity', 'claim', 'legal',
+        'quantity', 'gaps', 'requests', 'sources', 'technical', 'methodology', 'appendix']
+    for section in sections[:5]:
+        grids = checker.descendants_with_class(section, 'factual-grid')
+        assert len(grids) == 1 and len(grids[0].children) == 3
+        assert not checker.descendants_with_class(section, 'contradiction-card')
+    for section in sections[5:7]:
+        assert checker.descendants_with_class(section, 'report-table')
+        assert not checker.descendants_with_class(section, 'legal-grid')
+        assert not checker.descendants_with_class(section, 'state')
+    body = SHELL_TEXT[SHELL_TEXT.index('<body'):]
+    assert '{{FACT}}' not in body and '{{NARRATIVE}}' not in body and '{{BOUNDARY STATEMENT}}' not in body
+    assert '{{CONTROL_AUTHORIZATION}}' in body and '{{LEGAL_INSTRUMENT_KNOWN}}' in body
+    assert 'repeat(auto-fit,minmax(min(100%,260px),1fr))' in SHELL_TEXT
+    assert '.analyst-main .legal-cell .state{max-width:100%;white-space:normal;' in SHELL_TEXT
+    assert '.analyst-main .pillar-delivery{display:grid;gap:16px;' in SHELL_TEXT
+
+
+def _load_preview_example():
+    spec = importlib.util.spec_from_file_location('presentation_preview', ROOT / 'examples' / 'build_presentation_demo.py')
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    return module
+
+
+def test_preview_has_no_invented_product_evidence(tmp_path):
+    demo = _load_preview_example()
+    out = tmp_path / 'preview'
+    demo.build(out)
+    run = out / 'runs' / 'template-preview'
+    inputs = records_mod.load_inputs(run / 'assessment.json', run / 'documentary-evidence.json', cat.CATALOGUE_PATH)
+    current = datetime.now(UTC)
+    assert datetime.fromisoformat(inputs.evidence['generated_at'].replace('Z', '+00:00')) <= current
+    assert datetime.fromisoformat(inputs.assessment['meta']['generated_at'].replace('Z', '+00:00')) <= current
+    for name in ('sources', 'acquisitions', 'artifacts', 'locator_catalog', 'observations'):
+        assert inputs.evidence[name] == []
+    assert all(check['applicability'] == 'UNRESOLVED' and check['coverage'] is None
+               for check in inputs.assessment['checks'])
+    page = (out / 'index.html').read_text()
+    assert 'zero sources and zero observations' in page
+    assert 'Example Custody' not in page and '0.5%' not in page
+    assert 'The supplied synthetic design does not establish operative records.' not in page
+    assert 'data-evidence-label="source-described"' not in page
+    assert checker.check_document(page, SHELL_TEXT, inputs).startswith('PASS:')
+    # Authoring the guidance never rewrites the accepted payload or files.
+    before = ((run / 'assessment.json').read_bytes(), (run / 'documentary-evidence.json').read_bytes())
+    assert demo.author_preview(inputs) == page
+    assert before == ((run / 'assessment.json').read_bytes(), (run / 'documentary-evidence.json').read_bytes())
+
+
+def test_preview_cannot_be_used_as_an_author_for_real_inputs(varied):
+    demo = _load_preview_example()
+    with pytest.raises(ValueError, match='empty evidence'):
+        demo.author_preview(varied.inputs)
+
+
+def test_gap_groups_cover_each_accepted_gap_once(varied):
+    from presentation import render_gap_groups
+    index = checker.Index()
+    index.feed(render_gap_groups(varied.records))
+    groups = checker.descendants_with_class(index.root, 'gap-group')
+    assert [g.attrs['data-pillar'] for g in groups] == ['control', 'backing', 'economics', 'governance', 'continuity']
+    expected = [c for c in varied.inputs.assessment['checks'] if c.get('gap')]
+    summaries = checker.descendants_with_class(index.root, 'gap-summary')
+    assert [s.attrs['data-gap-check'] for s in summaries] == [c['check_id'] for c in expected]
+    for summary, check in zip(summaries, expected):
+        for field in ('question', 'what_is_known', 'what_remains_unresolved', 'what_would_close_it'):
+            assert checker.normalized(check['gap'][field]) in checker.visible_text(summary)
+    assert sum(int(g.attrs['data-gap-count']) for g in groups) == len(expected)
+
+
+def test_gap_summary_drift_is_rejected(tmp_path, varied):
+    page = author(prefilled(tmp_path, varied.files), varied.records)
+    start = page.index('class="gap-summary"')
+    end = page.index('</article>', start)
+    changed = page[:start] + page[start:end].replace('What remains unresolved', 'Nothing remains unresolved', 1) + page[end:]
+    with pytest.raises(AssertionError, match='gap groups differ'):
+        checker.check_document(changed, SHELL_TEXT, varied.inputs)
+
+
+def test_registry_field_example_is_not_compiler_evidence(tmp_path, varied):
+    demo = _load_preview_example()
+    out = tmp_path / 'preview'
+    demo.build(out)
+    page = (out / 'index.html').read_text()
+    index = checker.Index()
+    index.feed(page)
+    diagram = checker.element_by_id(index, 'registry-layout-example')
+    assert diagram.attrs['data-layout-example'] == 'source-registry'
+    assert len(checker.descendants_with_class(diagram, 'source-reference-list')[0].children) == 3
+    assert not any(e.tag == 'a' or e.attrs.get('data-record-type') or e.attrs.get('data-reference-source') for e in checker.walk(diagram))
+    assert '[Document title]' in checker.visible_text(diagram)
+    assert not PRODUCT_RE.findall((ROOT / 'examples' / 'registry-layout-example.html').read_text())
+    real = author(prefilled(tmp_path, varied.files), varied.records)
+    real = real.replace('<footer class="analyst-footer">', '<div data-layout-example="source-registry">Field placeholders</div><footer class="analyst-footer">')
+    with pytest.raises(AssertionError, match='preview-only'):
+        checker.check_document(real, SHELL_TEXT, varied.inputs)

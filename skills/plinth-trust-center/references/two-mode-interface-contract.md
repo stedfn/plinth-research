@@ -21,9 +21,9 @@ contradiction and limitation.
 ## Transposition method
 
 `scripts/prefill_shell.py` copies the shell and fills its mechanical regions, which are the
-elements marked `data-fill`. You then replace the remaining `{{PLACEHOLDER}}`s. The shell
-holds one example of each component; repeat it as needed and delete the ones you do not
-use.
+elements marked `data-fill`. You then replace the remaining `{{PLACEHOLDER}}`s. Each Analyst section has named, section-specific slots described in
+[authoring-slots.md](authoring-slots.md). Repeat supported rows/cards as needed and remove
+unused optional components. Never invent values or use a universal filler sentence.
 
 Keep exactly two reading modes:
 
@@ -34,45 +34,82 @@ The mode selector has a fixed width, so it does not move with adjacent text. Evi
 in Executive switch to Analyst and reveal the corresponding pillar, check, observation,
 source or gap. Direct fragments and browser history must keep that behaviour.
 
-Some fixed labels assume a public-only campaign (`bounded_public_evidence: true`). Rewrite
-them for a privately enriched campaign. They are:
-
-- "Public evidence supports" and "Public evidence does not establish";
-- "Where public evidence stops";
-- "Bounded public-evidence assessment";
-- "Fixed public snapshot".
-
 ## Executive composition
 
-Executive is one centered continuous column with no sidebar and exactly six blocks:
+The only Executive format is twelve questions in five groups. The shared shell holds one
+`data-executive-slot`; prefill inserts `assets/executive-questions12.html` and writes
+`data-executive-layout="questions12"` on `#v3-executive`. A custom `--shell` must have this
+slot or a complete, marked twelve-question Executive. Old six-block shells are rejected.
+There are no layout-selection options.
 
-1. **Product orientation:** product, operator, evidence cutoff, participation boundary, and documented perimeter.
-2. **What the holder holds:** holder-to-economic-asset chain, explicit unresolved legal links, and a separate service/control branch.
-3. **How value moves:** enter, accrue, and exit cards without connector circles.
-4. **Five pillar conclusions:** one factual conclusion and one unresolved boundary per pillar, with one route to Analyst. Pillar colors identify categories; they are not grades.
-5. **What remains open:** a factual strip derived from canonical check records plus five pillar-level groups that partition every check exactly once. Prefill writes both; you write each group's question.
-6. **Evidence boundary:** the public/private or supplied-evidence limit and an explicit route into Analyst.
+Use the bundled warm paper background, centred 960px column, lightweight title, rounded
+chips, compact question index, soft white answer cards and inset limitations boxes. Preserve
+the amber/rust documentary labels and the explicit Expand / Collapse cue with its chevron.
+These colours identify answer categories; they are not a product rating or a severity scale.
+Use the existing fonts, responsive layout and reduced-motion rules.
 
-Executive must not show any of the following:
+The questions and their default check mappings are defined in
+`scripts/executive_questions.py`. Keep their headings and order. A known check outside a
+question's mapping causes a warning to justify in `review.md`; an unknown ID fails.
 
-- source citations, evidence classes or check states;
-- check counts on pillar cards;
-- coverage distributions;
-- per-pillar grades.
+| Group | Questions |
+| --- | --- |
+| A — Product & holder rights | 1–3 |
+| B — Assets & backing | 4–6 |
+| C — Returns & costs | 7–8 |
+| D — Control & valuation | 9–10 |
+| E — Exit & ownership records | 11–12 |
 
-Supporting check and observation IDs stay in semantic attributes. The framework strip shows
-only counts computed from the assessment.
+Every answer card contains the plain answer, a concrete unresolved-record question and a
+native `details.evidence` disclosure called **Basis & limitations**. Its summary shows the
+answer label, Expand / Collapse text and a chevron, with a 48px target. Supporting source
+links and observation IDs may appear in that disclosure. Keep it collapsed in the delivered
+draft unless documenting an expanded state for QA.
 
-The main claim path ends at an underlying economic asset, portfolio, reserve, receivable, or
-explicitly unresolved endpoint. The following belong in a separate branch:
+### Answer categories
 
-- managers and administrators;
-- custodians;
-- networks and bridges;
-- verification providers;
-- settlement infrastructure.
+The author chooses one category from the accepted observations, independently of coverage:
 
-Do not infer a missing legal link to make the diagram appear complete.
+- **Source-described** (`source-described`, `p-part`): the answer restates at least one
+  supporting observation about the question's core proposition. It requires supporting
+  `data-observation-ids` on the question and links to them in its disclosure.
+- **Answer unresolved** (`answer-unresolved`, `p-no`): no supporting observation answers
+  the core proposition. Contextual observations may still be cited.
+
+Keep each question's index label and disclosure label consistent. Source-described is not
+independent verification, legal effect, deployment confirmation or complete check coverage.
+The semantic review must check that the cited observation actually answers the proposition;
+the verifier can prove only ID existence and linkage.
+
+Executive may show source links and supporting IDs inside disclosures, plus aggregate
+factual coverage counts. It must not show canonical record cards, evidence-class badges,
+individual check-state badges, per-pillar grades or investment judgments.
+
+### Conformance to the pinned output contract
+
+| Contract requirement | Twelve-question element |
+| --- | --- |
+| §3.1 Orientation | Introduction, intended use, snapshot chip and evidence-context card |
+| §3.2 Claim and parties; §11 identities | Q1 identifies issuer and holder claim; Q5 identifies custody and asset ownership; visible claim path beneath Q1 |
+| §3.3 Value movement | Entry → Holding → Exit summary before Q7; Q7–Q12 explain mechanics |
+| §3.4 Unresolved questions | Visible closing five-pillar summaries linking the complete gaps |
+| §3.5 Coverage | Visible framework strip and factual aggregate coverage counts |
+| §3.6 Technical basis | Closing technical/source/methodology routes, card disclosures and Analyst records |
+
+The visible claim path covers holder → recorded interest → legal claim → issuer/vehicle →
+asset owner → custodian → underlying asset. Use actual relationships; separate entities are
+not mandatory. Mark every unsupported step unresolved or not applicable. Do not infer a
+provider engagement from an issuer-named brand.
+
+The framework strip, coverage counts and five open-question summaries stay visible, never
+inside a closed disclosure. Keep all gaps in neutral pillar/check order. Coverage includes
+applicable checks assessed, EVIDENCED, PARTIAL, MISSING, CONTRADICTORY and NOT_ASSESSED,
+with unresolved applicability separate. MISSING remains zero and carries the compiler
+limitation footnote; actual MISSING coverage is rejected.
+
+Draft and pending publication-approval status remain visible. Preparation, extraction and
+agent-review history belongs in the private review record. Accepted metadata is never
+redacted from the payload: unwanted records require a successor run.
 
 ## Analyst composition
 
@@ -103,12 +140,63 @@ Every pillar keeps five elements:
 - named source links;
 - one collapsed check register.
 
+The Evidence gaps panel uses five numbered native disclosures generated from accepted gaps.
+Their bodies separate known facts, the unresolved proposition and closure evidence, with a
+complete-gap link for each question. Optional documentation clarifications use a table.
+Technical limitations keep a padded heading and body rather than an unstructured box.
+
+The registry preview may illustrate field positions with explicit bracketed placeholders,
+never invented documents or fake links. This diagram is outside the generated bibliography
+and is absent from real evidence runs.
+
 The full research record contains every canonical check, observation, source and locator
 record.
+
+The three pillar fact cards use a compact grid. Lone cards expand to fill the available
+width; labels and identifiers wrap rather than escape their container. Claim and legal
+structure use full-width tables with separate support and unresolved columns. Default
+conflict alerts and legal status badges are absent; add only evidence-supported variants.
 
 Source pills use consistent horizontal and wrapped-row spacing. Decorative separators must
 not be stranded on their own line. Contradiction cards use the same thin perimeter treatment
 as other colored surfaces.
+
+## Source references
+
+The registry starts with a compact cited-source bibliography. One shared entries function
+feeds the HTML and optional `--source-references-md PATH` report section. Integrate that
+section into `report.md`; do not maintain a second hand-written bibliography.
+
+Include only sources reached from observation supports through their actual acquisitions,
+with disposition IN_SCOPE or SUPERSEDED. Cited superseded sources link their successor.
+Uncited and excluded sources remain in the complete registry. Use the unique capture dates
+of the acquisitions actually cited, never an unrelated source's newest capture.
+
+Each reference gives the title, recorded publisher, safe document URL when available,
+structured publication date when recorded, cited capture dates, all stated limitations
+and a link to the source record. Null URLs and supplied text have no invented document link.
+Publication dates are not inferred from prose notes. Markdown escapes its punctuation;
+HTML escapes its attributes and text.
+
+## Dates and evidence boundaries
+
+Keep the opening snapshot chip short, using the UTC calendar date. Show the precise cutoff
+to the minute, explicitly labelled UTC, in the evidence boundary. Publication and acquisition
+retrieval dates display as UTC calendar dates; Published and Captured are distinct labels.
+Do not guess a publication date from a capture or from notes.
+
+`UtcMoment` normalizes offsets. A local midnight may belong to the preceding UTC date.
+For genuinely date-only publication metadata, intake records `T00:00:00Z` and notes that
+only the date is known. Never alter accepted timestamps to improve their display.
+
+Use neutral headings: Fixed evidence snapshot, Evidence supports / does not establish,
+Where acquired evidence stops, and What acquired records support. Generate the declared-scope
+line from the campaign: public evidence only, or not limited to public evidence. A false
+public-only flag does not itself prove that private material was actually supplied; disclose
+actual restricted material from its source records when present.
+
+Evidence request cards have 12px gaps. A single technical-state panel fills its container;
+multiple panels retain their grid. Keep the draft label and pending publication approval.
 
 ## Canonical and machine-readable state
 

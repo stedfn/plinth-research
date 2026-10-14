@@ -162,6 +162,44 @@ Follow [skills/plinth-trust-center/SKILL.md](skills/plinth-trust-center/SKILL.md
 
 The output goes to `trust-centers/<subject-slug>/`.
 
+The Executive uses twelve fixed investor questions in five groups, with a warm paper
+background, a compact question index and expandable **Basis & limitations**. There is one
+Executive format; the fourteen Analyst panels and canonical records stay unchanged.
+The snapshot chip is concise; the evidence boundary states the precise cutoff in UTC.
+Source references distinguish publication dates from cited capture dates. Neutral headings
+work across public-only and supplied-evidence campaigns. Answer labels describe documentary
+answers and do not change framework applicability or coverage.
+
+
+To build a template preview without invented product facts:
+
+```sh
+python3 examples/build_presentation_demo.py --out /tmp/plinth-demo
+python3 skills/plinth-trust-center/scripts/check_morphed_html.py /tmp/plinth-demo/index.html \
+  --reference skills/plinth-trust-center/assets/v0.3-two-mode-shell.html \
+  --assessment /tmp/plinth-demo/runs/template-preview/assessment.json \
+  --evidence /tmp/plinth-demo/runs/template-preview/documentary-evidence.json \
+  --catalogue inputs/catalogue.json
+```
+
+The demo also writes `source-references.md`. For an accepted run, prefill can write the
+same bibliography used in HTML as a report section:
+
+```sh
+python3 skills/plinth-trust-center/scripts/prefill_shell.py --product "Trust Center template" \
+  --assessment /tmp/plinth-demo/runs/template-preview/assessment.json \
+  --evidence /tmp/plinth-demo/runs/template-preview/documentary-evidence.json \
+  --catalogue inputs/catalogue.json --out /tmp/plinth-demo/prefilled.html \
+  --source-references-md /tmp/plinth-demo/report-references.md
+```
+
+Choose a fresh output directory. The preview has zero sources and zero observations. Every check has unresolved applicability
+and null coverage. Its text explains authoring slots; it does not assert an issuer, provider,
+fee, asset holding or deployed capability. The gaps are grouped from compiler records, and
+the registry shows a labelled field-layout example with no fake documents or links. See [the authoring slot guide](skills/plinth-trust-center/references/authoring-slots.md)
+to populate the shell from an actual accepted compiler run.
+
+
 ## Assessment workflow
 
 Start from a run whose accepted `documentary-evidence.json` is valid. Run files live in
