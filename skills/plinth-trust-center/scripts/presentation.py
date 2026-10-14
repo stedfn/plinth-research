@@ -3,7 +3,7 @@ from datetime import datetime, timezone
 import html
 import re
 from urllib.parse import quote
-from trust_center_records import Records
+from trust_center_records import Records, DOM_PILLAR
 
 def utc_date(value: str) -> str:
     """A recorded moment's UTC calendar date; never infer dates from source notes."""
@@ -23,6 +23,35 @@ def executive_counts(records: Records) -> dict[str, int]:
             "MISSING": counts["missing"], "CONTRADICTORY": counts["contradictory"],
             "NOT_ASSESSED": counts["not-assessed"],
             "Applicability unresolved": counts["applicability-unresolved"]}
+
+
+def render_gap_groups(records: Records) -> str:
+    """Compact, complete gap summaries in catalogue order, never invented themes."""
+    esc = html.escape
+    groups = []
+    for number, pillar in enumerate(records.pillar_ids, 1):
+        checks = [check for check in records.checks_in(pillar) if check.get("gap")]
+        if not checks:
+            continue
+        items = []
+        for check in checks:
+            cid, gap = check["check_id"], check["gap"]
+            fields = "".join(f'<div><dt>{label}</dt><dd>{esc(gap[key])}</dd></div>'
+                             for label, key in (("What is known", "what_is_known"),
+                                                ("What remains unresolved", "what_remains_unresolved"),
+                                                ("What would close it", "what_would_close_it")))
+            items.append(f'<article class="gap-summary" data-gap-check="{esc(cid)}" '
+                         f'data-origin="derived-presentation" data-check-ids="{esc(cid)}">'
+                         f'<h4>{esc(gap["question"])}</h4><dl class="gap-facts">{fields}</dl>'
+                         f'<a class="gap-record-link" href="#check-{esc(cid)}">Complete gap and lineage · {esc(cid)} ↗</a></article>')
+        groups.append(f'<details class="gap-group" id="gap-group-{DOM_PILLAR[pillar]}" '
+                      f'data-pillar="{DOM_PILLAR[pillar]}" data-gap-count="{len(checks)}">'
+                      f'<summary><span class="gap-number">{number:02}</span>'
+                      f'<span class="gap-group-title">{esc(records.pillar_label[pillar])}</span>'
+                      f'<span class="gap-group-count">{len(checks)} open questions</span>'
+                      '<span class="gap-toggle" aria-hidden="true">+</span></summary>'
+                      f'<div class="gap-group-body">{"".join(items)}</div></details>')
+    return "\n".join(groups) or '<p class="section-lede">No open check-level gaps in the accepted assessment.</p>'
 
 
 def source_reference_entries(records: Records) -> list[dict]:

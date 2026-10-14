@@ -1566,6 +1566,49 @@ html:not(.js) #v3-executive .rail,html:not(.js) #v3-executive #prog{display:none
 .analyst-main .panel>.section-lede{margin-bottom:20px}
 @media(max-width:760px){.analyst-main .factual-grid,.analyst-main .legal-grid{grid-template-columns:1fr}}
 </style>
+<style data-purpose="gap-and-registry-layout">
+.analyst-main .gap-groups{display:grid;gap:12px;margin:24px 0 28px}
+.analyst-main .gap-group{background:var(--panel);border-radius:12px;overflow:hidden}
+.analyst-main .gap-group>summary{display:flex;align-items:center;gap:12px;min-height:58px;padding:18px 22px;list-style:none;cursor:pointer;color:var(--ink);font-size:15px}
+.analyst-main .gap-group>summary::-webkit-details-marker{display:none}
+.analyst-main .gap-group>summary:hover{background:var(--cream-2)}
+.analyst-main .gap-group>summary:focus-visible,.registry-field-preview>summary:focus-visible{outline:2px solid var(--ink-3);outline-offset:-3px}
+.analyst-main .gap-number{font:11px/1.4 var(--mono);color:var(--muted)}
+.analyst-main .gap-group-title{flex:1;min-width:0}
+.analyst-main .gap-group-count{font-size:11px;color:var(--muted)}
+.analyst-main .gap-toggle{font-size:20px;color:var(--muted);width:16px;text-align:center}
+.analyst-main .gap-group[open] .gap-toggle{font-size:0}
+.analyst-main .gap-group[open] .gap-toggle::after{content:'−';font-size:20px}
+.analyst-main .gap-group-body{padding:0 22px 20px}
+.analyst-main .gap-summary{padding:20px 0;border-top:1px solid var(--line)}
+.analyst-main .gap-summary:last-child{padding-bottom:0}
+.analyst-main .gap-summary h4{font-size:14px;font-weight:500;line-height:1.55;margin:0 0 14px;color:var(--ink)}
+.analyst-main .gap-facts{display:grid;gap:12px;margin:0}
+.analyst-main .gap-facts>div{display:grid;grid-template-columns:155px minmax(0,1fr);gap:18px}
+.analyst-main .gap-facts dt{font-size:12px;font-weight:500;color:var(--muted)}
+.analyst-main .gap-facts dd{font-size:13px;line-height:1.6;color:var(--ink-2);margin:0;overflow-wrap:anywhere}
+.analyst-main .gap-record-link{display:inline-flex;min-height:32px;margin-top:14px;font-size:11px;text-decoration:underline;text-underline-offset:3px;color:var(--ink-3)}
+.analyst-main .technical-limitations{background:var(--panel);border:0;border-radius:12px;margin-top:28px}
+.analyst-main .technical-limitations .section-head{margin:0;padding:18px 22px;border-bottom:1px solid var(--line);align-items:center}
+.analyst-main .technical-limitations .section-head h3{font-size:15px;font-weight:500;letter-spacing:-.01em;margin:0}
+.analyst-main .technical-limitations .record-body{padding:18px 22px 20px}
+.analyst-main .technical-limitations .record-body p{font-size:13px;line-height:1.65;margin:0;color:var(--ink-3)}
+.analyst-main .preview-layout-note{font-size:12px;line-height:1.6;color:var(--muted);margin:0 0 14px}
+.registry-layout-example{margin:24px 0 28px;padding:22px;background:var(--panel);border-radius:12px}
+.registry-layout-example h3{font-size:20px;letter-spacing:-.02em;font-weight:500;margin:0 0 12px}
+.registry-layout-example>p{font-size:12px;line-height:1.65;color:var(--muted);margin:0 0 16px}
+.registry-layout-example .source-reference-list>li{padding:12px 0}
+.source-reference-placeholder-link{color:var(--ink-2);text-decoration:underline;text-underline-offset:3px}
+.registry-field-preview{margin-top:20px;border-top:1px solid var(--line);padding-top:16px}
+.registry-field-preview>summary{cursor:pointer;min-height:44px;display:flex;align-items:center;gap:10px;font-size:13px;color:var(--ink-2)}
+.registry-field-preview>summary::after{content:'+';margin-left:auto}
+.registry-field-preview[open]>summary::after{content:'−'}
+.registry-field-preview dl{display:grid;grid-template-columns:150px minmax(0,1fr);gap:10px 18px;font-size:12px;line-height:1.6;margin:12px 0 0}
+.registry-field-preview dt{font-weight:500;color:var(--muted)}
+.registry-field-preview dd{margin:0;color:var(--ink-3);overflow-wrap:anywhere}
+@media(max-width:760px){.analyst-main .gap-group>summary{padding:16px;gap:8px}.analyst-main .gap-group-count{font-size:10px}.analyst-main .gap-group-body{padding:0 16px 16px}.analyst-main .gap-facts>div{grid-template-columns:1fr;gap:3px}.registry-layout-example{padding:18px}.registry-field-preview dl{grid-template-columns:1fr;gap:3px}.registry-field-preview dd{margin-bottom:9px}}
+@media print{.gap-group,.gap-group>*{display:block!important}.gap-toggle{display:none!important}.gap-summary{break-inside:avoid}}
+</style>
 </head>
 
         <body class="mode-executive">
@@ -1720,8 +1763,10 @@ html:not(.js) #v3-executive .rail,html:not(.js) #v3-executive #prog{display:none
 <section aria-labelledby="gaps-title" data-authoring-section="gaps">
 <div class="section-head"><h2 id="gaps-title">Evidence gaps</h2><div class="section-tag">Unresolved propositions</div></div>
 <p class="section-lede">{{GAPS_INTRO}}</p>
-<div class="record-stack"><details class="pillar-deep"><summary>{{GAPS_THEME_TITLE}}</summary><div class="record-body"><p>{{GAPS_THEME_TEXT}} {{GAPS_CITATIONS}}</p></div></details></div>
-<section class="technical-limitations" id="technical-evidence-limitations"><h3 class="subsection-title">Technical evidence limitations</h3><p>{{GAPS_TECHNICAL_LIMITATION}}</p></section>
+<div class="gap-groups" data-fill="gap-groups"></div>
+<section class="gap-clarifications"><h3 class="subsection-title">Documentation points to clarify</h3>
+<div class="table-wrap"><table class="report-table"><thead><tr><th>Topic</th><th>Descriptions in the acquired records</th><th>Clarification</th></tr></thead><tbody>{{GAPS_CLARIFICATION_ROWS}}</tbody></table></div></section>
+<section class="technical-limitations" id="technical-evidence-limitations"><div class="section-head"><h3>Technical evidence limitations</h3><div class="section-tag">Evidence boundary</div></div><div class="record-body"><p>{{GAPS_TECHNICAL_LIMITATION}} {{GAPS_TECHNICAL_CITATIONS}}</p></div></section>
 </section>
 </div><div class="panel" data-mode-panel="analyst">
 <section aria-labelledby="requests-title" data-authoring-section="requests">

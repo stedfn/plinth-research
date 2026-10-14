@@ -195,7 +195,8 @@ python3 skills/plinth-trust-center/scripts/prefill_shell.py --product "Trust Cen
 
 Choose a fresh output directory. The preview has zero sources and zero observations. Every check has unresolved applicability
 and null coverage. Its text explains authoring slots; it does not assert an issuer, provider,
-fee, asset holding or deployed capability. See [the authoring slot guide](skills/plinth-trust-center/references/authoring-slots.md)
+fee, asset holding or deployed capability. The gaps are grouped from compiler records, and
+the registry shows a labelled field-layout example with no fake documents or links. See [the authoring slot guide](skills/plinth-trust-center/references/authoring-slots.md)
 to populate the shell from an actual accepted compiler run.
 
 

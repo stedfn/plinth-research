@@ -140,6 +140,15 @@ Every pillar keeps five elements:
 - named source links;
 - one collapsed check register.
 
+The Evidence gaps panel uses five numbered native disclosures generated from accepted gaps.
+Their bodies separate known facts, the unresolved proposition and closure evidence, with a
+complete-gap link for each question. Optional documentation clarifications use a table.
+Technical limitations keep a padded heading and body rather than an unstructured box.
+
+The registry preview may illustrate field positions with explicit bracketed placeholders,
+never invented documents or fake links. This diagram is outside the generated bibliography
+and is absent from real evidence runs.
+
 The full research record contains every canonical check, observation, source and locator
 record.
 

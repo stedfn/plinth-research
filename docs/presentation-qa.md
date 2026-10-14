@@ -8,7 +8,7 @@ Synthetic values remain confined to automated test fixtures.
 
 ## Automated verification
 
-- PASS — full repository tests: 471 tests.
+- PASS — full repository tests: 474 tests.
 - PASS — catalogue build check and verification: unchanged 63 checks.
 - PASS — existing sole HTML verifier checks the actual twelve-question empty-evidence preview.
 - PASS — exact accepted payload, canonical markers, findings, IDs and source links.
@@ -36,9 +36,9 @@ structure/style comparison, not a claimed fresh browser screenshot pass.
 | Claim and party structure | Full-width table with support and unresolved columns; no inferred entities |
 | Legal and operating structure | Full-width table replaces the narrow sample card and overflowing status label |
 | Quantity boundaries | Compact table retains identifier, quantity, date and scope separately |
-| Evidence gaps | Native disclosures with repeatable, explicitly named theme slots; no decorative placeholder boxes |
+| Evidence gaps | Five numbered disclosures generated from actual check gaps; question/known/unresolved/closure structure, clarification table, and correctly padded limitations heading/body |
 | Evidence requests | Existing compiler-rendered questions and complete-gap links retained; 12px card gaps |
-| Evidence registry | Shared cited-source list and full canonical registry retained; no manufactured bibliography |
+| Evidence registry | Shared cited-source list and canonical registry retained; empty preview adds a clearly labelled populated-layout diagram using bracketed fields, with no invented records or hyperlinks |
 | Observed technical state | Single state panel fills width, followed by scoped record table; no fake deployment event rows |
 | Methodology | Fixed definitions and compiler-derived distribution retained |
 | Full research record | Complete compiler records, anchors and deep links retained |

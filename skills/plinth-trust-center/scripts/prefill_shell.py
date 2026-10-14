@@ -42,7 +42,7 @@ from trust_center_records import (  # noqa: E402
 )
 
 from presentation import (utc_date, cutoff_text, executive_counts, source_reference_entries,
-                          render_source_references_html, render_source_references_md)
+                          render_source_references_html, render_source_references_md, render_gap_groups)
 
 DEFAULT_SHELL = Path(__file__).resolve().parent.parent / "assets" / "v0.3-two-mode-shell.html"
 EXECUTIVE_FRAGMENT = DEFAULT_SHELL.with_name("executive-questions12.html")
@@ -443,6 +443,8 @@ def fill(shell: str, records: Records, payload: str, product: str) -> tuple[str,
             inner = "\n" + render_pillar_rows(records, arg) + "\n"
         elif kind == "evidence-requests":
             inner = "\n" + render_requests(records) + "\n"
+        elif kind == "gap-groups":
+            inner = "\n" + render_gap_groups(records) + "\n"
         elif kind == "source-count":
             inner = f"{len(records.sources)} source records"
         elif kind == "source-references":

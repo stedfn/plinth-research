@@ -34,7 +34,7 @@ from trust_center_records import (  # noqa: E402
     load_inputs,
 )
 from executive_questions import QUESTIONS, GROUPS, LABELS
-from presentation import executive_counts, source_reference_entries, render_source_references_html
+from presentation import executive_counts, source_reference_entries, render_source_references_html, render_gap_groups
 
 PANEL_ROLE_ORDER = [
     "control",
@@ -444,6 +444,17 @@ def check_document(raw_html: str, reference_html: str, inputs: Inputs,
     check_payload(payload_match.group(1), inputs)
 
     check_markers(index, records)
+
+    gap_section = next(e for e in walk(panels_by_role["gaps"]) if e.attrs.get("aria-labelledby") == "gaps-title")
+    expected_gaps = Index()
+    expected_gaps.feed(render_gap_groups(records))
+    gap_signature = lambda root: [(e.attrs["data-pillar"], e.attrs["data-gap-count"], visible_text(e),
+                                   [child.attrs.get("href") for child in walk(e) if child.tag == "a"])
+                                  for e in walk(root) if "gap-group" in classes(e)]
+    if gap_signature(gap_section) != gap_signature(expected_gaps.root):
+        fail("gap groups differ from the accepted check-level gap records")
+    if (records.sources or records.observations) and any("data-layout-example" in e.attrs for e in walk(index.root)):
+        fail("layout examples are preview-only; remove them when authoring real evidence")
 
     references = element_by_id(index, "source-references")
     expected_index = Index()

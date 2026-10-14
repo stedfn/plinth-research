@@ -50,7 +50,7 @@ PANEL_INTROS = {
     'CLAIM': 'Map the holder-to-asset path from records. Mark each unsupported link unresolved.',
     'LEGAL': 'Record the governing entities, instruments and agreements without inferring legal effect.',
     'QUANTITY': 'Keep quantities attached to their own identifiers, dates, populations and scopes.',
-    'GAPS': 'Group unresolved propositions in neutral framework order and link to complete check records.',
+    'GAPS': 'Open a pillar to inspect the compiler’s unresolved questions, known facts and records that would close them.',
     'REQUESTS': 'These questions come from the accepted check-level gap records.',
     'SOURCES': 'Only actual source and acquisition records belong here. This preview supplies none.',
     'TECHNICAL': 'Bind technical records to official identifiers and scope before describing observed state.',
@@ -77,10 +77,6 @@ def preview_slot(name: str) -> str:
     if name.startswith('TECHNICAL_RECORD_'):
         return {'TITLE': 'Deployment / state record', 'SCOPE': 'No record supplied',
                 'UNRESOLVED': 'Product binding and recorded state are unresolved.'}.get(field.removeprefix('RECORD_'), '')
-    if name == 'GAPS_THEME_TITLE':
-        return 'Product applicability remains unresolved'
-    if name == 'GAPS_THEME_TEXT':
-        return 'No product evidence was supplied. The full framework questions remain in the check register.'
     if field.endswith('KNOWN'):
         return 'No product observation supplied.'
     if field.endswith('UNRESOLVED'):
@@ -111,6 +107,20 @@ def author_preview(inputs) -> str:
                         'BASIS': '<p>No supporting observation is supplied in this preview. Add the accepted observation IDs and source links when authoring.</p>'}
         for key, value in replacements.items():
             page = page.replace(f'{{{{Q{n} {key}}}}}', value)
+    # Preview-only field diagrams never become source records or observations.
+    rows = ('<tr><th>[Topic]</th><td>[Descriptions from accepted observations]</td>'
+            '<td>[The exact qualification or question to resolve]</td></tr>'
+            '<tr><th>[Scope or version]</th><td>[Each description with its date and population]</td>'
+            '<td>[Which scope, version or operative record applies?]</td></tr>')
+    page = page.replace('{{GAPS_CLARIFICATION_ROWS}}', rows)
+    page = page.replace('<section class="gap-clarifications">',
+                        '<section class="gap-clarifications" data-layout-example="clarifications">')
+    page = page.replace('<h3 class="subsection-title">Documentation points to clarify</h3>',
+                        '<h3 class="subsection-title">Documentation points to clarify</h3>'
+                        '<p class="preview-layout-note">Field positions only · No source conflict is asserted in this preview.</p>')
+    registry = (ROOT / 'examples' / 'registry-layout-example.html').read_text(encoding='utf-8')
+    source_marker = '<section class="source-reference-section" id="source-references"'
+    page = page.replace(source_marker, registry + source_marker, 1)
     values = {'SUBJECT SUMMARY': 'Template preview · No product evidence supplied. The text describes authoring slots, not a product or its operation.',
               'PARTICIPATION BOUNDARY': 'Authoring guidance only. No issuer, provider, fee, asset holding or deployed capability is assumed.',
               'CLAIM PATH': 'Populate each link from observations; mark unsupported relationships unresolved or not applicable.',

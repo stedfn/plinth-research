@@ -30,7 +30,7 @@ FILL_REGIONS = {
     "framework-strip", "open-row", "evidence-requests", "source-count", "source-records", "source-references",
     "methodology-distribution", "technical-index", "locator-records", "observation-records",
     "check-records", "footer-counts",
-    "snapshot-date", "cutoff", "declared-scope", "executive-coverage",
+    "snapshot-date", "cutoff", "declared-scope", "executive-coverage", "gap-groups",
 } | {f"pillar-{kind}:{pillar}" for kind in ("count", "table")
      for pillar in ("control", "backing", "economics", "governance_compliance", "continuity")}
 
@@ -790,3 +790,46 @@ def test_preview_cannot_be_used_as_an_author_for_real_inputs(varied):
     demo = _load_preview_example()
     with pytest.raises(ValueError, match='empty evidence'):
         demo.author_preview(varied.inputs)
+
+
+def test_gap_groups_cover_each_accepted_gap_once(varied):
+    from presentation import render_gap_groups
+    index = checker.Index()
+    index.feed(render_gap_groups(varied.records))
+    groups = checker.descendants_with_class(index.root, 'gap-group')
+    assert [g.attrs['data-pillar'] for g in groups] == ['control', 'backing', 'economics', 'governance', 'continuity']
+    expected = [c for c in varied.inputs.assessment['checks'] if c.get('gap')]
+    summaries = checker.descendants_with_class(index.root, 'gap-summary')
+    assert [s.attrs['data-gap-check'] for s in summaries] == [c['check_id'] for c in expected]
+    for summary, check in zip(summaries, expected):
+        for field in ('question', 'what_is_known', 'what_remains_unresolved', 'what_would_close_it'):
+            assert checker.normalized(check['gap'][field]) in checker.visible_text(summary)
+    assert sum(int(g.attrs['data-gap-count']) for g in groups) == len(expected)
+
+
+def test_gap_summary_drift_is_rejected(tmp_path, varied):
+    page = author(prefilled(tmp_path, varied.files), varied.records)
+    start = page.index('class="gap-summary"')
+    end = page.index('</article>', start)
+    changed = page[:start] + page[start:end].replace('What remains unresolved', 'Nothing remains unresolved', 1) + page[end:]
+    with pytest.raises(AssertionError, match='gap groups differ'):
+        checker.check_document(changed, SHELL_TEXT, varied.inputs)
+
+
+def test_registry_field_example_is_not_compiler_evidence(tmp_path, varied):
+    demo = _load_preview_example()
+    out = tmp_path / 'preview'
+    demo.build(out)
+    page = (out / 'index.html').read_text()
+    index = checker.Index()
+    index.feed(page)
+    diagram = checker.element_by_id(index, 'registry-layout-example')
+    assert diagram.attrs['data-layout-example'] == 'source-registry'
+    assert len(checker.descendants_with_class(diagram, 'source-reference-list')[0].children) == 3
+    assert not any(e.tag == 'a' or e.attrs.get('data-record-type') or e.attrs.get('data-reference-source') for e in checker.walk(diagram))
+    assert '[Document title]' in checker.visible_text(diagram)
+    assert not PRODUCT_RE.findall((ROOT / 'examples' / 'registry-layout-example.html').read_text())
+    real = author(prefilled(tmp_path, varied.files), varied.records)
+    real = real.replace('<footer class="analyst-footer">', '<div data-layout-example="source-registry">Field placeholders</div><footer class="analyst-footer">')
+    with pytest.raises(AssertionError, match='preview-only'):
+        checker.check_document(real, SHELL_TEXT, varied.inputs)

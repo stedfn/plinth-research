@@ -91,7 +91,7 @@ Custom `--shell` files require the insertion slot or complete marked twelve-ques
 The former six-block layout is unsupported. The generated regions include:
 
 - the canonical check, observation, source and locator records;
-- the pillar check registers, evidence requests and methodology counts;
+- the pillar check registers, grouped gap summaries, evidence requests and methodology counts;
 - the Executive snapshot, scope, framework figures, coverage counts and open-evidence partition;
 - the cited-source reference list, escaped payload and product name.
 
@@ -150,7 +150,9 @@ python3 skills/plinth-trust-center/scripts/check_morphed_html.py trust-centers/S
 Fix every `FAIL`. Fix each `WARN`, or justify it in `review.md`.
 
 Build the empty-evidence preview as shown in README to compare the interface without
-inventing or importing product content. Use the section-specific slot guide for real runs. Preserve the 960px paper column, title hierarchy, rounded white cards,
+inventing or importing product content. The registry field-layout example uses bracketed
+placeholders and is never added to compiler records. The grouped gap questions are generated
+from the accepted gaps even in an empty-evidence preview. Use the section-specific slot guide for real runs. Preserve the 960px paper column, title hierarchy, rounded white cards,
 warm documentary labels, inset limitations and clear Expand / Collapse controls. Check a
 realistic expanded disclosure as well as the collapsed reading layer.
 

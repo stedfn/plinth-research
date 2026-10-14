@@ -56,7 +56,7 @@ cutoff, declared scope and framework accounting are generated, not authored.
 | CLAIM | Holder-to-asset relationships, recorded support, and unresolved links |
 | LEGAL | Issuer/jurisdiction, governing instrument, ownership, and agreements |
 | QUANTITY | Identifiers, quantities, dates and their separate populations/scopes |
-| GAPS | Neutral gap themes pointing to complete canonical check records |
+| GAPS | Generated five-pillar gap groups, optional clarification rows, and technical limitations |
 | REQUESTS | Introduction to compiler-rendered requests; do not rewrite generated gaps |
 | SOURCES | Introduction to generated references and the full source registry |
 | TECHNICAL | Product-bound deployments, state records, scope and limitations |
@@ -89,6 +89,25 @@ The capitalized values above are instructions, not literal IDs or values to publ
 Use the source-posture mapping in `scripts/trust_center_records.py`; do not guess its class.
 A pillar with `data-pillar-sources="none"` leaves citation slots empty. Missing evidence is
 not replaced with invented source links, operators or acquisitions.
+
+## Evidence gaps and registry
+
+Prefill generates `gap-groups` directly from accepted check-level gaps in pillar/check order.
+Every group shows the question, known facts, unresolved proposition, closure records and a
+link to its complete canonical gap and lineage. Do not rewrite that generated content.
+
+`GAPS_CLARIFICATION_ROWS` accepts table rows based on accepted observations when document
+scope, versions or descriptions need qualification. Populate it with scoped source links,
+or remove the entire optional clarification section when no such issue is supported.
+`GAPS_TECHNICAL_LIMITATION` and `GAPS_TECHNICAL_CITATIONS` describe the actual technical
+boundary, retaining the heading/body wrapper and spacing.
+
+The registry is populated automatically from actual source/acquisition records. Cited-source
+references and canonical source records are generated, not invented or manually seeded.
+The empty preview alone shows a marked field-layout diagram: bracketed titles, publishers,
+dates, limits and provenance. It adds no source IDs, acquisitions, observations or hyperlinks.
+Do not copy `data-layout-example` components into a real Trust Center; the verifier rejects
+them when real sources or observations are present.
 
 ## Optional components and empty inputs
 
