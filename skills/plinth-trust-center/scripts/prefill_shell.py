@@ -471,14 +471,16 @@ def fill(shell: str, records: Records, payload: str, product: str) -> tuple[str,
     for pillar, heading in PILLAR_HEADING.items():
         if records.pillar_sources(pillar):
             continue
-        marker = f'<section aria-labelledby="{heading}">'
-        position = shell.find(marker)
-        if position < 0:
+        sections = [node for node in elements_with(shell, "aria-labelledby")
+                    if node["tag"] == "section" and node["attrs"]["aria-labelledby"] == heading]
+        if len(sections) != 1:
             raise RecordError(f"the shell has no pillar section for {heading}")
-        edits.append((position, position + len(marker),
-                      f'<section aria-labelledby="{heading}" data-pillar-sources="none">'))
+        section = sections[0]
+        start_tag = re.sub(r'\s+data-pillar-sources="[^"]*"', "", section["raw_start"])
+        edits.append((section["start"], section["inner_start"],
+                      start_tag[:-1] + ' data-pillar-sources="none">'))
         notes.append(f"{records.pillar_label[pillar]} cites no observations: it is marked "
-                     "data-pillar-sources=\"none\"; delete its example claim-source links")
+                     "data-pillar-sources=\"none\"; leave its citation slots empty")
 
     for start, end, replacement in sorted(edits, key=lambda edit: edit[0], reverse=True):
         shell = shell[:start] + replacement + shell[end:]
@@ -490,6 +492,7 @@ def fill(shell: str, records: Records, payload: str, product: str) -> tuple[str,
                           f'<script type="application/json" id="plinth-research-state">{payload}</script>')
     shell = shell.replace("{{SNAPSHOT LABEL}}", "Fixed evidence snapshot · " + esc(utc_date(records.campaign["cutoff"])))
     shell = shell.replace("{{CAMPAIGN BOUNDARY}}", esc("Evidence cutoff: " + cutoff_text(records.campaign["cutoff"]) + "; " + records.campaign["declared_scope_note"]))
+    shell = shell.replace("{{METHODOLOGY_CAMPAIGN_BOUNDARY}}", esc("Evidence cutoff: " + cutoff_text(records.campaign["cutoff"]) + "; " + records.campaign["declared_scope_note"]))
     shell = shell.replace("{{PRODUCT}}", esc(product))
     return shell, notes
 

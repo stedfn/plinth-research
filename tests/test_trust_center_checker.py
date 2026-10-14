@@ -258,16 +258,18 @@ def author(page: str, records) -> str:
         end = page.index("</section>", start)
         segment = page[start:end]
         sources = sorted(records.pillar_sources(pillar))
+        citation, oid = "", ""
         if sources:
             observations = [oid for oid in records.pillar_observation_ids(pillar)
                             if sources[0] in records.observation_sources(oid)]
-            segment = (segment.replace("{{SOURCE_ID}}", sources[0])
-                       .replace("{{OBSERVATION_IDS}}", observations[0])
-                       .replace("{{SOURCE TITLE}}", records.sources[sources[0]]["title"]))
-        else:
-            segment = re.sub(r'<a class="claim-source[^"]*"[^>]*>.*?</a>', "", segment)
-            segment = re.sub(r'<span class="source-prefix">.*?</span>', "", segment)
-            segment = segment.replace("{{OBSERVATION_IDS}}", "")
+            oid = observations[0]
+            citation = (f'<span class="inline-citations" data-observation-ids="{oid}">'
+                        f'<a class="claim-source inline-source" href="#source-{sources[0]}" '
+                        f'data-evidence-class="mixed">{prefill.esc(records.sources[sources[0]]["title"])}</a></span>')
+        segment = re.sub(r'\{\{[A-Z_]+_CITATIONS\}\}', lambda _: citation, segment)
+        segment = re.sub(r'\{\{[A-Z_]+_OBSERVATION_IDS\}\}', lambda _: oid, segment)
+        segment = re.sub(r'\{\{[A-Z_]+_CHECK_IDS\}\}',
+                         lambda _: " ".join(c["check_id"] for c in records.checks_in(pillar)), segment)
         page = page[:start] + segment + page[end:]
     for number, _, _ in checker.QUESTIONS:
         state = "source-described" if number == 5 else "answer-unresolved"
@@ -281,6 +283,7 @@ def author(page: str, records) -> str:
     for i, part in enumerate(parts):
         if part.startswith('<script type="application/json"'):
             continue
+        part = re.sub(r'\{\{[A-Z_]+_CITATIONS\}\}', "", part)
         part = (part.replace("{{SOURCE_ID}}", next(iter(records.sources)))
                 .replace("{{OBSERVATION_IDS}}", next(iter(records.observations)))
                 .replace("{{CHECK_IDS}}", records.check_order[0])
@@ -421,7 +424,7 @@ def test_prefill_renders_every_record_state(tmp_path, varied):
     assert "SRC-A-blocked: HTTP_DOWNLOAD, ACCESS_BLOCKED" in page and "failure: HTTP 403" in page
     assert 'href="#observation-OBS-1">OBS-1</a>, <a href="#observation-obs-1">obs-1</a>' in page
     assert "same-period version 1" in page and "effective " in page
-    assert '<section aria-labelledby="pillar-continuity" data-pillar-sources="none">' in page
+    assert '<section aria-labelledby="pillar-continuity" data-authoring-section="continuity" data-pillar-sources="none">' in page
     assert page.count('aria-labelledby="pillar-control" data-pillar-sources') == 0
     assert "{{x}}" in page, "the quote survives inside the escaped payload"
 
@@ -489,12 +492,12 @@ MUTATIONS = [
      "links must be"),
     ("no related pillar source", lambda p: _retarget_pillar_links(p, "pillar-control", "src-a"),
      "links no source that supports its own checks"),
-    ("false no-source marker", lambda p: p.replace('<section aria-labelledby="pillar-control">',
-                                                   '<section aria-labelledby="pillar-control" data-pillar-sources="none">'),
+    ("false no-source marker", lambda p: p.replace('<section aria-labelledby="pillar-control" data-authoring-section="control">',
+                                                   '<section aria-labelledby="pillar-control" data-authoring-section="control" data-pillar-sources="none">'),
      "must not be marked"),
     ("source on empty pillar", lambda p: p.replace(
-        '<section aria-labelledby="pillar-continuity" data-pillar-sources="none">',
-        '<section aria-labelledby="pillar-continuity" data-pillar-sources="none">'
+        '<section aria-labelledby="pillar-continuity" data-authoring-section="continuity" data-pillar-sources="none">',
+        '<section aria-labelledby="pillar-continuity" data-authoring-section="continuity" data-pillar-sources="none">'
         '<a class="claim-source" href="#source-SRC-A">Custody statement</a>'),
      "cites no observations but links sources"),
     ("unknown observation id", lambda p: p.replace('data-observation-ids="OBS-1"', 'data-observation-ids="OBS-404"', 1),
@@ -725,3 +728,62 @@ def test_spacing_and_single_panel_rules():
 def test_synthetic_example_has_no_reference_product_content():
     example = (ROOT / 'examples' / 'build_presentation_demo.py').read_text()
     assert PRODUCT_RE.findall(example) == []
+
+
+def test_analyst_defaults_use_named_slots_and_tables():
+    index = checker.Index()
+    index.feed(SHELL_TEXT)
+    analyst = checker.element_by_id(index, 'analyst-main')
+    sections = [e for e in checker.walk(analyst) if e.tag == 'section' and 'data-authoring-section' in e.attrs]
+    assert [e.attrs['data-authoring-section'] for e in sections] == [
+        'control', 'backing', 'economics', 'governance', 'continuity', 'claim', 'legal',
+        'quantity', 'gaps', 'requests', 'sources', 'technical', 'methodology', 'appendix']
+    for section in sections[:5]:
+        grids = checker.descendants_with_class(section, 'factual-grid')
+        assert len(grids) == 1 and len(grids[0].children) == 3
+        assert not checker.descendants_with_class(section, 'contradiction-card')
+    for section in sections[5:7]:
+        assert checker.descendants_with_class(section, 'report-table')
+        assert not checker.descendants_with_class(section, 'legal-grid')
+        assert not checker.descendants_with_class(section, 'state')
+    body = SHELL_TEXT[SHELL_TEXT.index('<body'):]
+    assert '{{FACT}}' not in body and '{{NARRATIVE}}' not in body and '{{BOUNDARY STATEMENT}}' not in body
+    assert '{{CONTROL_AUTHORIZATION}}' in body and '{{LEGAL_INSTRUMENT_KNOWN}}' in body
+    assert 'repeat(auto-fit,minmax(min(100%,260px),1fr))' in SHELL_TEXT
+    assert '.analyst-main .legal-cell .state{max-width:100%;white-space:normal;' in SHELL_TEXT
+    assert '.analyst-main .pillar-delivery{display:grid;gap:16px;' in SHELL_TEXT
+
+
+def _load_preview_example():
+    spec = importlib.util.spec_from_file_location('presentation_preview', ROOT / 'examples' / 'build_presentation_demo.py')
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    return module
+
+
+def test_preview_has_no_invented_product_evidence(tmp_path):
+    demo = _load_preview_example()
+    out = tmp_path / 'preview'
+    demo.build(out)
+    run = out / 'runs' / 'template-preview'
+    inputs = records_mod.load_inputs(run / 'assessment.json', run / 'documentary-evidence.json', cat.CATALOGUE_PATH)
+    for name in ('sources', 'acquisitions', 'artifacts', 'locator_catalog', 'observations'):
+        assert inputs.evidence[name] == []
+    assert all(check['applicability'] == 'UNRESOLVED' and check['coverage'] is None
+               for check in inputs.assessment['checks'])
+    page = (out / 'index.html').read_text()
+    assert 'zero sources and zero observations' in page
+    assert 'Example Custody' not in page and '0.5%' not in page
+    assert 'The supplied synthetic design does not establish operative records.' not in page
+    assert 'data-evidence-label="source-described"' not in page
+    assert checker.check_document(page, SHELL_TEXT, inputs).startswith('PASS:')
+    # Authoring the guidance never rewrites the accepted payload or files.
+    before = ((run / 'assessment.json').read_bytes(), (run / 'documentary-evidence.json').read_bytes())
+    assert demo.author_preview(inputs) == page
+    assert before == ((run / 'assessment.json').read_bytes(), (run / 'documentary-evidence.json').read_bytes())
+
+
+def test_preview_cannot_be_used_as_an_author_for_real_inputs(varied):
+    demo = _load_preview_example()
+    with pytest.raises(ValueError, match='empty evidence'):
+        demo.author_preview(varied.inputs)

@@ -3,13 +3,14 @@
 The Executive now has one twelve-question format. Its visual target is the approved
 private reference: warm paper, a 960px column, lightweight title, compact index, rounded
 white answer cards, inset limitation boxes, warm documentary labels and clear disclosures.
-Only generic visual patterns were reused. All committed example facts are synthetic.
+Only generic visual patterns were reused. The preview has no invented product facts: it contains empty evidence and explicit authoring guidance.
+Synthetic values remain confined to automated test fixtures.
 
 ## Automated verification
 
-- PASS — full repository tests: 468 tests.
+- PASS — full repository tests: 471 tests.
 - PASS — catalogue build check and verification: unchanged 63 checks.
-- PASS — existing sole HTML verifier checks the actual twelve-question synthetic page.
+- PASS — existing sole HTML verifier checks the actual twelve-question empty-evidence preview.
 - PASS — exact accepted payload, canonical markers, findings, IDs and source links.
 - PASS — layout, category linkage, conformance structure, visible accounting and mapping guards.
 - PASS — shared HTML/Markdown references, cited acquisition dates, superseded sources and escaping.
@@ -19,9 +20,38 @@ Only generic visual patterns were reused. All committed example facts are synthe
 - PASS — new assets and example script contain no reference-product names or protected facts.
 - PASS — request spacing and single-panel width rules preserve the shared interface fixes.
 
+## Section-by-section comparison
+
+The user-supplied screenshots and the private reference HTML/CSS were inspected. This is a
+structure/style comparison, not a claimed fresh browser screenshot pass.
+
+| Section | Matching structure and correction |
+| --- | --- |
+| Executive | Existing twelve questions, paper background, 960px column, index, labels and disclosures retained; preview contains guidance only |
+| Control | Supported/unresolved pair followed by three compact fact cards and the collapsed register; consistent vertical spacing |
+| Assets & Backing | Same three-card arrangement; no sample contradiction alert without supporting records |
+| Economics | Same arrangement; separate entry, value/costs and exit slots; no invented fees or return claims |
+| Governance & Compliance | Same arrangement; separate claim, eligibility and party-role slots |
+| Continuity | Same arrangement; separate normal-exit, disruption and reconciliation slots |
+| Claim and party structure | Full-width table with support and unresolved columns; no inferred entities |
+| Legal and operating structure | Full-width table replaces the narrow sample card and overflowing status label |
+| Quantity boundaries | Compact table retains identifier, quantity, date and scope separately |
+| Evidence gaps | Native disclosures with repeatable, explicitly named theme slots; no decorative placeholder boxes |
+| Evidence requests | Existing compiler-rendered questions and complete-gap links retained; 12px card gaps |
+| Evidence registry | Shared cited-source list and full canonical registry retained; no manufactured bibliography |
+| Observed technical state | Single state panel fills width, followed by scoped record table; no fake deployment event rows |
+| Methodology | Fixed definitions and compiler-derived distribution retained |
+| Full research record | Complete compiler records, anchors and deep links retained |
+
+Grids size to actual card count, and long optional legal labels wrap within their card.
+Analyst authoring slots now use section prefixes, with a separate slot guide for other agents.
+The preview's accepted run contains zero sources, acquisitions, artifacts and observations;
+every check has unresolved applicability and null coverage. No preview helper can be used to
+author real evidence inputs.
+
 ## Browser acceptance
 
-**NOT RUN.** The session's browser policy denied local-file access. No alternate-browser
+**NOT RUN.** The session's browser policy denied access even to the user-opened local-file tab. No alternate-browser
 or local-server workaround was attempted. Automated source inspection is not a browser pass.
 
 | Check | Result |
@@ -43,7 +73,7 @@ acceptance or publication approval as completed.
 
 ## Reproduce
 
-Use the synthetic demo and verifier commands in README. Choose a new output directory.
+Use the empty-evidence preview and verifier commands in README. Choose a new output directory.
 Inspect question 5 and its expanded Basis & limitations, a long answer, the question index,
 visible unresolved/coverage sections and the single technical-state panel. Confirm three
 index columns on desktop, two on mobile and one below 380px, without clipping.

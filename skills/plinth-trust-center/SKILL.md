@@ -42,7 +42,9 @@ Before authoring, read:
 2. `inputs/trust-center-output-contract-v0.1.md`, complete.
 3. [references/assessment-and-authoring.md](references/assessment-and-authoring.md).
 4. [references/two-mode-interface-contract.md](references/two-mode-interface-contract.md).
-5. The `<body>` of the shell. Do not read its `<head>`, which is 240 KB of CSS and embedded
+5. [references/authoring-slots.md](references/authoring-slots.md), which maps named slots to
+   compiler records and explains empty citation slots and optional components.
+6. The `<body>` of the shell. Do not read its `<head>`, which is 240 KB of CSS and embedded
    fonts that is copied, never edited.
 
 [references/input-contract.md](references/input-contract.md) is the guidance for building the
@@ -122,7 +124,7 @@ Rules while authoring:
 - Every factual statement resolves to observations and sources in the run.
 - Repeat a component by copying the example the shell gives, and delete examples you do not
   need.
-- In a pillar marked `data-pillar-sources="none"`, delete the example citations.
+- In a pillar marked `data-pillar-sources="none"`, leave its citation slots empty.
 - Leave the canonical records, the payload and every region prefill rendered exactly as it
   wrote them.
 - Do not expose internal materiality.
@@ -147,8 +149,8 @@ python3 skills/plinth-trust-center/scripts/check_morphed_html.py trust-centers/S
 
 Fix every `FAIL`. Fix each `WARN`, or justify it in `review.md`.
 
-Build the synthetic demo as shown in README to compare the interface without importing
-product content. Preserve the 960px paper column, title hierarchy, rounded white cards,
+Build the empty-evidence preview as shown in README to compare the interface without
+inventing or importing product content. Use the section-specific slot guide for real runs. Preserve the 960px paper column, title hierarchy, rounded white cards,
 warm documentary labels, inset limitations and clear Expand / Collapse controls. Check a
 realistic expanded disclosure as well as the collapsed reading layer.
 

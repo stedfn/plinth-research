@@ -21,9 +21,9 @@ contradiction and limitation.
 ## Transposition method
 
 `scripts/prefill_shell.py` copies the shell and fills its mechanical regions, which are the
-elements marked `data-fill`. You then replace the remaining `{{PLACEHOLDER}}`s. The shell
-holds one example of each component; repeat it as needed and delete the ones you do not
-use.
+elements marked `data-fill`. You then replace the remaining `{{PLACEHOLDER}}`s. Each Analyst section has named, section-specific slots described in
+[authoring-slots.md](authoring-slots.md). Repeat supported rows/cards as needed and remove
+unused optional components. Never invent values or use a universal filler sentence.
 
 Keep exactly two reading modes:
 
@@ -142,6 +142,11 @@ Every pillar keeps five elements:
 
 The full research record contains every canonical check, observation, source and locator
 record.
+
+The three pillar fact cards use a compact grid. Lone cards expand to fill the available
+width; labels and identifiers wrap rather than escape their container. Claim and legal
+structure use full-width tables with separate support and unresolved columns. Default
+conflict alerts and legal status badges are absent; add only evidence-supported variants.
 
 Source pills use consistent horizontal and wrapped-row spacing. Decorative separators must
 not be stranded on their own line. Contradiction cards use the same thin perimeter treatment

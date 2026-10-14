@@ -1552,6 +1552,20 @@ html:not(.js) #v3-executive .rail,html:not(.js) #v3-executive #prog{display:none
 .analyst-main .request-stack{display:grid;gap:12px}
 .analyst-main .alert-ledger:not(:has(>div+div)){grid-template-columns:1fr}
 </style>
+<style data-purpose="analyst-content-layout">
+.analyst-main .factual-grid,.analyst-main .legal-grid{grid-template-columns:repeat(auto-fit,minmax(min(100%,260px),1fr));gap:12px}
+.analyst-main .pillar-delivery{display:grid;gap:16px;margin:20px 0 24px}
+.analyst-main .pillar-delivery>.factual-grid{margin:0}
+.analyst-main .pillar-delivery>.subsection-title{margin:0}
+.analyst-main .factual-grid>article{display:flex;flex-direction:column;gap:8px;overflow-wrap:anywhere}
+.analyst-main .factual-grid>article>strong,.analyst-main .factual-grid>article>p{margin:0}
+.analyst-main .factual-grid>article>.claim-citations{margin-top:auto;padding-top:8px}
+.analyst-main .legal-cell .state{max-width:100%;white-space:normal;overflow-wrap:anywhere;line-height:1.5}
+.analyst-main .structure-note{margin:18px 0 24px;color:var(--ink-3);font-size:13px;line-height:1.65}
+.analyst-main .report-table th,.analyst-main .report-table td{overflow-wrap:anywhere}
+.analyst-main .panel>.section-lede{margin-bottom:20px}
+@media(max-width:760px){.analyst-main .factual-grid,.analyst-main .legal-grid{grid-template-columns:1fr}}
+</style>
 </head>
 
         <body class="mode-executive">
@@ -1574,20 +1588,16 @@ html:not(.js) #v3-executive .rail,html:not(.js) #v3-executive #prog{display:none
               <nav class="analyst-nav desktop-nav" aria-label="Analyst sections"><div class="analyst-nav-label">Trust pillars</div><a href="#pillar-control" data-target="pillar-control"><span class="nav-name"><i class="nav-dot pillar-control"></i><span>Control</span></span><span class="nav-count">8 checks</span></a><a href="#pillar-reserves" data-target="pillar-reserves"><span class="nav-name"><i class="nav-dot pillar-backing"></i><span>Assets &amp; Backing</span></span><span class="nav-count">13 checks</span></a><a href="#pillar-economics" data-target="pillar-economics"><span class="nav-name"><i class="nav-dot pillar-economics"></i><span>Economics</span></span><span class="nav-count">14 checks</span></a><a href="#pillar-governance-compliance" data-target="pillar-governance-compliance"><span class="nav-name"><i class="nav-dot pillar-governance"></i><span>Governance &amp; Compliance</span></span><span class="nav-count">16 checks</span></a><a href="#pillar-continuity" data-target="pillar-continuity"><span class="nav-name"><i class="nav-dot pillar-continuity"></i><span>Continuity</span></span><span class="nav-count">12 checks</span></a><div class="analyst-nav-label">Structure</div><a href="#chain-of-title" data-target="chain-of-title"><span class="nav-name"><i class="nav-dot"></i><span>Claim and parties</span></span></a><a href="#legal-structure" data-target="legal-structure"><span class="nav-name"><i class="nav-dot"></i><span>Legal structure</span></span></a><a href="#supply-by-chain" data-target="supply-by-chain"><span class="nav-name"><i class="nav-dot"></i><span>Quantity boundaries</span></span></a><div class="analyst-nav-label">Evidence</div><a href="#gaps-title" data-target="gaps-title"><span class="nav-name"><i class="nav-dot"></i><span>Evidence gaps</span></span></a><a href="#requests-title" data-target="requests-title"><span class="nav-name"><i class="nav-dot"></i><span>Evidence requests</span></span></a><a href="#sources-title" data-target="sources-title"><span class="nav-name"><i class="nav-dot"></i><span>Evidence registry</span></span></a><a href="#changes-title" data-target="changes-title"><span class="nav-name"><i class="nav-dot"></i><span>Observed technical state</span></span></a><div class="analyst-nav-label">Reference</div><a href="#methodology-title" data-target="methodology-title"><span class="nav-name"><i class="nav-dot"></i><span>Methodology</span></span></a><a href="#technical-appendix" data-target="technical-appendix"><span class="nav-name"><i class="nav-dot"></i><span>Full research record</span></span></a></nav>
             </aside>
             <div class="analyst-main" id="analyst-main"><div class="panel active" data-mode-panel="analyst">
-<section aria-labelledby="pillar-control">
-  <div class="section-head">
-    <h2 id="pillar-control">Control</h2>
-    <div class="section-tag">Trust pillar</div>
-  </div>
-  <p class="panel-note">{{PANEL NOTE}}</p>
-<h3 class="subsection-title">{{SUBSECTION TITLE}}</h3>
-<p>{{NARRATIVE}} <span class="inline-citations" data-origin="derived-presentation" data-observation-ids="{{OBSERVATION_IDS}}"><a class="claim-source inline-source" href="#source-{{SOURCE_ID}}" data-evidence-class="{{EVIDENCE_CLASS}}">{{SOURCE TITLE}}</a></span> </p>
-<div class="pillar-delivery" data-origin="derived-presentation" data-check-ids="{{CHECK_IDS}}" data-observation-ids="{{OBSERVATION_IDS}}">
-<div class="evidence-boundary-pair"><article><span>Evidence supports</span><p>{{BOUNDARY STATEMENT}}</p></article><article><span>Evidence does not establish</span><p>{{BOUNDARY STATEMENT}}</p></article></div>
-<h3 class="subsection-title">{{SUBSECTION TITLE}}</h3>
-<div class="factual-grid network-grid">
-<article><strong>{{FACT}}</strong><p>{{FACT}}</p><span class="claim-citations" data-origin="derived-presentation" data-observation-ids="{{OBSERVATION_IDS}}"><a class="claim-source" href="#source-{{SOURCE_ID}}" data-evidence-class="{{EVIDENCE_CLASS}}">{{SOURCE TITLE}}</a></span></article>
-</div></div>
+<section aria-labelledby="pillar-control" data-authoring-section="control">
+<div class="section-head"><h2 id="pillar-control">Control</h2><div class="section-tag">Trust pillar</div></div>
+<p class="section-lede">{{CONTROL_INTRO}}</p>
+<p>{{CONTROL_NARRATIVE}} {{CONTROL_CITATIONS}}</p>
+<div class="pillar-delivery" data-origin="derived-presentation" data-check-ids="{{CONTROL_CHECK_IDS}}" data-observation-ids="{{CONTROL_OBSERVATION_IDS}}">
+<div class="evidence-boundary-pair"><article><span>Evidence supports</span><p>{{CONTROL_KNOWN}}</p></article><article><span>Evidence does not establish</span><p>{{CONTROL_UNRESOLVED}}</p></article></div>
+<div class="factual-grid"><article><strong>Authorization</strong><p>{{CONTROL_AUTHORIZATION}}</p>{{CONTROL_AUTHORIZATION_CITATIONS}}</article>
+<article><strong>Execution</strong><p>{{CONTROL_EXECUTION}}</p>{{CONTROL_EXECUTION_CITATIONS}}</article>
+<article><strong>Changes and restrictions</strong><p>{{CONTROL_CHANGES}}</p>{{CONTROL_CHANGES_CITATIONS}}</article></div>
+</div>
 <details class="pillar-checks" id="checks-control"><summary data-fill="pillar-count:control">View {{CHECK COUNT}} framework checks</summary>
 <div class="check-index check-index-control">
 <h3 class="subsection-title">Check-level results</h3>
@@ -1598,18 +1608,15 @@ html:not(.js) #v3-executive .rail,html:not(.js) #v3-executive #prog{display:none
 </details>
 </section>
 </div><div class="panel" data-mode-panel="analyst">
-<section aria-labelledby="pillar-reserves">
-  <div class="section-head">
-    <h2 id="pillar-reserves">Assets &amp; Backing</h2>
-    <div class="section-tag">Trust pillar</div>
-  </div>
-  <p class="panel-note">{{PANEL NOTE}}</p>
-<h3 class="subsection-title">{{SUBSECTION TITLE}}</h3>
-<p>{{NARRATIVE}} <span class="inline-citations" data-origin="derived-presentation" data-observation-ids="{{OBSERVATION_IDS}}"><a class="claim-source inline-source" href="#source-{{SOURCE_ID}}" data-evidence-class="{{EVIDENCE_CLASS}}">{{SOURCE TITLE}}</a></span> </p>
-<div class="pillar-delivery" data-origin="derived-presentation" data-check-ids="{{CHECK_IDS}}" data-observation-ids="{{OBSERVATION_IDS}}">
-<div class="evidence-boundary-pair"><article><span>Evidence supports</span><p>{{BOUNDARY STATEMENT}}</p></article><article><span>Evidence does not establish</span><p>{{BOUNDARY STATEMENT}}</p></article></div>
-<div class="factual-grid"><article><strong>{{FACT}}</strong><p>{{FACT}}</p><span class="claim-citations" data-origin="derived-presentation" data-observation-ids="{{OBSERVATION_IDS}}"><a class="claim-source" href="#source-{{SOURCE_ID}}" data-evidence-class="{{EVIDENCE_CLASS}}">{{SOURCE TITLE}}</a></span></article></div>
-<article class="contradiction-card" data-origin="derived-presentation" data-check-ids="{{CHECK_IDS}}" data-observation-ids="{{OBSERVATION_IDS}}"><span>{{CONTRADICTION}}</span><h3>{{CONTRADICTION}}</h3><p>{{CONTRADICTION}}</p><span class="claim-citations" data-origin="derived-presentation" data-observation-ids="{{OBSERVATION_IDS}}"><span class="source-prefix">{{SOURCE PREFIX}}</span> <a class="claim-source" href="#source-{{SOURCE_ID}}" data-evidence-class="{{EVIDENCE_CLASS}}">{{SOURCE TITLE}}</a></span></article>
+<section aria-labelledby="pillar-reserves" data-authoring-section="backing">
+<div class="section-head"><h2 id="pillar-reserves">Assets &amp; Backing</h2><div class="section-tag">Trust pillar</div></div>
+<p class="section-lede">{{BACKING_INTRO}}</p>
+<p>{{BACKING_NARRATIVE}} {{BACKING_CITATIONS}}</p>
+<div class="pillar-delivery" data-origin="derived-presentation" data-check-ids="{{BACKING_CHECK_IDS}}" data-observation-ids="{{BACKING_OBSERVATION_IDS}}">
+<div class="evidence-boundary-pair"><article><span>Evidence supports</span><p>{{BACKING_KNOWN}}</p></article><article><span>Evidence does not establish</span><p>{{BACKING_UNRESOLVED}}</p></article></div>
+<div class="factual-grid"><article><strong>Asset population</strong><p>{{BACKING_ASSETS}}</p>{{BACKING_ASSETS_CITATIONS}}</article>
+<article><strong>Custody and title</strong><p>{{BACKING_CUSTODY}}</p>{{BACKING_CUSTODY_CITATIONS}}</article>
+<article><strong>Verification</strong><p>{{BACKING_VERIFICATION}}</p>{{BACKING_VERIFICATION_CITATIONS}}</article></div>
 </div>
 <details class="pillar-checks" id="checks-backing"><summary data-fill="pillar-count:backing">View {{CHECK COUNT}} framework checks</summary>
 <div class="check-index check-index-backing">
@@ -1621,18 +1628,15 @@ html:not(.js) #v3-executive .rail,html:not(.js) #v3-executive #prog{display:none
 </details>
 </section>
 </div><div class="panel" data-mode-panel="analyst">
-<section aria-labelledby="pillar-economics">
-  <div class="section-head">
-    <h2 id="pillar-economics">Economics</h2>
-    <div class="section-tag">Trust pillar</div>
-  </div>
-  <p class="panel-note">{{PANEL NOTE}}</p>
-<h3 class="subsection-title">{{SUBSECTION TITLE}}</h3>
-<p>{{NARRATIVE}} <span class="inline-citations" data-origin="derived-presentation" data-observation-ids="{{OBSERVATION_IDS}}"><a class="claim-source inline-source" href="#source-{{SOURCE_ID}}" data-evidence-class="{{EVIDENCE_CLASS}}">{{SOURCE TITLE}}</a></span> </p>
-<div class="pillar-delivery" data-origin="derived-presentation" data-check-ids="{{CHECK_IDS}}" data-observation-ids="{{OBSERVATION_IDS}}">
-<div class="evidence-boundary-pair"><article><span>Evidence supports</span><p>{{BOUNDARY STATEMENT}}</p></article><article><span>Evidence does not establish</span><p>{{BOUNDARY STATEMENT}}</p></article></div>
-<div class="factual-grid"><article><strong>{{FACT}}</strong><p>{{FACT}}</p><span class="claim-citations" data-origin="derived-presentation" data-observation-ids="{{OBSERVATION_IDS}}"><a class="claim-source" href="#source-{{SOURCE_ID}}" data-evidence-class="{{EVIDENCE_CLASS}}">{{SOURCE TITLE}}</a></span></article></div>
-<article class="contradiction-card" data-origin="derived-presentation" data-check-ids="{{CHECK_IDS}}" data-observation-ids="{{OBSERVATION_IDS}}"><span>{{CONTRADICTION}}</span><h3>{{CONTRADICTION}}</h3><p>{{CONTRADICTION}}</p><span class="claim-citations" data-origin="derived-presentation" data-observation-ids="{{OBSERVATION_IDS}}"><span class="source-prefix">{{SOURCE PREFIX}}</span> <a class="claim-source" href="#source-{{SOURCE_ID}}" data-evidence-class="{{EVIDENCE_CLASS}}">{{SOURCE TITLE}}</a></span></article>
+<section aria-labelledby="pillar-economics" data-authoring-section="economics">
+<div class="section-head"><h2 id="pillar-economics">Economics</h2><div class="section-tag">Trust pillar</div></div>
+<p class="section-lede">{{ECONOMICS_INTRO}}</p>
+<p>{{ECONOMICS_NARRATIVE}} {{ECONOMICS_CITATIONS}}</p>
+<div class="pillar-delivery" data-origin="derived-presentation" data-check-ids="{{ECONOMICS_CHECK_IDS}}" data-observation-ids="{{ECONOMICS_OBSERVATION_IDS}}">
+<div class="evidence-boundary-pair"><article><span>Evidence supports</span><p>{{ECONOMICS_KNOWN}}</p></article><article><span>Evidence does not establish</span><p>{{ECONOMICS_UNRESOLVED}}</p></article></div>
+<div class="factual-grid"><article><strong>Entry and settlement</strong><p>{{ECONOMICS_ENTRY}}</p>{{ECONOMICS_ENTRY_CITATIONS}}</article>
+<article><strong>Value and costs</strong><p>{{ECONOMICS_VALUE}}</p>{{ECONOMICS_VALUE_CITATIONS}}</article>
+<article><strong>Exit mechanics</strong><p>{{ECONOMICS_EXIT}}</p>{{ECONOMICS_EXIT_CITATIONS}}</article></div>
 </div>
 <details class="pillar-checks" id="checks-economics"><summary data-fill="pillar-count:economics">View {{CHECK COUNT}} framework checks</summary>
 <div class="check-index check-index-economics">
@@ -1644,17 +1648,15 @@ html:not(.js) #v3-executive .rail,html:not(.js) #v3-executive #prog{display:none
 </details>
 </section>
 </div><div class="panel" data-mode-panel="analyst">
-<section aria-labelledby="pillar-governance-compliance">
-  <div class="section-head">
-    <h2 id="pillar-governance-compliance">Governance &amp; Compliance</h2>
-    <div class="section-tag">Trust pillar</div>
-  </div>
-  <p class="panel-note">{{PANEL NOTE}}</p>
-<h3 class="subsection-title">{{SUBSECTION TITLE}}</h3>
-<p>{{NARRATIVE}} <span class="inline-citations" data-origin="derived-presentation" data-observation-ids="{{OBSERVATION_IDS}}"><a class="claim-source inline-source" href="#source-{{SOURCE_ID}}" data-evidence-class="{{EVIDENCE_CLASS}}">{{SOURCE TITLE}}</a></span> </p>
-<div class="pillar-delivery" data-origin="derived-presentation" data-check-ids="{{CHECK_IDS}}" data-observation-ids="{{OBSERVATION_IDS}}">
-<div class="evidence-boundary-pair"><article><span>Evidence supports</span><p>{{BOUNDARY STATEMENT}}</p></article><article><span>Evidence does not establish</span><p>{{BOUNDARY STATEMENT}}</p></article></div>
-<div class="factual-grid"><article><strong>{{FACT}}</strong><p>{{FACT}}</p><span class="claim-citations" data-origin="derived-presentation" data-observation-ids="{{OBSERVATION_IDS}}"><a class="claim-source" href="#source-{{SOURCE_ID}}" data-evidence-class="{{EVIDENCE_CLASS}}">{{SOURCE TITLE}}</a></span></article></div>
+<section aria-labelledby="pillar-governance-compliance" data-authoring-section="governance">
+<div class="section-head"><h2 id="pillar-governance-compliance">Governance &amp; Compliance</h2><div class="section-tag">Trust pillar</div></div>
+<p class="section-lede">{{GOVERNANCE_INTRO}}</p>
+<p>{{GOVERNANCE_NARRATIVE}} {{GOVERNANCE_CITATIONS}}</p>
+<div class="pillar-delivery" data-origin="derived-presentation" data-check-ids="{{GOVERNANCE_CHECK_IDS}}" data-observation-ids="{{GOVERNANCE_OBSERVATION_IDS}}">
+<div class="evidence-boundary-pair"><article><span>Evidence supports</span><p>{{GOVERNANCE_KNOWN}}</p></article><article><span>Evidence does not establish</span><p>{{GOVERNANCE_UNRESOLVED}}</p></article></div>
+<div class="factual-grid"><article><strong>Issuer and holder claim</strong><p>{{GOVERNANCE_CLAIM}}</p>{{GOVERNANCE_CLAIM_CITATIONS}}</article>
+<article><strong>Eligibility</strong><p>{{GOVERNANCE_ELIGIBILITY}}</p>{{GOVERNANCE_ELIGIBILITY_CITATIONS}}</article>
+<article><strong>Party roles</strong><p>{{GOVERNANCE_PARTIES}}</p>{{GOVERNANCE_PARTIES_CITATIONS}}</article></div>
 </div>
 <details class="pillar-checks" id="checks-governance"><summary data-fill="pillar-count:governance_compliance">View {{CHECK COUNT}} framework checks</summary>
 <div class="check-index check-index-governance">
@@ -1666,17 +1668,15 @@ html:not(.js) #v3-executive .rail,html:not(.js) #v3-executive #prog{display:none
 </details>
 </section>
 </div><div class="panel" data-mode-panel="analyst">
-<section aria-labelledby="pillar-continuity">
-  <div class="section-head">
-    <h2 id="pillar-continuity">Continuity</h2>
-    <div class="section-tag">Trust pillar</div>
-  </div>
-  <p class="panel-note">{{PANEL NOTE}}</p>
-<h3 class="subsection-title">{{SUBSECTION TITLE}}</h3>
-<p>{{NARRATIVE}} <span class="inline-citations" data-origin="derived-presentation" data-observation-ids="{{OBSERVATION_IDS}}"><a class="claim-source inline-source" href="#source-{{SOURCE_ID}}" data-evidence-class="{{EVIDENCE_CLASS}}">{{SOURCE TITLE}}</a></span> </p>
-<div class="pillar-delivery" data-origin="derived-presentation" data-check-ids="{{CHECK_IDS}}" data-observation-ids="{{OBSERVATION_IDS}}">
-<div class="evidence-boundary-pair"><article><span>Evidence supports</span><p>{{BOUNDARY STATEMENT}}</p></article><article><span>Evidence does not establish</span><p>{{BOUNDARY STATEMENT}}</p></article></div>
-<div class="factual-grid"><article><strong>{{FACT}}</strong><p>{{FACT}}</p><span class="claim-citations" data-origin="derived-presentation" data-observation-ids="{{OBSERVATION_IDS}}"><a class="claim-source" href="#source-{{SOURCE_ID}}" data-evidence-class="{{EVIDENCE_CLASS}}">{{SOURCE TITLE}}</a></span></article></div>
+<section aria-labelledby="pillar-continuity" data-authoring-section="continuity">
+<div class="section-head"><h2 id="pillar-continuity">Continuity</h2><div class="section-tag">Trust pillar</div></div>
+<p class="section-lede">{{CONTINUITY_INTRO}}</p>
+<p>{{CONTINUITY_NARRATIVE}} {{CONTINUITY_CITATIONS}}</p>
+<div class="pillar-delivery" data-origin="derived-presentation" data-check-ids="{{CONTINUITY_CHECK_IDS}}" data-observation-ids="{{CONTINUITY_OBSERVATION_IDS}}">
+<div class="evidence-boundary-pair"><article><span>Evidence supports</span><p>{{CONTINUITY_KNOWN}}</p></article><article><span>Evidence does not establish</span><p>{{CONTINUITY_UNRESOLVED}}</p></article></div>
+<div class="factual-grid"><article><strong>Normal exit</strong><p>{{CONTINUITY_NORMAL_EXIT}}</p>{{CONTINUITY_NORMAL_EXIT_CITATIONS}}</article>
+<article><strong>Disruption</strong><p>{{CONTINUITY_DISRUPTION}}</p>{{CONTINUITY_DISRUPTION_CITATIONS}}</article>
+<article><strong>Record reconciliation</strong><p>{{CONTINUITY_RECONCILIATION}}</p>{{CONTINUITY_RECONCILIATION_CITATIONS}}</article></div>
 </div>
 <details class="pillar-checks" id="checks-continuity"><summary data-fill="pillar-count:continuity">View {{CHECK COUNT}} framework checks</summary>
 <div class="check-index check-index-continuity">
@@ -1688,100 +1688,67 @@ html:not(.js) #v3-executive .rail,html:not(.js) #v3-executive #prog{display:none
 </details>
 </section>
 </div><div class="panel" data-mode-panel="analyst">
-<section aria-labelledby="chain-of-title">
-  <div class="section-head">
-    <h2 id="chain-of-title">Claim and party structure</h2>
-    <div class="section-tag">Claim and service-provider architecture</div>
-  </div>
-
-<p class="section-lede">{{SECTION LEDE}}</p>
-<h3 class="subsection-title">{{SUBSECTION TITLE}}</h3>
-<div class="table-wrap"><table class="report-table"><thead><tr><th>Layer</th><th>What acquired records support</th><th>What remains unresolved</th></tr></thead><tbody>
-<tr><th>Holder</th><td>{{TABLE CELL}} <span class="inline-citations" data-origin="derived-presentation" data-observation-ids="{{OBSERVATION_IDS}}"><a class="claim-source inline-source" href="#source-{{SOURCE_ID}}" data-evidence-class="{{EVIDENCE_CLASS}}">{{SOURCE TITLE}}</a></span> </td><td>{{TABLE CELL}}</td></tr>
-</tbody></table></div>
-<ul class="fact-list">
-<li><strong>{{FACT}}</strong> {{FACT}} <span class="inline-citations" data-origin="derived-presentation" data-observation-ids="{{OBSERVATION_IDS}}"><a class="claim-source inline-source" href="#source-{{SOURCE_ID}}" data-evidence-class="{{EVIDENCE_CLASS}}">{{SOURCE TITLE}}</a></span> </li>
-</ul>
+<section aria-labelledby="chain-of-title" data-authoring-section="claim">
+<div class="section-head"><h2 id="chain-of-title">Claim and party structure</h2><div class="section-tag">Records and unresolved links</div></div>
+<p class="section-lede">{{CLAIM_INTRO}}</p>
+<div class="table-wrap"><table class="report-table"><thead><tr><th>Layer</th><th>What acquired records support</th><th>What remains unresolved</th></tr></thead><tbody><tr><th>Holder and recorded interest</th><td>{{CLAIM_HOLDER_KNOWN}} {{CLAIM_HOLDER_CITATIONS}}</td><td>{{CLAIM_HOLDER_UNRESOLVED}}</td></tr>
+<tr><th>Issuer / vehicle</th><td>{{CLAIM_ISSUER_KNOWN}} {{CLAIM_ISSUER_CITATIONS}}</td><td>{{CLAIM_ISSUER_UNRESOLVED}}</td></tr>
+<tr><th>Holder claim</th><td>{{CLAIM_CLAIM_KNOWN}} {{CLAIM_CLAIM_CITATIONS}}</td><td>{{CLAIM_CLAIM_UNRESOLVED}}</td></tr>
+<tr><th>Asset owner</th><td>{{CLAIM_ASSET_OWNER_KNOWN}} {{CLAIM_ASSET_OWNER_CITATIONS}}</td><td>{{CLAIM_ASSET_OWNER_UNRESOLVED}}</td></tr>
+<tr><th>Custodian</th><td>{{CLAIM_CUSTODIAN_KNOWN}} {{CLAIM_CUSTODIAN_CITATIONS}}</td><td>{{CLAIM_CUSTODIAN_UNRESOLVED}}</td></tr>
+<tr><th>Underlying asset</th><td>{{CLAIM_ASSET_KNOWN}} {{CLAIM_ASSET_CITATIONS}}</td><td>{{CLAIM_ASSET_UNRESOLVED}}</td></tr></tbody></table></div>
+<p class="structure-note">{{CLAIM_LIMITATION}}</p>
 </section>
 </div><div class="panel" data-mode-panel="analyst">
-<section aria-labelledby="legal-structure">
-  <div class="section-head">
-    <h2 id="legal-structure">Legal and operating structure</h2>
-    <div class="section-tag">{{SECTION TAG}}</div>
-  </div>
-
-<p class="section-lede">{{SECTION LEDE}}</p>
-<div class="legal-grid">
-  <div class="legal-cell"><h3>{{LEGAL TOPIC}}</h3><span class="state state-partial">{{STATE LABEL}}</span><p class="legal-value">{{LEGAL FACT}} <span class="inline-citations" data-origin="derived-presentation" data-observation-ids="{{OBSERVATION_IDS}}"><a class="claim-source inline-source" href="#source-{{SOURCE_ID}}" data-evidence-class="{{EVIDENCE_CLASS}}">{{SOURCE TITLE}}</a></span> </p><p class="legal-limitation">{{LEGAL LIMITATION}}</p></div>
-  </div>
-<h3 class="subsection-title">{{SUBSECTION TITLE}}</h3>
-<div class="table-wrap"><table class="report-table"><thead><tr><th>Layer</th><th>What acquired records support</th><th>What remains unresolved</th></tr></thead><tbody>
-<tr><th>Holder</th><td>{{TABLE CELL}} <span class="inline-citations" data-origin="derived-presentation" data-observation-ids="{{OBSERVATION_IDS}}"><a class="claim-source inline-source" href="#source-{{SOURCE_ID}}" data-evidence-class="{{EVIDENCE_CLASS}}">{{SOURCE TITLE}}</a></span> </td><td>{{TABLE CELL}}</td></tr>
-</tbody></table></div>
-<ul class="fact-list">
-<li><strong>{{FACT}}</strong> {{FACT}} <span class="inline-citations" data-origin="derived-presentation" data-observation-ids="{{OBSERVATION_IDS}}"><a class="claim-source inline-source" href="#source-{{SOURCE_ID}}" data-evidence-class="{{EVIDENCE_CLASS}}">{{SOURCE TITLE}}</a></span> </li>
-</ul>
-
+<section aria-labelledby="legal-structure" data-authoring-section="legal">
+<div class="section-head"><h2 id="legal-structure">Legal and operating structure</h2><div class="section-tag">Records and unresolved links</div></div>
+<p class="section-lede">{{LEGAL_INTRO}}</p>
+<div class="table-wrap"><table class="report-table"><thead><tr><th>Layer</th><th>What acquired records support</th><th>What remains unresolved</th></tr></thead><tbody><tr><th>Issuer and jurisdiction</th><td>{{LEGAL_ISSUER_KNOWN}} {{LEGAL_ISSUER_CITATIONS}}</td><td>{{LEGAL_ISSUER_UNRESOLVED}}</td></tr>
+<tr><th>Governing instrument</th><td>{{LEGAL_INSTRUMENT_KNOWN}} {{LEGAL_INSTRUMENT_CITATIONS}}</td><td>{{LEGAL_INSTRUMENT_UNRESOLVED}}</td></tr>
+<tr><th>Ownership and segregation</th><td>{{LEGAL_OWNERSHIP_KNOWN}} {{LEGAL_OWNERSHIP_CITATIONS}}</td><td>{{LEGAL_OWNERSHIP_UNRESOLVED}}</td></tr>
+<tr><th>Operating agreements</th><td>{{LEGAL_AGREEMENTS_KNOWN}} {{LEGAL_AGREEMENTS_CITATIONS}}</td><td>{{LEGAL_AGREEMENTS_UNRESOLVED}}</td></tr></tbody></table></div>
+<p class="structure-note">{{LEGAL_LIMITATION}}</p>
 </section>
 </div><div class="panel" data-mode-panel="analyst">
-<section aria-labelledby="supply-by-chain">
-  <div class="section-head">
-    <h2 id="supply-by-chain">Quantity boundaries</h2>
-    <div class="section-tag">{{SECTION TAG}}</div>
-  </div>
-
-<p class="section-lede">{{SECTION LEDE}} <span class="inline-citations" data-origin="derived-presentation" data-observation-ids="{{OBSERVATION_IDS}}"><a class="claim-source inline-source" href="#source-{{SOURCE_ID}}" data-evidence-class="{{EVIDENCE_CLASS}}">{{SOURCE TITLE}}</a></span> </p>
-<div class="table-wrap"><table class="boundary-table"><thead><tr><th>Network</th><th>Issuer-published identifier</th><th>Observed ledger figure</th><th>Anchor and replayability</th></tr></thead><tbody><tr><th>{{TABLE CELL}}</th><td class="mono">{{IDENTIFIER}}</td><td><strong>{{TABLE CELL}}</strong><span class="cell-note">{{CELL NOTE}}</span></td><td><strong>{{TABLE CELL}}</strong><span class="cell-note">{{CELL NOTE}}</span></td></tr></tbody></table></div>
-<div class="caveat"><strong>{{CAVEAT}}</strong> {{CAVEAT}} <a href="#check-{{CHECK_ID}}">{{CHECK_ID}}</a> </div>
-
+<section aria-labelledby="supply-by-chain" data-authoring-section="quantity">
+<div class="section-head"><h2 id="supply-by-chain">Quantity boundaries</h2><div class="section-tag">Identifiers, quantities and scope</div></div>
+<p class="section-lede">{{QUANTITY_INTRO}}</p>
+<div class="table-wrap"><table class="report-table"><thead><tr><th>Record grouping</th><th>Supplied identifier</th><th>Recorded quantity</th><th>Date and scope</th></tr></thead><tbody>
+<tr><th>{{QUANTITY_GROUP}}</th><td>{{QUANTITY_IDENTIFIER}}</td><td>{{QUANTITY_VALUE}}</td><td>{{QUANTITY_SCOPE}}</td></tr>
+</tbody></table></div><p class="structure-note">{{QUANTITY_LIMITATION}} {{QUANTITY_CITATIONS}}</p></section>
+</div><div class="panel" data-mode-panel="analyst">
+<section aria-labelledby="gaps-title" data-authoring-section="gaps">
+<div class="section-head"><h2 id="gaps-title">Evidence gaps</h2><div class="section-tag">Unresolved propositions</div></div>
+<p class="section-lede">{{GAPS_INTRO}}</p>
+<div class="record-stack"><details class="pillar-deep"><summary>{{GAPS_THEME_TITLE}}</summary><div class="record-body"><p>{{GAPS_THEME_TEXT}} {{GAPS_CITATIONS}}</p></div></details></div>
+<section class="technical-limitations" id="technical-evidence-limitations"><h3 class="subsection-title">Technical evidence limitations</h3><p>{{GAPS_TECHNICAL_LIMITATION}}</p></section>
 </section>
 </div><div class="panel" data-mode-panel="analyst">
-<section aria-labelledby="gaps-title">
-  <div class="section-head">
-    <h2 id="gaps-title">Evidence gaps</h2>
-    <div class="section-tag">{{GAP THEME COUNT}} neutral evidence-gap themes</div>
-  </div>
-  <p class="section-lede">{{SECTION LEDE}}</p><p>{{GAPS INTRODUCTION}}</p><div class="record-stack"><details class="pillar-deep" id="gap-theme-01"><summary><span class="mono">01</span>&nbsp; {{GAP THEME TITLE}}</summary><div class="record-body">
-<p>{{THEME TEXT}} <span class="inline-citations" data-origin="derived-presentation" data-observation-ids="{{OBSERVATION_IDS}}"><a class="claim-source inline-source" href="#source-{{SOURCE_ID}}" data-evidence-class="{{EVIDENCE_CLASS}}">{{SOURCE TITLE}}</a></span> </p>
-</div></details><details class="pillar-deep"><summary><span class="mono">{{IDENTIFIER}}</span>{{GAP THEME TITLE}}</summary><div class="record-body">
-<p>{{THEME TEXT}} <span class="inline-citations" data-origin="derived-presentation" data-observation-ids="{{OBSERVATION_IDS}}"><a class="claim-source inline-source" href="#source-{{SOURCE_ID}}" data-evidence-class="{{EVIDENCE_CLASS}}">{{SOURCE TITLE}}</a></span> </p>
-</div></details></div><section class="technical-limitations" id="technical-evidence-limitations">
-<div class="section-head"><h3>Technical evidence limitations</h3><div class="section-tag">Separate evidence boundary</div></div>
-<div class="record-body">
-<ul class="fact-list">
-<li><strong>{{FACT}}</strong> {{FACT}} <span class="inline-citations" data-origin="derived-presentation" data-observation-ids="{{OBSERVATION_IDS}}"><a class="claim-source inline-source" href="#source-{{SOURCE_ID}}" data-evidence-class="{{EVIDENCE_CLASS}}">{{SOURCE TITLE}}</a></span> </li>
-</ul></div></section>
-</section>
-</div><div class="panel" data-mode-panel="analyst">
-<section aria-labelledby="requests-title">
+<section aria-labelledby="requests-title" data-authoring-section="requests">
   <div class="section-head">
     <h2 id="requests-title">Evidence requests</h2>
     <div class="section-tag">What would close each unresolved route</div>
   </div>
-  <p class="section-lede">{{SECTION LEDE}}</p>
+  <p class="section-lede">{{REQUESTS_SECTION_LEDE}}</p>
 <div class="request-stack" data-fill="evidence-requests">
 <!-- evidence requests filled by scripts/prefill_shell.py -->
 </div>
 </section>
 </div><div class="panel" data-mode-panel="analyst">
-<section aria-labelledby="sources-title"><div class="section-head"><h2 id="sources-title">Evidence registry</h2><div class="section-tag" data-fill="source-count">{{SOURCE COUNT}} source records</div></div><p class="section-lede">{{SECTION LEDE}}</p><section class="source-reference-section" id="source-references" data-fill="source-references"></section><div class="record-stack" data-fill="source-records">
+<section aria-labelledby="sources-title" data-authoring-section="sources"><div class="section-head"><h2 id="sources-title">Evidence registry</h2><div class="section-tag" data-fill="source-count">{{SOURCE COUNT}} source records</div></div><p class="section-lede">{{SOURCES_SECTION_LEDE}}</p><section class="source-reference-section" id="source-references" data-fill="source-references"></section><div class="record-stack" data-fill="source-records">
 <!-- source records filled by scripts/prefill_shell.py -->
 </div></section>
 </div><div class="panel" data-mode-panel="analyst">
-<section aria-labelledby="changes-title">
-  <div class="section-head">
-    <h2 id="changes-title">Observed technical state</h2>
-    <div class="section-tag">{{SECTION TAG}}</div>
-  </div>
-
-<p class="section-lede">{{SECTION LEDE}}</p>
-<div class="alert-ledger"><div><span>{{STATE FACT}}</span><strong>{{STATE FACT}}</strong><small>{{STATE FACT}}</small></div></div>
-<p class="panel-note">{{PANEL NOTE}} <span class="inline-citations" data-origin="derived-presentation" data-observation-ids="{{OBSERVATION_IDS}}"><a class="claim-source inline-source" href="#source-{{SOURCE_ID}}" data-evidence-class="{{EVIDENCE_CLASS}}">{{SOURCE TITLE}}</a></span></p>
-<div class="table-wrap"><table class="recent-table"><thead><tr><th>Date</th><th>Event</th><th>Observed at</th><th>Address fragment</th><th>Transaction</th></tr></thead><tbody><tr><td>{{TABLE CELL}}</td><td>{{TABLE CELL}}</td><td>{{TABLE CELL}}</td><td class="mono">{{IDENTIFIER}}</td><td class="mono">{{IDENTIFIER}}</td></tr></tbody></table></div>
-
-</section>
+<section aria-labelledby="changes-title" data-authoring-section="technical">
+<div class="section-head"><h2 id="changes-title">Observed technical state</h2><div class="section-tag">Deployment and state evidence</div></div>
+<p class="section-lede">{{TECHNICAL_INTRO}}</p>
+<div class="alert-ledger"><div><span>Deployment evidence</span><strong>{{TECHNICAL_STATE}}</strong><small>{{TECHNICAL_SCOPE}}</small></div></div>
+<p class="structure-note">{{TECHNICAL_LIMITATION}} {{TECHNICAL_CITATIONS}}</p>
+<div class="table-wrap"><table class="report-table"><thead><tr><th>Record</th><th>What the record covers</th><th>What remains unresolved</th></tr></thead><tbody>
+<tr><th>{{TECHNICAL_RECORD_TITLE}}</th><td>{{TECHNICAL_RECORD_SCOPE}} {{TECHNICAL_RECORD_CITATIONS}}</td><td>{{TECHNICAL_RECORD_UNRESOLVED}}</td></tr>
+</tbody></table></div></section>
 </div><div class="panel" data-mode-panel="analyst">
-<section aria-labelledby="methodology-title">
+<section aria-labelledby="methodology-title" data-authoring-section="methodology">
   <div class="section-head">
     <h2 id="methodology-title">Methodology &amp; independence</h2>
     <div class="section-tag">Framework v0.2 semantics</div>
@@ -1814,10 +1781,10 @@ html:not(.js) #v3-executive .rail,html:not(.js) #v3-executive #prog{display:none
 <h3 class="subsection-title">Commissioning and commercial neutrality</h3>
 <p>Source records preserve authorship, publisher, commissioner, relationship to the subject, source type, scope, and limitations. Commissioned work is not excluded automatically, and a named institution is not sufficient for an unrelated proposition. Commercial participation and payment cannot change applicability, admissibility, sufficiency, coverage, or the findings displayed for otherwise identical eligible inputs.</p>
 <h3 class="subsection-title">Fixed campaign boundary</h3>
-<p>{{CAMPAIGN BOUNDARY}}</p>
+<p>{{METHODOLOGY_CAMPAIGN_BOUNDARY}}</p>
 </section>
 </div><div class="panel" data-mode-panel="analyst">
-<section aria-labelledby="technical-appendix"><div class="section-head"><h2 id="technical-appendix">Full research record</h2><div class="section-tag">Anchors, lineage and complete registers</div></div><p class="section-lede">{{SECTION LEDE}}</p><div class="technical-index" data-fill="technical-index"><a href="#technical-anchors">Anchors</a><a href="#technical-locators">{{LOCATOR COUNT}} locators</a><a href="#technical-observations">{{OBSERVATION COUNT}} observations</a><a href="#technical-checks">{{CHECK COUNT}} checks</a></div><h3 class="subsection-title" id="technical-anchors">Technical anchors</h3><div class="table-wrap"><table class="boundary-table"><thead><tr><th>Network</th><th>Anchor</th><th>Boundary</th></tr></thead><tbody><tr><th>{{TABLE CELL}}</th><td class="mono">{{IDENTIFIER}}</td><td>{{TABLE CELL}}</td></tr></tbody></table></div><div class="caveat"><strong>{{CAVEAT}}</strong> {{CAVEAT}}</div><h3 class="subsection-title" id="technical-locators">Locators</h3><div class="record-stack" data-fill="locator-records">
+<section aria-labelledby="technical-appendix" data-authoring-section="appendix"><div class="section-head"><h2 id="technical-appendix">Full research record</h2><div class="section-tag">Anchors, lineage and complete registers</div></div><p class="section-lede">{{APPENDIX_SECTION_LEDE}}</p><div class="technical-index" data-fill="technical-index"><a href="#technical-anchors">Anchors</a><a href="#technical-locators">{{LOCATOR COUNT}} locators</a><a href="#technical-observations">{{OBSERVATION COUNT}} observations</a><a href="#technical-checks">{{CHECK COUNT}} checks</a></div><h3 class="subsection-title" id="technical-anchors">Technical anchors</h3><div class="table-wrap"><table class="boundary-table"><thead><tr><th>Network</th><th>Anchor</th><th>Boundary</th></tr></thead><tbody><tr><th>{{APPENDIX_TABLE_CELL}}</th><td class="mono">{{APPENDIX_IDENTIFIER}}</td><td>{{APPENDIX_TABLE_CELL}}</td></tr></tbody></table></div><div class="caveat"><strong>{{APPENDIX_CAVEAT}}</strong> {{APPENDIX_CAVEAT}}</div><h3 class="subsection-title" id="technical-locators">Locators</h3><div class="record-stack" data-fill="locator-records">
 <!-- locator records filled by scripts/prefill_shell.py -->
 </div><h3 class="subsection-title" id="technical-observations">Observations</h3><div class="record-stack" data-fill="observation-records">
 <!-- observation records filled by scripts/prefill_shell.py -->
