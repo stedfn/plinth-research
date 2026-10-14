@@ -164,6 +164,26 @@ and a link to the source record. Null URLs and supplied text have no invented do
 Publication dates are not inferred from prose notes. Markdown escapes its punctuation;
 HTML escapes its attributes and text.
 
+## Dates and evidence boundaries
+
+Keep the opening snapshot chip short, using the UTC calendar date. Show the precise cutoff
+to the minute, explicitly labelled UTC, in the evidence boundary. Publication and acquisition
+retrieval dates display as UTC calendar dates; Published and Captured are distinct labels.
+Do not guess a publication date from a capture or from notes.
+
+`UtcMoment` normalizes offsets. A local midnight may belong to the preceding UTC date.
+For genuinely date-only publication metadata, intake records `T00:00:00Z` and notes that
+only the date is known. Never alter accepted timestamps to improve their display.
+
+Use neutral headings: Fixed evidence snapshot, Evidence supports / does not establish,
+Where acquired evidence stops, and What acquired records support. Generate the declared-scope
+line from the campaign: public evidence only, or not limited to public evidence. A false
+public-only flag does not itself prove that private material was actually supplied; disclose
+actual restricted material from its source records when present.
+
+Evidence request cards have 12px gaps. A single technical-state panel fills its container;
+multiple panels retain their grid. Keep the draft label and pending publication approval.
+
 ## Canonical and machine-readable state
 
 Prefill renders every canonical check, observation and source record with these attributes:

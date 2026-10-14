@@ -1548,6 +1548,10 @@ html:not(.js) #v3-executive .rail,html:not(.js) #v3-executive #prog{display:none
 @media(max-width:760px){.source-reference-section{padding:18px}.source-reference-detail,.source-reference-note{display:block;margin-left:0}}
 @media print{.source-reference-section{background:#fff}.source-reference-list li{break-inside:avoid}}
 </style>
+<style data-purpose="shared-presentation-fixes">
+.analyst-main .request-stack{display:grid;gap:12px}
+.analyst-main .alert-ledger:not(:has(>div+div)){grid-template-columns:1fr}
+</style>
 </head>
 
         <body class="mode-executive">
@@ -1579,7 +1583,7 @@ html:not(.js) #v3-executive .rail,html:not(.js) #v3-executive #prog{display:none
 <h3 class="subsection-title">{{SUBSECTION TITLE}}</h3>
 <p>{{NARRATIVE}} <span class="inline-citations" data-origin="derived-presentation" data-observation-ids="{{OBSERVATION_IDS}}"><a class="claim-source inline-source" href="#source-{{SOURCE_ID}}" data-evidence-class="{{EVIDENCE_CLASS}}">{{SOURCE TITLE}}</a></span> </p>
 <div class="pillar-delivery" data-origin="derived-presentation" data-check-ids="{{CHECK_IDS}}" data-observation-ids="{{OBSERVATION_IDS}}">
-<div class="evidence-boundary-pair"><article><span>Public evidence supports</span><p>{{BOUNDARY STATEMENT}}</p></article><article><span>Public evidence does not establish</span><p>{{BOUNDARY STATEMENT}}</p></article></div>
+<div class="evidence-boundary-pair"><article><span>Evidence supports</span><p>{{BOUNDARY STATEMENT}}</p></article><article><span>Evidence does not establish</span><p>{{BOUNDARY STATEMENT}}</p></article></div>
 <h3 class="subsection-title">{{SUBSECTION TITLE}}</h3>
 <div class="factual-grid network-grid">
 <article><strong>{{FACT}}</strong><p>{{FACT}}</p><span class="claim-citations" data-origin="derived-presentation" data-observation-ids="{{OBSERVATION_IDS}}"><a class="claim-source" href="#source-{{SOURCE_ID}}" data-evidence-class="{{EVIDENCE_CLASS}}">{{SOURCE TITLE}}</a></span></article>
@@ -1603,7 +1607,7 @@ html:not(.js) #v3-executive .rail,html:not(.js) #v3-executive #prog{display:none
 <h3 class="subsection-title">{{SUBSECTION TITLE}}</h3>
 <p>{{NARRATIVE}} <span class="inline-citations" data-origin="derived-presentation" data-observation-ids="{{OBSERVATION_IDS}}"><a class="claim-source inline-source" href="#source-{{SOURCE_ID}}" data-evidence-class="{{EVIDENCE_CLASS}}">{{SOURCE TITLE}}</a></span> </p>
 <div class="pillar-delivery" data-origin="derived-presentation" data-check-ids="{{CHECK_IDS}}" data-observation-ids="{{OBSERVATION_IDS}}">
-<div class="evidence-boundary-pair"><article><span>Public evidence supports</span><p>{{BOUNDARY STATEMENT}}</p></article><article><span>Public evidence does not establish</span><p>{{BOUNDARY STATEMENT}}</p></article></div>
+<div class="evidence-boundary-pair"><article><span>Evidence supports</span><p>{{BOUNDARY STATEMENT}}</p></article><article><span>Evidence does not establish</span><p>{{BOUNDARY STATEMENT}}</p></article></div>
 <div class="factual-grid"><article><strong>{{FACT}}</strong><p>{{FACT}}</p><span class="claim-citations" data-origin="derived-presentation" data-observation-ids="{{OBSERVATION_IDS}}"><a class="claim-source" href="#source-{{SOURCE_ID}}" data-evidence-class="{{EVIDENCE_CLASS}}">{{SOURCE TITLE}}</a></span></article></div>
 <article class="contradiction-card" data-origin="derived-presentation" data-check-ids="{{CHECK_IDS}}" data-observation-ids="{{OBSERVATION_IDS}}"><span>{{CONTRADICTION}}</span><h3>{{CONTRADICTION}}</h3><p>{{CONTRADICTION}}</p><span class="claim-citations" data-origin="derived-presentation" data-observation-ids="{{OBSERVATION_IDS}}"><span class="source-prefix">{{SOURCE PREFIX}}</span> <a class="claim-source" href="#source-{{SOURCE_ID}}" data-evidence-class="{{EVIDENCE_CLASS}}">{{SOURCE TITLE}}</a></span></article>
 </div>
@@ -1626,7 +1630,7 @@ html:not(.js) #v3-executive .rail,html:not(.js) #v3-executive #prog{display:none
 <h3 class="subsection-title">{{SUBSECTION TITLE}}</h3>
 <p>{{NARRATIVE}} <span class="inline-citations" data-origin="derived-presentation" data-observation-ids="{{OBSERVATION_IDS}}"><a class="claim-source inline-source" href="#source-{{SOURCE_ID}}" data-evidence-class="{{EVIDENCE_CLASS}}">{{SOURCE TITLE}}</a></span> </p>
 <div class="pillar-delivery" data-origin="derived-presentation" data-check-ids="{{CHECK_IDS}}" data-observation-ids="{{OBSERVATION_IDS}}">
-<div class="evidence-boundary-pair"><article><span>Public evidence supports</span><p>{{BOUNDARY STATEMENT}}</p></article><article><span>Public evidence does not establish</span><p>{{BOUNDARY STATEMENT}}</p></article></div>
+<div class="evidence-boundary-pair"><article><span>Evidence supports</span><p>{{BOUNDARY STATEMENT}}</p></article><article><span>Evidence does not establish</span><p>{{BOUNDARY STATEMENT}}</p></article></div>
 <div class="factual-grid"><article><strong>{{FACT}}</strong><p>{{FACT}}</p><span class="claim-citations" data-origin="derived-presentation" data-observation-ids="{{OBSERVATION_IDS}}"><a class="claim-source" href="#source-{{SOURCE_ID}}" data-evidence-class="{{EVIDENCE_CLASS}}">{{SOURCE TITLE}}</a></span></article></div>
 <article class="contradiction-card" data-origin="derived-presentation" data-check-ids="{{CHECK_IDS}}" data-observation-ids="{{OBSERVATION_IDS}}"><span>{{CONTRADICTION}}</span><h3>{{CONTRADICTION}}</h3><p>{{CONTRADICTION}}</p><span class="claim-citations" data-origin="derived-presentation" data-observation-ids="{{OBSERVATION_IDS}}"><span class="source-prefix">{{SOURCE PREFIX}}</span> <a class="claim-source" href="#source-{{SOURCE_ID}}" data-evidence-class="{{EVIDENCE_CLASS}}">{{SOURCE TITLE}}</a></span></article>
 </div>
@@ -1649,7 +1653,7 @@ html:not(.js) #v3-executive .rail,html:not(.js) #v3-executive #prog{display:none
 <h3 class="subsection-title">{{SUBSECTION TITLE}}</h3>
 <p>{{NARRATIVE}} <span class="inline-citations" data-origin="derived-presentation" data-observation-ids="{{OBSERVATION_IDS}}"><a class="claim-source inline-source" href="#source-{{SOURCE_ID}}" data-evidence-class="{{EVIDENCE_CLASS}}">{{SOURCE TITLE}}</a></span> </p>
 <div class="pillar-delivery" data-origin="derived-presentation" data-check-ids="{{CHECK_IDS}}" data-observation-ids="{{OBSERVATION_IDS}}">
-<div class="evidence-boundary-pair"><article><span>Public evidence supports</span><p>{{BOUNDARY STATEMENT}}</p></article><article><span>Public evidence does not establish</span><p>{{BOUNDARY STATEMENT}}</p></article></div>
+<div class="evidence-boundary-pair"><article><span>Evidence supports</span><p>{{BOUNDARY STATEMENT}}</p></article><article><span>Evidence does not establish</span><p>{{BOUNDARY STATEMENT}}</p></article></div>
 <div class="factual-grid"><article><strong>{{FACT}}</strong><p>{{FACT}}</p><span class="claim-citations" data-origin="derived-presentation" data-observation-ids="{{OBSERVATION_IDS}}"><a class="claim-source" href="#source-{{SOURCE_ID}}" data-evidence-class="{{EVIDENCE_CLASS}}">{{SOURCE TITLE}}</a></span></article></div>
 </div>
 <details class="pillar-checks" id="checks-governance"><summary data-fill="pillar-count:governance_compliance">View {{CHECK COUNT}} framework checks</summary>
@@ -1671,7 +1675,7 @@ html:not(.js) #v3-executive .rail,html:not(.js) #v3-executive #prog{display:none
 <h3 class="subsection-title">{{SUBSECTION TITLE}}</h3>
 <p>{{NARRATIVE}} <span class="inline-citations" data-origin="derived-presentation" data-observation-ids="{{OBSERVATION_IDS}}"><a class="claim-source inline-source" href="#source-{{SOURCE_ID}}" data-evidence-class="{{EVIDENCE_CLASS}}">{{SOURCE TITLE}}</a></span> </p>
 <div class="pillar-delivery" data-origin="derived-presentation" data-check-ids="{{CHECK_IDS}}" data-observation-ids="{{OBSERVATION_IDS}}">
-<div class="evidence-boundary-pair"><article><span>Public evidence supports</span><p>{{BOUNDARY STATEMENT}}</p></article><article><span>Public evidence does not establish</span><p>{{BOUNDARY STATEMENT}}</p></article></div>
+<div class="evidence-boundary-pair"><article><span>Evidence supports</span><p>{{BOUNDARY STATEMENT}}</p></article><article><span>Evidence does not establish</span><p>{{BOUNDARY STATEMENT}}</p></article></div>
 <div class="factual-grid"><article><strong>{{FACT}}</strong><p>{{FACT}}</p><span class="claim-citations" data-origin="derived-presentation" data-observation-ids="{{OBSERVATION_IDS}}"><a class="claim-source" href="#source-{{SOURCE_ID}}" data-evidence-class="{{EVIDENCE_CLASS}}">{{SOURCE TITLE}}</a></span></article></div>
 </div>
 <details class="pillar-checks" id="checks-continuity"><summary data-fill="pillar-count:continuity">View {{CHECK COUNT}} framework checks</summary>
@@ -1692,7 +1696,7 @@ html:not(.js) #v3-executive .rail,html:not(.js) #v3-executive #prog{display:none
 
 <p class="section-lede">{{SECTION LEDE}}</p>
 <h3 class="subsection-title">{{SUBSECTION TITLE}}</h3>
-<div class="table-wrap"><table class="report-table"><thead><tr><th>Layer</th><th>What the public record supports</th><th>What remains unresolved</th></tr></thead><tbody>
+<div class="table-wrap"><table class="report-table"><thead><tr><th>Layer</th><th>What acquired records support</th><th>What remains unresolved</th></tr></thead><tbody>
 <tr><th>Holder</th><td>{{TABLE CELL}} <span class="inline-citations" data-origin="derived-presentation" data-observation-ids="{{OBSERVATION_IDS}}"><a class="claim-source inline-source" href="#source-{{SOURCE_ID}}" data-evidence-class="{{EVIDENCE_CLASS}}">{{SOURCE TITLE}}</a></span> </td><td>{{TABLE CELL}}</td></tr>
 </tbody></table></div>
 <ul class="fact-list">
@@ -1711,7 +1715,7 @@ html:not(.js) #v3-executive .rail,html:not(.js) #v3-executive #prog{display:none
   <div class="legal-cell"><h3>{{LEGAL TOPIC}}</h3><span class="state state-partial">{{STATE LABEL}}</span><p class="legal-value">{{LEGAL FACT}} <span class="inline-citations" data-origin="derived-presentation" data-observation-ids="{{OBSERVATION_IDS}}"><a class="claim-source inline-source" href="#source-{{SOURCE_ID}}" data-evidence-class="{{EVIDENCE_CLASS}}">{{SOURCE TITLE}}</a></span> </p><p class="legal-limitation">{{LEGAL LIMITATION}}</p></div>
   </div>
 <h3 class="subsection-title">{{SUBSECTION TITLE}}</h3>
-<div class="table-wrap"><table class="report-table"><thead><tr><th>Layer</th><th>What the public record supports</th><th>What remains unresolved</th></tr></thead><tbody>
+<div class="table-wrap"><table class="report-table"><thead><tr><th>Layer</th><th>What acquired records support</th><th>What remains unresolved</th></tr></thead><tbody>
 <tr><th>Holder</th><td>{{TABLE CELL}} <span class="inline-citations" data-origin="derived-presentation" data-observation-ids="{{OBSERVATION_IDS}}"><a class="claim-source inline-source" href="#source-{{SOURCE_ID}}" data-evidence-class="{{EVIDENCE_CLASS}}">{{SOURCE TITLE}}</a></span> </td><td>{{TABLE CELL}}</td></tr>
 </tbody></table></div>
 <ul class="fact-list">

@@ -60,6 +60,11 @@ Record:
 - the evidence cutoff;
 - whether the campaign is public-only (`bounded_public_evidence`).
 
+The snapshot chip uses a UTC calendar date; the evidence boundary shows the cutoff to
+the minute with UTC labelled. Publication and retrieval dates are distinct UTC calendar
+dates. Neutral headings work for either declared scope. Disclose actual protected material
+from source records; the scope flag alone does not establish that it was supplied.
+
 Content authority is the accepted records plus the catalogue. UI authority is the shell.
 
 ### 2. Verify the run
@@ -142,12 +147,21 @@ python3 skills/plinth-trust-center/scripts/check_morphed_html.py trust-centers/S
 
 Fix every `FAIL`. Fix each `WARN`, or justify it in `review.md`.
 
+Build the synthetic demo as shown in README to compare the interface without importing
+product content. Preserve the 960px paper column, title hierarchy, rounded white cards,
+warm documentary labels, inset limitations and clear Expand / Collapse controls. Check a
+realistic expanded disclosure as well as the collapsed reading layer.
+
 Then check the page in a browser:
 
 - desktop and mobile, in both modes;
 - direct fragments, cross-panel links, back and forward, and a malformed fragment;
 - keyboard focus, JavaScript disabled, and print;
 - zero runtime network requests.
+
+Save four screenshots: Executive and Analyst at desktop and mobile widths. If browser
+access is blocked, record NOT RUN with the reason and require a human browser pass before
+merge. Never substitute static checks for a claimed browser pass.
 
 ## Deliverables
 

@@ -271,7 +271,7 @@ def render_source(records: Records, source: dict) -> str:
     if source.get("url"):
         rows.append(("URL", url_text(source["url"])))
     if source.get("publication_date"):
-        rows.append(("Published", esc(source["publication_date"])))
+        rows.append(("Published (UTC date)", esc(utc_date(source["publication_date"]))))
     disposition = source.get("disposition", "IN_SCOPE")
     if disposition == "EXCLUDED":
         disposition_text = f"EXCLUDED: {esc(source.get('excluded_reason') or 'no reason recorded')}"
@@ -289,15 +289,15 @@ def render_source(records: Records, source: dict) -> str:
     if attempts:
         items = []
         for attempt in attempts:
-            parts = [attempt["acquisition_mode"], attempt["outcome"], f"attempted {attempt['attempted_at']}"]
+            parts = [attempt["acquisition_mode"], attempt["outcome"], f"attempted {utc_date(attempt['attempted_at'])}"]
             if attempt.get("retrieved_at"):
-                parts.append(f"retrieved {attempt['retrieved_at']}")
+                parts.append(f"retrieved {utc_date(attempt['retrieved_at'])}")
             if attempt.get("failure_reason"):
                 parts.append(f"failure: {attempt['failure_reason']}")
             if attempt.get("artifact_sha256"):
                 parts.append(f"artifact sha256 {attempt['artifact_sha256'][:16]}…")
             items.append(f"<li>{esc(attempt['acquisition_id'])}: {esc(', '.join(parts))}</li>")
-        rows.append(("Acquisitions", f'<ul class="fact-list">{"".join(items)}</ul>'))
+        rows.append(("Acquisitions (UTC dates)", f'<ul class="fact-list">{"".join(items)}</ul>'))
     else:
         rows.append(("Acquisitions", "None recorded"))
     state = source_state(records, source)
@@ -488,6 +488,8 @@ def fill(shell: str, records: Records, payload: str, product: str) -> tuple[str,
         raise RecordError("the shell's payload placeholder was not found exactly once")
     shell = shell.replace(payload_marker,
                           f'<script type="application/json" id="plinth-research-state">{payload}</script>')
+    shell = shell.replace("{{SNAPSHOT LABEL}}", "Fixed evidence snapshot · " + esc(utc_date(records.campaign["cutoff"])))
+    shell = shell.replace("{{CAMPAIGN BOUNDARY}}", esc("Evidence cutoff: " + cutoff_text(records.campaign["cutoff"]) + "; " + records.campaign["declared_scope_note"]))
     shell = shell.replace("{{PRODUCT}}", esc(product))
     return shell, notes
 

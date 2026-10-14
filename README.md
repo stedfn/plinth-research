@@ -165,6 +165,11 @@ The output goes to `trust-centers/<subject-slug>/`.
 The Executive uses twelve fixed investor questions in five groups, with a warm paper
 background, a compact question index and expandable **Basis & limitations**. There is one
 Executive format; the fourteen Analyst panels and canonical records stay unchanged.
+The snapshot chip is concise; the evidence boundary states the precise cutoff in UTC.
+Source references distinguish publication dates from cited capture dates. Neutral headings
+work across public-only and supplied-evidence campaigns. Answer labels describe documentary
+answers and do not change framework applicability or coverage.
+
 
 To build a synthetic example with realistic answer lengths and both documentary labels:
 

@@ -667,3 +667,61 @@ def test_source_reference_dates_cannot_drift(tmp_path, varied):
     changed = page[:start] + page[start:stop].replace('Captured:', 'Published:', 1) + page[stop:]
     with pytest.raises(AssertionError, match='source references differ'):
         checker.check_document(changed, SHELL_TEXT, varied.inputs)
+
+
+@pytest.mark.parametrize('value,date,cutoff', [
+    ('2026-10-13T00:00:00+08:00', '12 Oct 2026', '12 Oct 2026, 16:00 UTC'),
+    ('2026-10-13T00:00:01Z', '13 Oct 2026', '13 Oct 2026, 00:00 UTC'),
+    ('2026-10-12T23:59:59Z', '12 Oct 2026', '12 Oct 2026, 23:59 UTC'),
+])
+def test_utc_dates_are_explicit(value, date, cutoff):
+    from presentation import utc_date, cutoff_text
+    assert utc_date(value) == date
+    assert cutoff_text(value) == cutoff
+
+
+@pytest.mark.parametrize('public,line', [
+    (True, 'Declared scope: public evidence only'),
+    (False, 'Declared scope: not limited to public evidence'),
+])
+def test_scope_and_boundary_labels(varied, public, line):
+    import copy
+    inputs = copy.deepcopy(varied.inputs)
+    inputs.evidence['campaign']['bounded_public_evidence'] = public
+    page, _ = prefill.fill(SHELL_TEXT, records_mod.Records(inputs), records_mod.payload_text(inputs), 'Generated product')
+    outside = PAYLOAD_SPLIT.sub('', page)
+    assert line in outside
+    assert 'Evidence cutoff:' in outside and 'UTC' in outside
+    assert 'Fixed evidence snapshot' in outside
+    for old in ('Public evidence supports', 'Public evidence does not establish', 'What the public record supports'):
+        assert old not in outside
+    assert 'Evidence supports' in outside and 'What acquired records support' in outside
+    assert 'Published:' not in outside, 'capture dates must not be presented as publication dates'
+    assert json.loads(checker.PAYLOAD_RE.search(page)[1])['evidence'] == inputs.evidence
+
+
+def test_publication_date_is_structured_not_guessed(varied):
+    import copy
+    from presentation import source_reference_entries
+    records = records_mod.Records(copy.deepcopy(varied.inputs))
+    source = records.sources['SRC-A']
+    source['notes'] = 'Report dated 3 October 2026.'
+    source['publication_date'] = None
+    assert source_reference_entries(records)[0]['published'] is None
+    source['publication_date'] = '2026-10-13T00:00:00+08:00'
+    assert source_reference_entries(records)[0]['published'] == '12 Oct 2026'
+    rendered = prefill.render_source(records, source)
+    assert 'Published (UTC date)' in rendered and '12 Oct 2026' in rendered
+    assert source['publication_date'] == '2026-10-13T00:00:00+08:00'
+
+
+def test_spacing_and_single_panel_rules():
+    assert '.analyst-main .request-stack{display:grid;gap:12px}' in SHELL_TEXT
+    assert '.analyst-main .alert-ledger:not(:has(>div+div)){grid-template-columns:1fr}' in SHELL_TEXT
+    # The base grid remains available for multi-panel displays.
+    assert '.summary-ledger,.alert-ledger{display:grid;grid-template-columns:repeat(4,1fr)' in SHELL_TEXT
+
+
+def test_synthetic_example_has_no_reference_product_content():
+    example = (ROOT / 'examples' / 'build_presentation_demo.py').read_text()
+    assert PRODUCT_RE.findall(example) == []

@@ -70,7 +70,7 @@ def render_source_references_html(entries: list[dict]) -> str:
         items.append(f'<li data-reference-source="{sid}">{title}{publisher} '
                      f'<a class="source-reference-detail" href="#source-{sid}">Full source record ↗</a>'
                      f'{details}{successor}{limitation}</li>')
-    return ('<h3>Source references</h3><p>Documents supporting observations. Dates distinguish publication from cited captures. '
+    return ('<h3>Source references</h3><p>Documents supporting observations. Dates are UTC calendar dates and distinguish publication from cited captures. '
             'The full registry also retains uncited and excluded records.</p><ul class="source-reference-list">'
             + "".join(items) + '</ul>' if items else '<h3>Source references</h3><p>No acquired source supports an observation.</p>')
 
@@ -81,7 +81,7 @@ def markdown_text(value: str) -> str:
 
 def render_source_references_md(entries: list[dict]) -> str:
     lines = ["## Source references", "",
-             "Documents supporting observations. Dates distinguish publication from cited captures.", ""]
+             "Documents supporting observations. Dates are UTC calendar dates and distinguish publication from cited captures.", ""]
     for entry in entries:
         title = markdown_text(entry["title"])
         if entry["url"]:

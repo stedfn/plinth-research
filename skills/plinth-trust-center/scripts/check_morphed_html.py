@@ -337,7 +337,7 @@ def check_executive(index: Index, records: Records, warnings: list[str]) -> Elem
         cited = set(card.attrs.get("data-check-ids", "").split())
         if not cited:
             fail(f"Q{number} must name supporting check IDs")
-        outside = sorted(cited - set(mapping) - (cited - set(records.checks)))
+        outside = sorted((cited - set(mapping)) & set(records.checks))
         if outside:
             warnings.append(f"Q{number} cites checks outside its default mapping: {outside}; justify in review.md")
         links = {e.attrs.get("href") for e in walk(disclosures[0]) if e.tag == "a"}
@@ -356,6 +356,8 @@ def check_executive(index: Index, records: Records, warnings: list[str]) -> Elem
     for name in ("framework-strip", "open-row", "coverage-counts"):
         for e in descendants_with_class(executive, name):
             require_exposed(e, name)
+    if len(descendants_with_class(executive, "framework-strip")) != 1 or len(descendants_with_class(executive, "framework-cell")) != 4:
+        fail("Executive must have one complete visible framework strip")
     actual_counts = {e.attrs["data-coverage-count"]: e.attrs.get("data-value")
                      for e in walk(executive) if "data-coverage-count" in e.attrs}
     expected_counts = {key: str(value) for key, value in executive_counts(records).items()}
