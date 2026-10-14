@@ -162,6 +162,25 @@ Follow [skills/plinth-trust-center/SKILL.md](skills/plinth-trust-center/SKILL.md
 
 The output goes to `trust-centers/<subject-slug>/`.
 
+The Executive uses twelve fixed investor questions in five groups, with a warm paper
+background, a compact question index and expandable **Basis & limitations**. There is one
+Executive format; the fourteen Analyst panels and canonical records stay unchanged.
+
+To build a synthetic example with realistic answer lengths and both documentary labels:
+
+```sh
+python3 examples/build_presentation_demo.py --out /tmp/plinth-demo
+python3 skills/plinth-trust-center/scripts/check_morphed_html.py /tmp/plinth-demo/index.html \
+  --reference skills/plinth-trust-center/assets/v0.3-two-mode-shell.html \
+  --assessment /tmp/plinth-demo/runs/synthetic-presentation/assessment.json \
+  --evidence /tmp/plinth-demo/runs/synthetic-presentation/documentary-evidence.json \
+  --catalogue inputs/catalogue.json
+```
+
+Choose a fresh output directory. Every fact and party in the example is fictional; its
+accepted synthetic run demonstrates the interface, not real research or publication approval.
+
+
 ## Assessment workflow
 
 Start from a run whose accepted `documentary-evidence.json` is valid. Run files live in

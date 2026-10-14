@@ -29,7 +29,8 @@ The compiler produces the canonical records, and this skill presents them:
 - The run's accepted `documentary-evidence.json` and `assessment.json`: content authority.
 - `inputs/catalogue.json`, `inputs/plinth-framework-v0.2-working.md` and
   `inputs/trust-center-output-contract-v0.1.md`: framework authority.
-- `skills/plinth-trust-center/assets/v0.3-two-mode-shell.html`: UI authority.
+- `skills/plinth-trust-center/assets/v0.3-two-mode-shell.html` and
+  `assets/executive-questions12.html`: UI authority.
 
 Never modify these files.
 
@@ -78,11 +79,13 @@ python3 skills/plinth-trust-center/scripts/prefill_shell.py --product "PRODUCT N
   --catalogue inputs/catalogue.json --out trust-centers/SLUG/index.html
 ```
 
-This copies the shell and renders every region marked `data-fill`:
+This inserts the twelve-question Executive fragment and renders every region marked `data-fill`.
+Custom `--shell` files require the insertion slot or complete marked twelve-question markup.
+The former six-block layout is unsupported. The generated regions include:
 
 - the canonical check, observation, source and locator records;
 - the pillar check registers, evidence requests and methodology counts;
-- the Executive framework figures and open-evidence partition;
+- the Executive snapshot, scope, framework figures, coverage counts and open-evidence partition;
 - the escaped payload and the product name.
 
 It marks each pillar whose checks cite no observations with `data-pillar-sources="none"`,
@@ -95,12 +98,12 @@ Replace every remaining `{{PLACEHOLDER}}` in `index.html` from the accepted reco
 [references/two-mode-interface-contract.md](references/two-mode-interface-contract.md). This
 covers:
 
-- the six Executive blocks. Together they are a two-to-three-minute read covering:
-  - what the product is and who is behind it;
-  - what the holder is stated to hold, and what backs it;
-  - how value enters, accrues and exits;
-  - what Plinth can establish and what remains unresolved;
-  - the evidence boundary;
+- the twelve Executive questions in five fixed groups, using the bundled warm paper
+  presentation, coloured documentary labels and clear native disclosures;
+- the claim path beneath Q1, Q5's custody/asset-owner explanation, the value-movement
+  summary and visible unresolved/coverage sections. Mark unsupported relationships unresolved;
+- each question's answer label, supporting observations and Basis & limitations links,
+  following the interface contract's category rules rather than deriving labels from coverage;
 - for each pillar: the narrative, the boundary between what is supported and what is not
   established, a product-specific factual display, and named source links;
 - the claim-structure, legal, quantity, gap, technical-state and methodology panels.

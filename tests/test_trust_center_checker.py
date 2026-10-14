@@ -25,11 +25,12 @@ SKILL = ROOT / "skills" / "plinth-trust-center"
 SHELL = SKILL / "assets" / "v0.3-two-mode-shell.html"
 # Inner CSS of <style id="v03-skin">, byte-identical to the exemplar it was derived from.
 V03_SKIN_SHA256 = "8792c57c991bd44c40154fa876ea148385d3b6c91a6f50d63983c3df6953d11a"
-PRODUCT_RE = re.compile(r"(?i)(?<![a-z])(ousg|ondo|xauh|qmc|realfi|usdr)(?![a-z])")
+PRODUCT_RE = re.compile(r"(?i)(?<![a-z])(ousg|ondo|xauh|qmc|realfi|usdr|aru|acua|vantara|hawkrel|loomis|metlock|redstone|taipei)(?![a-z])")
 FILL_REGIONS = {
     "framework-strip", "open-row", "evidence-requests", "source-count", "source-records",
     "methodology-distribution", "technical-index", "locator-records", "observation-records",
     "check-records", "footer-counts",
+    "snapshot-date", "cutoff", "declared-scope", "executive-coverage",
 } | {f"pillar-{kind}:{pillar}" for kind in ("count", "table")
      for pillar in ("control", "backing", "economics", "governance_compliance", "continuity")}
 
@@ -268,6 +269,14 @@ def author(page: str, records) -> str:
             segment = re.sub(r'<span class="source-prefix">.*?</span>', "", segment)
             segment = segment.replace("{{OBSERVATION_IDS}}", "")
         page = page[:start] + segment + page[end:]
+    for number, _, _ in checker.QUESTIONS:
+        state = "source-described" if number == 5 else "answer-unresolved"
+        label, css = checker.LABELS[state]
+        oid = next(iter(records.observations))
+        for key, value in {"STATE": state, "LABEL": label, "CLASS": css,
+                           "OBSERVATION IDS": oid,
+                           "BASIS": f'<p><a href="#observation-{oid}">{oid}</a></p>'}.items():
+            page = page.replace(f"{{{{Q{number} {key}}}}}", value)
     parts = PAYLOAD_SPLIT.split(page)
     for i, part in enumerate(parts):
         if part.startswith('<script type="application/json"'):
@@ -291,18 +300,21 @@ def run_checker(tmp_path: Path, html: str, files) -> int:
 # the shell
 # ---------------------------------------------------------------------------
 SHELL_TEXT = SHELL.read_text(encoding="utf-8")
+COMPLETE_SHELL = prefill.executive_shell(SHELL_TEXT)
 
 
 def test_shell_contains_no_product_content():
-    outside_fonts = re.sub(r"url\(data:font[^)]*\)", "", SHELL_TEXT)
-    assert PRODUCT_RE.findall(outside_fonts) == []
-    body = SHELL_TEXT[SHELL_TEXT.index("<body"):]  # the head's CSS selectors name these values legitimately
+    for asset in (SKILL / "assets").glob("*"):
+        outside_fonts = re.sub(r"url\(data:font[^)]*\)", "", asset.read_text())
+        assert PRODUCT_RE.findall(outside_fonts) == [], asset
+    body = COMPLETE_SHELL[COMPLETE_SHELL.index("<body"):]
     assert "data-record-id" not in body, "canonical cards are rendered by prefill, never shipped"
     hrefs = set(re.findall(r'href="([^"]*)"', body))
     assert all(h.startswith("#") or h == "https://example.invalid/" for h in hrefs), hrefs
     for name in ("data-check-ids", "data-observation-ids", "data-evidence-class", "data-state"):
         values = set(re.findall(rf'{name}="([^"]*)"', body))
-        assert all(v.startswith("{{") for v in values), (name, values)
+        assert all(v.startswith("{{") or (name == "data-check-ids" and all(x.startswith("PF-") for x in v.split()))
+                   for v in values), (name, values)
 
 
 def test_shell_keeps_the_exemplar_theme_and_fixes_fragment_decoding():
@@ -322,7 +334,7 @@ def test_shell_keeps_record_titles_readable_on_narrow_screens():
 
 def test_shell_has_every_structure_the_checker_and_router_need():
     index = checker.Index()
-    index.feed(SHELL_TEXT)
+    index.feed(COMPLETE_SHELL)
     assert checker.REQUIRED_IDS <= set(index.ids)
     assert checker.REQUIRED_CLASSES - {"record"} <= index.classes
     panels = [element for element in checker.descendants_with_class(checker.element_by_id(index, "analyst-main"), "panel")
@@ -331,7 +343,7 @@ def test_shell_has_every_structure_the_checker_and_router_need():
     for selector_id in ("v3-executive", "v3-analyst", "executive"):
         assert index.ids[selector_id] == 1
     assert sorted(index.mode_values) == ["analyst", "executive"]
-    assert set(re.findall(r'data-fill="([^"]+)"', SHELL_TEXT)) == FILL_REGIONS
+    assert set(re.findall(r'data-fill="([^"]+)"', COMPLETE_SHELL)) == FILL_REGIONS
     for key in ("control", "backing", "economics", "governance", "continuity"):
         assert index.ids[f"checks-{key}"] == 1
 
@@ -396,7 +408,7 @@ def test_prefilled_and_authored_page_passes(tmp_path, accepted, capsys):
     assert run_checker(tmp_path, page, accepted.files) == 0
     records = accepted.records
     assert capsys.readouterr().out == (
-        "PASS: v0.3 two-mode interface; 6 Executive blocks; 14 Analyst panels; 63 checks; "
+        "PASS: v0.3 two-mode interface; 12 Executive questions; 14 Analyst panels; 63 checks; "
         f"{len(records.observations)} observations; {len(records.sources)} sources\n")
 
 
@@ -468,7 +480,7 @@ MUTATIONS = [
     ("metric value", lambda p: p.replace('data-metric="total" data-value="63"', 'data-metric="total" data-value="62"'),
      "framework strip differs"),
     ("partition", _edit_open_row, "open-evidence group differs"),
-    ("placeholder", lambda p: p.replace('<div class="hero-name">', '<div class="hero-name">{{SUBJECT NAME}}', 1),
+    ("placeholder", lambda p: p.replace('<h1 class="h1">', '<h1 class="h1">{{SUBJECT NAME}}', 1),
      "unfilled placeholders"),
     ("fill marker", lambda p: p.replace('<footer class="analyst-footer">', '<footer class="analyst-footer" data-fill="x">'),
      "unfilled prefill region"),
@@ -511,3 +523,81 @@ def test_unrelated_pillar_source_is_a_warning_not_a_failure(tmp_path, varied, ca
     captured = capsys.readouterr()
     assert "WARN: control also links sources that support none of its checks: ['src-a']" in captured.err
     assert captured.out.startswith("PASS:")
+
+
+def _wrap_class(page, name):
+    node = next(n for n in prefill.elements_with(page, 'class') if name in n['attrs']['class'].split())
+    return page[:node['start']] + '<details><summary>More</summary>' + page[node['start']:node['end']] + '</details>' + page[node['end']:]
+
+
+def _clear_answer(page, number):
+    start = page.index(f'<article class="q" id="q{number}"')
+    stop = page.index('</article>', start)
+    segment = re.sub(r'<div class="q-a">.*?</div>', '<div class="q-a"></div>', page[start:stop], flags=re.S)
+    return page[:start] + segment + page[stop:]
+
+
+@pytest.mark.parametrize('mutate,message', [
+    (lambda p: p.replace('data-executive-layout="questions12"', 'data-executive-layout="six-blocks"'), 'layout must be questions12'),
+    (lambda p: p.replace('data-executive-layout="questions12"', ''), 'layout must be questions12'),
+    (lambda p: p.replace('<header id="executive-orientation">', '<header id="executive-orientation"><div data-exec-block="1"></div>'), 'legacy six-block'),
+    (lambda p: p.replace('<header id="executive-orientation">', '<header id="executive-orientation"><div data-executive-slot></div>'), 'unfinished Executive'),
+    (lambda p: p.replace('class="q" id="q12"', 'class="question" id="q12"'), 'exactly twelve'),
+    (lambda p: _clear_answer(p, 1), 'Q1 requires a non-empty answer'),
+    (lambda p: _clear_answer(p, 5), 'Q5 requires a non-empty answer'),
+    (lambda p: p.replace(' data-claim-path ', ' data-other-path '), 'claim path'),
+    (lambda p: _wrap_class(p, 'framework-strip'), 'closed disclosure'),
+    (lambda p: _wrap_class(p, 'open-groups'), 'closed disclosure'),
+    (lambda p: p.replace('data-evidence-label="source-described" data-check-ids="PF-BACKING-004 PF-BACKING-005 PF-BACKING-006 PF-BACKING-007 PF-BACKING-008 PF-BACKING-009" data-observation-ids="OBS-1"', 'data-evidence-label="source-described" data-check-ids="PF-BACKING-004 PF-BACKING-005 PF-BACKING-006 PF-BACKING-007 PF-BACKING-008 PF-BACKING-009" data-observation-ids=""'), 'requires supporting observation'),
+])
+def test_twelve_question_guards(tmp_path, varied, mutate, message):
+    page = author(prefilled(tmp_path, varied.files), varied.records)
+    changed = mutate(page)
+    assert changed != page
+    with pytest.raises(AssertionError, match=message):
+        checker.check_document(changed, SHELL_TEXT, varied.inputs)
+
+
+def test_question_mapping_warns_for_known_outside_check(tmp_path, varied):
+    page = author(prefilled(tmp_path, varied.files), varied.records)
+    page = page.replace('data-check-ids="PF-GOV-001 PF-GOV-002 PF-GOV-003"',
+                        'data-check-ids="PF-GOV-001 PF-GOV-002 PF-GOV-003 PF-CONTROL-001"', 1)
+    warnings = []
+    assert checker.check_document(page, SHELL_TEXT, varied.inputs, warnings).startswith('PASS')
+    assert any('Q1 cites checks outside its default mapping' in w for w in warnings)
+
+
+def test_custom_shell_slot_or_complete_layout_only():
+    assert prefill.executive_shell(COMPLETE_SHELL) == COMPLETE_SHELL
+    assert prefill.executive_shell(SHELL_TEXT.replace(' data-executive-layout="questions12"', '')) == COMPLETE_SHELL
+    for invalid in (SHELL_TEXT.replace('data-executive-layout="questions12"', 'data-executive-layout="six-blocks"'),
+                    SHELL_TEXT.replace('<div data-executive-slot></div>', '<div data-exec-block="1"></div>'),
+                    COMPLETE_SHELL.replace('class="q" id="q12"', 'class="q" id="other"'),
+                    COMPLETE_SHELL.replace('</main>', '<div data-executive-slot></div></main>', 1)):
+        with pytest.raises(records_mod.RecordError):
+            prefill.executive_shell(invalid)
+
+
+def test_prefill_is_deterministic_and_keeps_analyst(tmp_path, varied):
+    page, _ = prefill.fill(SHELL_TEXT, varied.records, records_mod.payload_text(varied.inputs), 'Generated product')
+    again, _ = prefill.fill(SHELL_TEXT, varied.records, records_mod.payload_text(varied.inputs), 'Generated product')
+    assert page == again
+    custom, _ = prefill.fill(COMPLETE_SHELL, varied.records, records_mod.payload_text(varied.inputs), 'Generated product')
+    assert page == custom
+
+
+def test_checker_rejects_missing_coverage_before_rendering(varied):
+    import copy
+    inputs = copy.deepcopy(varied.inputs)
+    inputs.assessment['checks'][0]['coverage'] = 'MISSING'
+    with pytest.raises(AssertionError, match='MISSING coverage is disabled'):
+        checker.check_document('', SHELL_TEXT, inputs)
+
+
+def test_print_and_disclosure_rules():
+    assert '#v3-executive details,#v3-executive details>*{display:block!important}' in SHELL_TEXT
+    assert "window.addEventListener('beforeprint'" in SHELL_TEXT
+    assert "window.addEventListener('afterprint'" in SHELL_TEXT
+    assert 'min-height:48px' in SHELL_TEXT
+    assert '@media(prefers-reduced-motion:reduce)' in SHELL_TEXT
+    assert '--paper:#F7F5F0' in SHELL_TEXT and '--col:960px' in SHELL_TEXT

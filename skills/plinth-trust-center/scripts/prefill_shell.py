@@ -41,7 +41,10 @@ from trust_center_records import (  # noqa: E402
     payload_text,
 )
 
+from presentation import utc_date, cutoff_text, executive_counts
+
 DEFAULT_SHELL = Path(__file__).resolve().parent.parent / "assets" / "v0.3-two-mode-shell.html"
+EXECUTIVE_FRAGMENT = DEFAULT_SHELL.with_name("executive-questions12.html")
 VOID_TAGS = {"area", "base", "br", "col", "embed", "hr", "img", "input", "link", "meta",
              "param", "source", "track", "wbr"}
 PLACEHOLDER_RE = re.compile(r"\{\{[A-Z][A-Z0-9_ &,./:'-]*\}\}")
@@ -98,6 +101,34 @@ def elements_with(text: str, attribute: str) -> list[dict]:
 
 def without_fill(raw_start: str) -> str:
     return re.sub(r'\s+data-fill="[^"]*"', "", raw_start)
+
+
+def executive_shell(shell: str) -> str:
+    """Insert the only supported Executive layout, or accept a complete custom one."""
+    if 'data-exec-block=' in shell:
+        raise RecordError("six-block shells are no longer supported; use the twelve-question shell")
+    views = [n for n in elements_with(shell, "id") if n["attrs"]["id"] == "v3-executive"]
+    if len(views) != 1:
+        raise RecordError("the shell must have one #v3-executive")
+    view = views[0]
+    layout = view["attrs"].get("data-executive-layout")
+    if layout not in (None, "questions12"):
+        raise RecordError("the shell's Executive layout must be questions12")
+    slots = elements_with(shell, "data-executive-slot")
+    if slots:
+        if len(slots) != 1 or not (view["inner_start"] <= slots[0]["start"] < view["inner_end"]):
+            raise RecordError("the shell must have exactly one Executive slot inside #v3-executive")
+        if re.search(r'id=[\"\']q\d+[\"\']', shell):
+            raise RecordError("the shell contains both an Executive slot and question cards")
+        slot = slots[0]
+        shell = shell[:slot["start"]] + EXECUTIVE_FRAGMENT.read_text(encoding="utf-8") + shell[slot["end"]:]
+    elif layout != "questions12" or re.findall(r'<article\b[^>]*\bid="q(\d+)"', shell) != [str(n) for n in range(1, 13)]:
+        raise RecordError("custom shells need an Executive slot or twelve ordered questions12 cards")
+    if layout is None:
+        shell = shell[:view["start"]] + view["raw_start"][:-1] + ' data-executive-layout="questions12">' + shell[view["inner_start"]:]
+    return shell
+
+
 
 
 # ---------------------------------------------------------------------------
@@ -370,6 +401,7 @@ def render_distribution(records: Records) -> str:
 # filling
 # ---------------------------------------------------------------------------
 def fill(shell: str, records: Records, payload: str, product: str) -> tuple[str, list[str]]:
+    shell = executive_shell(shell)
     notes: list[str] = []
     edits: list[tuple[int, int, str]] = []
     counts = {pillar: Records.counts(records.checks_in(pillar)) for pillar in records.pillar_ids}
@@ -380,7 +412,18 @@ def fill(shell: str, records: Records, payload: str, product: str) -> tuple[str,
         start_tag = without_fill(node["raw_start"])
         inner = shell[node["inner_start"]:node["inner_end"]]
         kind, _, arg = region.partition(":")
-        if kind == "framework-strip":
+        if kind == "snapshot-date":
+            inner = "Fixed evidence snapshot · " + esc(utc_date(records.campaign["cutoff"]))
+        elif kind == "cutoff":
+            inner = "Evidence cutoff: " + esc(cutoff_text(records.campaign["cutoff"]))
+        elif kind == "declared-scope":
+            inner = ("Declared scope: public evidence only" if records.campaign["bounded_public_evidence"]
+                     else "Declared scope: not limited to public evidence")
+        elif kind == "executive-coverage":
+            inner = "".join(f'<span class="coverage-count" data-coverage-count="{esc(label)}" '
+                            f'data-value="{value}">{esc(label)}: {value}</span>'
+                            for label, value in executive_counts(records).items())
+        elif kind == "framework-strip":
             def cell(match):
                 value = metrics[match.group("metric")]
                 return f'{match.group("open")}{value}{match.group("mid")}{value}{match.group("close")}'

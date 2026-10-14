@@ -1400,6 +1400,142 @@ a:focus-visible,button:focus-visible,summary:focus-visible{outline:3px solid rgb
    so every record title collapsed to zero width. Let the badges wrap below it. */
 @media(max-width:760px){.record>summary{flex-wrap:wrap}}
 </style>
+<style data-purpose="questions12-presentation">
+html:not(.js){scroll-behavior:auto}@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+html:not(.js) #v3-executive .rail,html:not(.js) #v3-executive #prog{display:none}
+#v3-executive{
+  --paper:#F7F5F0;--paper-2:#FCFBF8;--panel:#FFFFFF;--ink:#15150F;
+  --ink-2:#3A3A33;--ink-3:#61605A;--muted:#6E6B62;--hint:#777369;
+  --line:#EAE7DE;--line-2:#DFDBD0;--sage:#5F7A5A;--sage-bg:#EFF3EE;
+  --amber:#A0731C;--amber-bg:#F7F1E4;--rust:#A3543A;--rust-bg:#F8EFEB;
+  --shadow-sm:0 1px 2px rgba(21,21,15,.04);
+  --shadow:0 1px 2px rgba(21,21,15,.04),0 10px 30px -18px rgba(21,21,15,.22);
+  --shadow-lift:0 1px 2px rgba(21,21,15,.05),0 20px 45px -22px rgba(21,21,15,.28);
+  --r:18px;--col:960px;--gut:32px;
+  color:var(--ink);background:var(--paper);
+  background-image:radial-gradient(1100px 520px at 50% -6%,#FFFDF9 0%,rgba(255,253,249,0) 66%);
+  font-family:Inter,-apple-system,BlinkMacSystemFont,sans-serif;font-size:15px;line-height:1.6;
+  -webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;
+  font-feature-settings:"cv05" 1,"ss01" 1;
+}
+#v3-executive *{box-sizing:border-box;margin:0;padding:0}
+#v3-executive a{color:inherit;text-decoration:none}
+#v3-executive button{font:inherit;cursor:pointer;border:0;background:none;color:inherit}
+#v3-executive a:focus-visible,#v3-executive button:focus-visible,#v3-executive summary:focus-visible{outline:2px solid var(--sage);outline-offset:4px}
+#v3-executive .kiid-col{width:100%;max-width:var(--col);margin-left:auto;margin-right:auto;padding-left:var(--gut);padding-right:var(--gut)}
+#v3-executive .kiid-main{padding-top:66px;padding-bottom:90px}
+#v3-executive #prog{position:fixed;top:0;left:0;height:2px;width:0;background:var(--ink);z-index:100;transition:width .1s linear}
+#v3-executive .rail{position:fixed;top:50%;transform:translateY(-50%);left:calc(50% - (var(--col) / 2) - 76px);z-index:30;display:flex;flex-direction:column;gap:0}
+#v3-executive .rl{display:flex;align-items:center;gap:11px;height:33px;opacity:.4;transition:opacity .25s;cursor:pointer}
+#v3-executive .rl:hover{opacity:.9}#v3-executive .rl.on{opacity:1}
+#v3-executive .rl-n{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--muted);width:18px;letter-spacing:-.02em;transition:color .25s}
+#v3-executive .rl.on .rl-n{color:var(--ink);font-weight:500}
+#v3-executive .rl-b{height:3px;border-radius:3px;width:16px;transition:width .3s cubic-bezier(.2,.8,.2,1)}
+#v3-executive .rl.on .rl-b{width:34px}#v3-executive .b-part{background:var(--amber)}
+#v3-executive .eyebrow{font-size:10.5px;letter-spacing:.17em;text-transform:uppercase;color:var(--muted);font-weight:500}
+#v3-executive .h1{font-size:64px;font-weight:300;letter-spacing:-.045em;line-height:1;margin:18px 0 22px}
+#v3-executive .lede{font-size:18.5px;line-height:1.58;color:var(--ink-2);font-weight:350;letter-spacing:-.011em}
+#v3-executive .chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:26px}
+#v3-executive .chip{display:inline-flex;align-items:center;gap:8px;padding:6px 13px;background:var(--panel);border:1px solid var(--line);border-radius:100px;font-size:12px;color:var(--ink-3);box-shadow:var(--shadow-sm);font-family:inherit;text-transform:none;letter-spacing:normal}
+#v3-executive .chip b{font-weight:500;color:var(--ink-2)}
+#v3-executive .context{margin-top:30px;background:var(--panel);border:1px solid var(--line);border-radius:18px;padding:23px 26px;box-shadow:var(--shadow-sm)}
+#v3-executive .context p{font-size:13px;color:var(--ink-3);line-height:1.65}#v3-executive .context p+p{margin-top:10px}
+#v3-executive .context strong{font-weight:550;color:var(--ink-2)}
+#v3-executive .context .labels{display:flex;flex-wrap:wrap;gap:9px;margin:15px 0 10px}
+#v3-executive .overlay-link{display:inline-flex;align-items:center;gap:7px;text-decoration:underline;text-underline-offset:3px;color:var(--ink-2)}
+#v3-executive .sec-h{margin:48px 0 22px;display:flex;align-items:baseline;justify-content:space-between;gap:20px;flex-wrap:wrap;font-family:inherit;font-size:inherit;text-transform:none;letter-spacing:normal;color:inherit}
+#v3-executive .sec-t{font-size:26px;font-weight:350;letter-spacing:-.03em}#v3-executive .sec-s{font-size:13px;color:var(--muted)}
+#v3-executive .grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:9px}
+#v3-executive .card{background:var(--panel);border:1px solid var(--line);border-radius:13px;padding:14px 15px;cursor:pointer;transition:transform .22s cubic-bezier(.2,.8,.2,1),box-shadow .22s,border-color .22s;display:flex;flex-direction:column;gap:8px;box-shadow:var(--shadow-sm);min-height:103px}
+#v3-executive .card:hover{transform:translateY(-3px);box-shadow:var(--shadow-lift);border-color:var(--line-2)}
+#v3-executive .c-top{display:flex;align-items:flex-start;justify-content:space-between;gap:8px}
+#v3-executive .c-n{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--muted)}
+#v3-executive .c-q{font-size:13px;line-height:1.4;color:var(--ink);letter-spacing:-.009em}
+#v3-executive .index-status{font-size:10px;color:var(--ink-3)}
+#v3-executive .pill{display:inline-flex;align-items:center;gap:6px;padding:4px 8px;border-radius:100px;font-size:10px;font-weight:500;white-space:nowrap;margin:0}
+#v3-executive .p-part{background:var(--amber-bg);color:var(--amber)}#v3-executive .p-no{background:var(--rust-bg);color:var(--rust)}
+#v3-executive .grp{margin-top:38px}#v3-executive .grp-h{display:flex;align-items:center;gap:14px;margin-bottom:16px}
+#v3-executive .grp-n{font-family:'JetBrains Mono',monospace;font-size:10.5px;color:var(--panel);background:var(--ink);width:22px;height:22px;border-radius:7px;display:grid;place-items:center;flex-shrink:0}
+#v3-executive .grp-t{font-size:18px;font-weight:450;letter-spacing:-.025em}
+#v3-executive .q{background:var(--panel);border:1px solid var(--line);border-radius:var(--r);padding:28px 30px;margin-bottom:12px;box-shadow:var(--shadow);scroll-margin-top:100px;opacity:1;transform:none;transition:none}
+#v3-executive .q-top{display:flex;align-items:flex-start;justify-content:space-between;gap:24px;margin-bottom:10px}
+#v3-executive .q-t{font-size:22px;font-weight:350;letter-spacing:-.031em;line-height:1.28;max-width:560px}
+#v3-executive .q-n{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--hint);display:block;margin-bottom:9px;letter-spacing:.04em}
+#v3-executive .q-pill{font-size:10px;letter-spacing:.11em;text-transform:uppercase;color:var(--ink-3);margin-bottom:18px}
+#v3-executive .q-a{font-size:15.5px;color:var(--ink-2);line-height:1.68;font-weight:400;letter-spacing:-.006em}
+#v3-executive .q-a p+p{margin-top:12px}#v3-executive .q-a strong{color:var(--ink);font-weight:550}
+#v3-executive .bound{margin-top:18px;padding:13px 16px;background:var(--rust-bg);border-radius:12px;border:1px solid rgba(163,84,58,.13)}
+#v3-executive .b-k{font-size:10px;letter-spacing:.07em;text-transform:uppercase;color:var(--rust);font-weight:600;margin-bottom:7px}
+#v3-executive .b-t{font-size:13.2px;color:var(--ink-2);line-height:1.62}
+#v3-executive .evidence{margin-top:16px;border-top:1px solid var(--line);padding-top:12px}
+#v3-executive .evidence summary{font-size:12px;color:var(--ink-3);cursor:pointer;padding:5px 0;list-style-position:inside}
+#v3-executive .evidence p{font-size:12.5px;line-height:1.65;color:var(--ink-3);margin-top:10px}
+#v3-executive .evidence a{text-decoration:underline;text-underline-offset:3px}
+#v3-executive .route{display:flex;flex-wrap:wrap;gap:7px;align-items:center;margin-top:18px;font-size:12px;color:var(--ink-3)}
+#v3-executive .route b{font-weight:500;background:var(--paper-2);border:1px solid var(--line);padding:7px 10px;border-radius:8px}
+#v3-executive .exit{margin-top:16px;border-left:2px solid var(--line-2);padding-left:15px;font-size:14px;color:var(--ink-2)}
+#v3-executive .scope{margin-top:38px;border-top:1px solid var(--line-2);padding-top:25px;scroll-margin-top:100px}
+#v3-executive .scope h2{font-size:20px;font-weight:450;margin-bottom:12px}#v3-executive .scope p{font-size:12.5px;color:var(--ink-3);margin-top:10px}
+#v3-executive .scope a{text-decoration:underline}#v3-executive .close{margin-top:30px;padding-top:26px;border-top:1px solid var(--line);display:flex;justify-content:space-between;align-items:flex-start;gap:24px;font-size:11.5px;color:var(--muted);line-height:1.65}
+#v3-executive .q-back{text-decoration:underline;text-underline-offset:3px;white-space:nowrap}
+@media(max-width:1120px){#v3-executive .rail{display:none}}
+@media(max-width:900px){#v3-executive .grid{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:760px){
+  #v3-executive{--gut:20px}#v3-executive .kiid-main{padding-top:38px;padding-bottom:60px}
+  #v3-executive .h1{font-size:43px}#v3-executive .lede{font-size:16.5px}#v3-executive .grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+  #v3-executive .q{padding:23px 20px}#v3-executive .q-t{font-size:21px}#v3-executive .q-top{gap:10px}
+  #v3-executive .context{padding:19px}#v3-executive .grp-h{gap:10px}#v3-executive .close{flex-direction:column;align-items:flex-start;gap:14px}
+}
+@media(max-width:380px){#v3-executive .grid{grid-template-columns:1fr}}
+@media(prefers-reduced-motion:reduce){#v3-executive *,#v3-executive *::before,#v3-executive *::after{transition:none!important;animation:none!important}}
+@media print{
+  @page{margin:16mm}.v3-top,#v3-executive .rail,#v3-executive #prog,.skip-link{display:none!important}
+  #v3-executive,.js #v3-executive,.js #v3-executive.is-active{display:block!important;background:#fff;font-size:11pt}
+  #v3-executive .kiid-main{max-width:none;padding:0}#v3-executive .grid,#v3-executive .sec-h,#v3-executive .q-back{display:none!important}
+  #v3-executive .h1{font-size:32pt;margin:12px 0}#v3-executive .lede{font-size:12pt}#v3-executive .chips{margin-top:15px}#v3-executive .chip{font-size:9pt}
+  #v3-executive .context{margin-top:20px;box-shadow:none}#v3-executive .grp{margin-top:22px}
+  #v3-executive .q{opacity:1!important;transform:none!important;box-shadow:none;break-inside:avoid;padding:18px;margin-bottom:12px}
+  #v3-executive .q-t{font-size:16pt}#v3-executive .q-a{font-size:10.5pt}#v3-executive .bound{padding:10px}#v3-executive .b-t,#v3-executive .evidence p{font-size:9pt}
+  #v3-executive .scope,#v3-executive .close{break-inside:avoid}#v3-executive .close{font-size:8pt}
+}
+
+
+#v3-executive .rl{min-height:36px}#v3-executive .rl-b{background:var(--ink-3)}
+#v3-executive .evidence summary{min-height:44px;display:flex;align-items:center;gap:8px}
+#v3-executive .framework-strip{margin-top:16px}#v3-executive .framework-cell{padding:16px}
+#v3-executive .framework-n{font-size:24px}#v3-executive .framework-l{font-size:12px}#v3-executive .framework-s{font-size:11px}
+#v3-executive .open-row{padding:16px}#v3-executive .open-m{margin-top:8px}#v3-executive .open-ref{margin-top:8px}
+@media print{#v3-analyst{display:block!important}#v3-executive .context{break-inside:avoid}.mode-tabs{display:none!important}}
+
+
+#v3-executive .pill.p-part,#v3-executive .index-status.p-part{background:#F7F1E4;color:#775615;border-color:#E8D6AA}
+#v3-executive .pill.p-no,#v3-executive .index-status.p-no{background:#F8EFEB;color:#8F4531;border-color:#EACABD}
+#v3-executive .evidence>summary{display:flex;align-items:center;gap:10px;min-height:48px;padding:8px 5px;list-style:none;border-radius:8px;transition:background .15s,color .15s}
+#v3-executive .evidence>summary:hover{background:var(--cream-2);color:var(--ink)}
+#v3-executive .evidence>summary::-webkit-details-marker{display:none}
+#v3-executive .evidence>summary::marker{content:''}
+#v3-executive .disclosure-cue{display:inline-flex;align-items:center;gap:6px;margin-left:auto;flex:none;font-size:10px;font-weight:500;color:var(--ink-3)}
+#v3-executive .when-open{display:none}
+#v3-executive .evidence[open]>summary .when-closed{display:none}
+#v3-executive .evidence[open]>summary .when-open{display:inline}
+#v3-executive .disclosure-chevron{transition:transform .15s}
+#v3-executive .evidence[open]>summary .disclosure-chevron{transform:rotate(90deg)}
+@media(max-width:420px){#v3-executive .evidence>summary{gap:7px;font-size:11px}#v3-executive .disclosure-cue{gap:3px}#v3-executive .pill{padding:4px 7px!important}}
+@media(prefers-reduced-motion:reduce){#v3-executive .evidence>summary,#v3-executive .disclosure-chevron{transition:none}}
+@media print{#v3-executive .disclosure-cue{display:none}}
+
+#v3-executive .bound{background:var(--paper-2);border-color:var(--line-2)}
+#v3-executive .b-k{color:var(--ink-3)}
+#v3-executive .pill,#v3-executive .index-status{border:1px solid var(--line-2);padding:4px 8px;border-radius:100px;font-size:10px;font-weight:500;white-space:nowrap;line-height:1.4}
+#v3-executive .c-top{align-items:center}
+#v3-executive .rail{opacity:0;visibility:hidden;pointer-events:none}
+#v3-executive .rail.is-visible{opacity:1;visibility:visible;pointer-events:auto}
+#v3-executive .route p{margin:0 0 8px;width:100%;overflow-wrap:anywhere}
+#v3-executive .route b{display:inline-block;white-space:normal}
+#v3-executive .coverage-counts{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
+#v3-executive .coverage-count{background:var(--panel);border:1px solid var(--line);border-radius:9px;padding:8px 12px;font-size:12px}
+@media print{#v3-executive details,#v3-executive details>*{display:block!important}#v3-executive details>summary{list-style:none}}
+</style>
 </head>
 
         <body class="mode-executive">
@@ -1411,79 +1547,8 @@ a:focus-visible,button:focus-visible,summary:focus-visible{outline:3px solid rgb
             <div class="v3-top-spacer" aria-hidden="true"></div>
           </div>
         </header>
-        <div class="v3-view is-active" id="v3-executive">
-<main class="executive-main" id="executive" aria-label="{{PRODUCT}} executive summary">
-  <section class="exec-block" id="executive-orientation" data-exec-block="1" data-origin="derived-presentation" data-check-ids="{{CHECK_IDS}}" data-observation-ids="{{OBSERVATION_IDS}}">
-    <div class="hero-tick">{{SUBJECT KICKER}}</div>
-    <div class="hero-name">{{SUBJECT NAME}}</div>
-    <p class="hero-what">{{SUBJECT SUMMARY}}</p>
-    <div class="facts">
-      <div><div class="fact-k">{{FACT LABEL}}</div><div class="fact-v">{{FACT VALUE}}</div><div class="fact-s">Fixed public snapshot</div></div>
-      <div><div class="fact-k">{{FACT LABEL}}</div><div class="fact-v">{{FACT VALUE}}</div><div class="fact-s">{{FACT NOTE}}</div></div>
-      <div><div class="fact-k">{{FACT LABEL}}</div><div class="fact-v">{{FACT VALUE}}</div><div class="fact-s">{{FACT NOTE}}</div></div>
-    </div>
-  </section>
-
-  <section class="exec-block" id="executive-holdings" data-exec-block="2" data-origin="derived-presentation" data-check-ids="{{CHECK_IDS}}" data-observation-ids="{{OBSERVATION_IDS}}">
-    <h2 class="sec-h">What the holder is stated to hold</h2>
-    <div class="holds">
-      <p class="holds-lede">{{HOLDINGS LEDE}} <strong>{{HOLDINGS LEDE}}</strong> {{HOLDINGS LEDE}}</p>
-      <div class="claim-track" aria-label="Holder to asset structure">
-        <div class="claim-step"><b>Holder</b><span>{{CLAIM STEP}}</span></div><div class="claim-arrow" aria-hidden="true">→</div>
-        <div class="claim-step"><b>Recorded interest</b><span>{{CLAIM STEP}}</span></div><div class="claim-arrow" aria-hidden="true">→</div>
-        <div class="claim-step unresolved"><b>Legal claim</b><span>{{CLAIM STEP}}</span></div><div class="claim-arrow" aria-hidden="true">→</div>
-        <div class="claim-step"><b>Issuing vehicle</b><span>{{CLAIM STEP}}</span></div><div class="claim-arrow" aria-hidden="true">→</div>
-        <div class="claim-step"><b>Economic asset</b><span>{{CLAIM STEP}}</span></div>
-      </div>
-      <div class="service-branch"><strong>Separate service and control branch:</strong> {{SERVICE BRANCH}}</div>
-      <p class="claim-limit">{{CLAIM LIMIT}}</p>
-    </div>
-  </section>
-
-  <section class="exec-block" id="executive-value" data-exec-block="3" data-origin="derived-presentation" data-check-ids="{{CHECK_IDS}}" data-observation-ids="{{OBSERVATION_IDS}}">
-    <h2 class="sec-h">How value moves</h2>
-    <div class="flow">
-      <article class="flow-c"><div class="flow-k">{{FLOW STAGE}}</div><div class="flow-v">{{FLOW VALUE}}</div><div class="flow-d">{{FLOW DETAIL}}</div></article>
-      <article class="flow-c"><div class="flow-k">{{FLOW STAGE}}</div><div class="flow-v">{{FLOW VALUE}}</div><div class="flow-d">{{FLOW DETAIL}}</div></article>
-      <article class="flow-c"><div class="flow-k">{{FLOW STAGE}}</div><div class="flow-v">{{FLOW VALUE}}</div><div class="flow-d">{{FLOW DETAIL}}</div></article>
-    </div>
-  </section>
-
-  <section class="exec-block" id="executive-pillars" data-exec-block="4" data-origin="derived-presentation" data-check-ids="{{CHECK_IDS}}">
-    <h2 class="sec-h">Five trust pillars</h2>
-    <article class="pill"><div class="pill-top"><div class="pill-name"><i class="pillar-dot pillar-control"></i>Control</div></div><p class="pill-text">{{PILLAR CONCLUSION}}</p><div class="pill-more"><div class="pill-open"><span>Still unresolved:</span> {{PILLAR OPEN BOUNDARY}}</div><a class="pill-link" href="#pillar-control">See the evidence →</a></div></article>
-    <article class="pill"><div class="pill-top"><div class="pill-name"><i class="pillar-dot pillar-backing"></i>Assets &amp; Backing</div></div><p class="pill-text">{{PILLAR CONCLUSION}}</p><div class="pill-more"><div class="pill-open"><span>Still unresolved:</span> {{PILLAR OPEN BOUNDARY}}</div><a class="pill-link" href="#pillar-reserves">See the evidence →</a></div></article>
-    <article class="pill"><div class="pill-top"><div class="pill-name"><i class="pillar-dot pillar-economics"></i>Economics</div></div><p class="pill-text">{{PILLAR CONCLUSION}}</p><div class="pill-more"><div class="pill-open"><span>Still unresolved:</span> {{PILLAR OPEN BOUNDARY}}</div><a class="pill-link" href="#pillar-economics">See the evidence →</a></div></article>
-    <article class="pill"><div class="pill-top"><div class="pill-name"><i class="pillar-dot pillar-governance"></i>Governance &amp; Compliance</div></div><p class="pill-text">{{PILLAR CONCLUSION}}</p><div class="pill-more"><div class="pill-open"><span>Still unresolved:</span> {{PILLAR OPEN BOUNDARY}}</div><a class="pill-link" href="#pillar-governance-compliance">See the evidence →</a></div></article>
-    <article class="pill"><div class="pill-top"><div class="pill-name"><i class="pillar-dot pillar-continuity"></i>Continuity</div></div><p class="pill-text">{{PILLAR CONCLUSION}}</p><div class="pill-more"><div class="pill-open"><span>Still unresolved:</span> {{PILLAR OPEN BOUNDARY}}</div><a class="pill-link" href="#pillar-continuity">See the evidence →</a></div></article>
-  </section>
-
-  <section class="exec-block" id="executive-open" data-exec-block="5" data-origin="derived-presentation" data-check-ids="{{CHECK_IDS}}">
-    <h2 class="sec-h">What remains open</h2>
-    <div class="framework-strip" aria-label="Framework question accounting" data-fill="framework-strip">
-      <div class="framework-cell" data-metric="total" data-value="{{VALUE}}"><div class="framework-n">{{VALUE}}</div><div class="framework-l">Fixed questions</div><div class="framework-s">Framework v0.2</div></div>
-      <div class="framework-cell" data-metric="applies" data-value="{{VALUE}}"><div class="framework-n">{{VALUE}}</div><div class="framework-l">Currently apply</div><div class="framework-s">Structural condition established</div></div>
-      <div class="framework-cell" data-metric="applicability-unresolved" data-value="{{VALUE}}"><div class="framework-n">{{VALUE}}</div><div class="framework-l">Applicability unresolved</div><div class="framework-s">More structural evidence needed</div></div>
-      <div class="framework-cell" data-metric="applicable-not-fully-answered" data-value="{{VALUE}}"><div class="framework-n">{{VALUE}}</div><div class="framework-l">Not fully answered</div><div class="framework-s">Among applicable questions</div></div>
-    </div>
-    <div class="open-groups">
-      <a class="open-row" href="#checks-control" data-pillar="control" data-check-ids="{{CHECK_IDS}}" data-fill="open-row"><div class="open-top"><div class="open-q">{{PILLAR OPEN QUESTION}}</div><div class="open-arrow">→</div></div><div class="open-m">{{OPEN SUMMARY}}</div><div class="open-ref"><span class="open-pill">Control</span><span class="open-ids">{{CHECK ID RANGE}}</span></div></a>
-      <a class="open-row" href="#checks-backing" data-pillar="backing" data-check-ids="{{CHECK_IDS}}" data-fill="open-row"><div class="open-top"><div class="open-q">{{PILLAR OPEN QUESTION}}</div><div class="open-arrow">→</div></div><div class="open-m">{{OPEN SUMMARY}}</div><div class="open-ref"><span class="open-pill">Assets &amp; Backing</span><span class="open-ids">{{CHECK ID RANGE}}</span></div></a>
-      <a class="open-row" href="#checks-economics" data-pillar="economics" data-check-ids="{{CHECK_IDS}}" data-fill="open-row"><div class="open-top"><div class="open-q">{{PILLAR OPEN QUESTION}}</div><div class="open-arrow">→</div></div><div class="open-m">{{OPEN SUMMARY}}</div><div class="open-ref"><span class="open-pill">Economics</span><span class="open-ids">{{CHECK ID RANGE}}</span></div></a>
-      <a class="open-row" href="#checks-governance" data-pillar="governance" data-check-ids="{{CHECK_IDS}}" data-fill="open-row"><div class="open-top"><div class="open-q">{{PILLAR OPEN QUESTION}}</div><div class="open-arrow">→</div></div><div class="open-m">{{OPEN SUMMARY}}</div><div class="open-ref"><span class="open-pill">Governance &amp; Compliance</span><span class="open-ids">{{CHECK ID RANGE}}</span></div></a>
-      <a class="open-row" href="#checks-continuity" data-pillar="continuity" data-check-ids="{{CHECK_IDS}}" data-fill="open-row"><div class="open-top"><div class="open-q">{{PILLAR OPEN QUESTION}}</div><div class="open-arrow">→</div></div><div class="open-m">{{OPEN SUMMARY}}</div><div class="open-ref"><span class="open-pill">Continuity</span><span class="open-ids">{{CHECK ID RANGE}}</span></div></a>
-    </div>
-  </section>
-
-  <section class="exec-block" id="executive-boundary" data-exec-block="6" data-origin="derived-presentation" data-check-ids="{{CHECK_IDS}}">
-    <h2 class="sec-h">Where public evidence stops</h2>
-    <div class="boundary-card">
-      <div class="boundary-k">Bounded public-evidence assessment</div>
-      <p>{{EVIDENCE BOUNDARY TEXT}}</p>
-      <div class="exec-cta"><span>Analyst mode contains the evidence, complete questions, source lineage and exact requirements that would close each gap.</span><a href="#pillar-control">See the full evidence →</a></div>
-    </div>
-  </section>
-</main>
+        <div class="v3-view is-active" id="v3-executive" data-executive-layout="questions12">
+<div data-executive-slot></div>
 </div>
         <div class="v3-view" id="v3-analyst">
           <details class="mobile-analyst-nav"><summary>Analyst sections</summary><nav class="analyst-nav mobile-nav" aria-label="Analyst sections"><div class="analyst-nav-label">Trust pillars</div><a href="#pillar-control" data-mobile-target="pillar-control"><span class="nav-name"><i class="nav-dot pillar-control"></i><span>Control</span></span><span class="nav-count">8 checks</span></a><a href="#pillar-reserves" data-mobile-target="pillar-reserves"><span class="nav-name"><i class="nav-dot pillar-backing"></i><span>Assets &amp; Backing</span></span><span class="nav-count">13 checks</span></a><a href="#pillar-economics" data-mobile-target="pillar-economics"><span class="nav-name"><i class="nav-dot pillar-economics"></i><span>Economics</span></span><span class="nav-count">14 checks</span></a><a href="#pillar-governance-compliance" data-mobile-target="pillar-governance-compliance"><span class="nav-name"><i class="nav-dot pillar-governance"></i><span>Governance &amp; Compliance</span></span><span class="nav-count">16 checks</span></a><a href="#pillar-continuity" data-mobile-target="pillar-continuity"><span class="nav-name"><i class="nav-dot pillar-continuity"></i><span>Continuity</span></span><span class="nav-count">12 checks</span></a><div class="analyst-nav-label">Structure</div><a href="#chain-of-title" data-mobile-target="chain-of-title"><span class="nav-name"><i class="nav-dot"></i><span>Claim and parties</span></span></a><a href="#legal-structure" data-mobile-target="legal-structure"><span class="nav-name"><i class="nav-dot"></i><span>Legal structure</span></span></a><a href="#supply-by-chain" data-mobile-target="supply-by-chain"><span class="nav-name"><i class="nav-dot"></i><span>Quantity boundaries</span></span></a><div class="analyst-nav-label">Evidence</div><a href="#gaps-title" data-mobile-target="gaps-title"><span class="nav-name"><i class="nav-dot"></i><span>Evidence gaps</span></span></a><a href="#requests-title" data-mobile-target="requests-title"><span class="nav-name"><i class="nav-dot"></i><span>Evidence requests</span></span></a><a href="#sources-title" data-mobile-target="sources-title"><span class="nav-name"><i class="nav-dot"></i><span>Evidence registry</span></span></a><a href="#changes-title" data-mobile-target="changes-title"><span class="nav-name"><i class="nav-dot"></i><span>Observed technical state</span></span></a><div class="analyst-nav-label">Reference</div><a href="#methodology-title" data-mobile-target="methodology-title"><span class="nav-name"><i class="nav-dot"></i><span>Methodology</span></span></a><a href="#technical-appendix" data-mobile-target="technical-appendix"><span class="nav-name"><i class="nav-dot"></i><span>Full research record</span></span></a></nav></details>
@@ -1823,6 +1888,32 @@ a:focus-visible,button:focus-visible,summary:focus-visible{outline:3px solid rgb
 }());
 </script>
 
-        </body>
+        <script data-purpose="questions12-navigation">
+(function(){
+  var view=document.getElementById('v3-executive');
+  var details=Array.prototype.slice.call(view.querySelectorAll('details'));
+  var saved=[];
+  window.addEventListener('beforeprint',function(){saved=details.map(function(d){return d.open});details.forEach(function(d){d.open=true})});
+  window.addEventListener('afterprint',function(){details.forEach(function(d,i){d.open=!!saved[i]})});
+  var progress=view.querySelector('#prog'), rail=view.querySelector('.rail');
+  var questions=Array.prototype.slice.call(view.querySelectorAll('article.q'));
+  var links=Array.prototype.slice.call(view.querySelectorAll('.rl'));
+  var scheduled=false;
+  function update(){
+    scheduled=false;
+    if(document.body.classList.contains('mode-analyst'))return;
+    var doc=document.documentElement, current='';
+    if(progress)progress.style.width=Math.max(0,Math.min(100,100*doc.scrollTop/(doc.scrollHeight-doc.clientHeight||1)))+'%';
+    if(rail)rail.classList.toggle('is-visible',!!questions.length&&questions[0].getBoundingClientRect().top<window.innerHeight-80&&questions[questions.length-1].getBoundingClientRect().bottom>100);
+    questions.forEach(function(q){if(q.getBoundingClientRect().top<=180)current=q.id});
+    links.forEach(function(link){var active=link.hash==='#'+current;link.classList.toggle('on',active);if(active)link.setAttribute('aria-current','location');else link.removeAttribute('aria-current')});
+  }
+  function queue(){if(scheduled)return;scheduled=true;requestAnimationFrame(update)}
+  ['scroll','resize','hashchange','popstate'].forEach(function(name){window.addEventListener(name,queue,{passive:true})});
+  document.addEventListener('click',queue);
+  queue();
+}());
+</script>
+</body>
 
 </html>

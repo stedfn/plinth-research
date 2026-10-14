@@ -34,45 +34,82 @@ The mode selector has a fixed width, so it does not move with adjacent text. Evi
 in Executive switch to Analyst and reveal the corresponding pillar, check, observation,
 source or gap. Direct fragments and browser history must keep that behaviour.
 
-Some fixed labels assume a public-only campaign (`bounded_public_evidence: true`). Rewrite
-them for a privately enriched campaign. They are:
-
-- "Public evidence supports" and "Public evidence does not establish";
-- "Where public evidence stops";
-- "Bounded public-evidence assessment";
-- "Fixed public snapshot".
-
 ## Executive composition
 
-Executive is one centered continuous column with no sidebar and exactly six blocks:
+The only Executive format is twelve questions in five groups. The shared shell holds one
+`data-executive-slot`; prefill inserts `assets/executive-questions12.html` and writes
+`data-executive-layout="questions12"` on `#v3-executive`. A custom `--shell` must have this
+slot or a complete, marked twelve-question Executive. Old six-block shells are rejected.
+There are no layout-selection options.
 
-1. **Product orientation:** product, operator, evidence cutoff, participation boundary, and documented perimeter.
-2. **What the holder holds:** holder-to-economic-asset chain, explicit unresolved legal links, and a separate service/control branch.
-3. **How value moves:** enter, accrue, and exit cards without connector circles.
-4. **Five pillar conclusions:** one factual conclusion and one unresolved boundary per pillar, with one route to Analyst. Pillar colors identify categories; they are not grades.
-5. **What remains open:** a factual strip derived from canonical check records plus five pillar-level groups that partition every check exactly once. Prefill writes both; you write each group's question.
-6. **Evidence boundary:** the public/private or supplied-evidence limit and an explicit route into Analyst.
+Use the bundled warm paper background, centred 960px column, lightweight title, rounded
+chips, compact question index, soft white answer cards and inset limitations boxes. Preserve
+the amber/rust documentary labels and the explicit Expand / Collapse cue with its chevron.
+These colours identify answer categories; they are not a product rating or a severity scale.
+Use the existing fonts, responsive layout and reduced-motion rules.
 
-Executive must not show any of the following:
+The questions and their default check mappings are defined in
+`scripts/executive_questions.py`. Keep their headings and order. A known check outside a
+question's mapping causes a warning to justify in `review.md`; an unknown ID fails.
 
-- source citations, evidence classes or check states;
-- check counts on pillar cards;
-- coverage distributions;
-- per-pillar grades.
+| Group | Questions |
+| --- | --- |
+| A — Product & holder rights | 1–3 |
+| B — Assets & backing | 4–6 |
+| C — Returns & costs | 7–8 |
+| D — Control & valuation | 9–10 |
+| E — Exit & ownership records | 11–12 |
 
-Supporting check and observation IDs stay in semantic attributes. The framework strip shows
-only counts computed from the assessment.
+Every answer card contains the plain answer, a concrete unresolved-record question and a
+native `details.evidence` disclosure called **Basis & limitations**. Its summary shows the
+answer label, Expand / Collapse text and a chevron, with a 48px target. Supporting source
+links and observation IDs may appear in that disclosure. Keep it collapsed in the delivered
+draft unless documenting an expanded state for QA.
 
-The main claim path ends at an underlying economic asset, portfolio, reserve, receivable, or
-explicitly unresolved endpoint. The following belong in a separate branch:
+### Answer categories
 
-- managers and administrators;
-- custodians;
-- networks and bridges;
-- verification providers;
-- settlement infrastructure.
+The author chooses one category from the accepted observations, independently of coverage:
 
-Do not infer a missing legal link to make the diagram appear complete.
+- **Source-described** (`source-described`, `p-part`): the answer restates at least one
+  supporting observation about the question's core proposition. It requires supporting
+  `data-observation-ids` on the question and links to them in its disclosure.
+- **Answer unresolved** (`answer-unresolved`, `p-no`): no supporting observation answers
+  the core proposition. Contextual observations may still be cited.
+
+Keep each question's index label and disclosure label consistent. Source-described is not
+independent verification, legal effect, deployment confirmation or complete check coverage.
+The semantic review must check that the cited observation actually answers the proposition;
+the verifier can prove only ID existence and linkage.
+
+Executive may show source links and supporting IDs inside disclosures, plus aggregate
+factual coverage counts. It must not show canonical record cards, evidence-class badges,
+individual check-state badges, per-pillar grades or investment judgments.
+
+### Conformance to the pinned output contract
+
+| Contract requirement | Twelve-question element |
+| --- | --- |
+| §3.1 Orientation | Introduction, intended use, snapshot chip and evidence-context card |
+| §3.2 Claim and parties; §11 identities | Q1 identifies issuer and holder claim; Q5 identifies custody and asset ownership; visible claim path beneath Q1 |
+| §3.3 Value movement | Entry → Holding → Exit summary before Q7; Q7–Q12 explain mechanics |
+| §3.4 Unresolved questions | Visible closing five-pillar summaries linking the complete gaps |
+| §3.5 Coverage | Visible framework strip and factual aggregate coverage counts |
+| §3.6 Technical basis | Closing technical/source/methodology routes, card disclosures and Analyst records |
+
+The visible claim path covers holder → recorded interest → legal claim → issuer/vehicle →
+asset owner → custodian → underlying asset. Use actual relationships; separate entities are
+not mandatory. Mark every unsupported step unresolved or not applicable. Do not infer a
+provider engagement from an issuer-named brand.
+
+The framework strip, coverage counts and five open-question summaries stay visible, never
+inside a closed disclosure. Keep all gaps in neutral pillar/check order. Coverage includes
+applicable checks assessed, EVIDENCED, PARTIAL, MISSING, CONTRADICTORY and NOT_ASSESSED,
+with unresolved applicability separate. MISSING remains zero and carries the compiler
+limitation footnote; actual MISSING coverage is rejected.
+
+Draft and pending publication-approval status remain visible. Preparation, extraction and
+agent-review history belongs in the private review record. Accepted metadata is never
+redacted from the payload: unwanted records require a successor run.
 
 ## Analyst composition
 
