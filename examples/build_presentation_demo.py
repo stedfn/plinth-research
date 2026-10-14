@@ -12,7 +12,7 @@ import html
 import json
 import re
 import sys
-from datetime import UTC, datetime, timedelta
+from datetime import UTC, datetime
 from pathlib import Path
 
 from plinth import archive, catalogue, cli
@@ -145,7 +145,7 @@ def build(out: Path) -> None:
     run = archive.create_run(campaign, runs_root=out / 'runs')
     pack = EvidencePack.model_validate({'schema_version': 'plinth.evidence/1',
                                       'campaign': campaign.model_dump(mode='json'),
-                                      'generated_at': (now + timedelta(minutes=1)).isoformat()})
+                                      'generated_at': datetime.now(UTC).isoformat()})
     (run.root / 'proposed-documentary-evidence.json').write_bytes(canonical_bytes(pack))
     if cli.main(['ingest', 'evidence', campaign.run_id, '--runs-root', str(out / 'runs')]) != 0:
         raise ValueError('Empty preview evidence did not pass the compiler.')
@@ -162,7 +162,7 @@ def build(out: Path) -> None:
     assessment = {'schema_version': 'plinth.assessment/1', 'checks': checks,
                   'meta': {'campaign_run_id': campaign.run_id, 'framework_version': cat['framework_version'],
                            'catalogue_sha256': run.manifest.catalogue_sha256, 'evidence_pack_sha256': canonical_sha256(pack),
-                           'generated_at': (now + timedelta(minutes=2)).isoformat()}}
+                           'generated_at': datetime.now(UTC).isoformat()}}
     (run.root / 'proposed-assessment.json').write_text(json.dumps(assessment))
     for action in ('check', 'ingest'):
         if cli.main([action, 'assessment', campaign.run_id, '--runs-root', str(out / 'runs')]) != 0:

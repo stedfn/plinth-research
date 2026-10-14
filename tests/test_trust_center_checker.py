@@ -767,6 +767,9 @@ def test_preview_has_no_invented_product_evidence(tmp_path):
     demo.build(out)
     run = out / 'runs' / 'template-preview'
     inputs = records_mod.load_inputs(run / 'assessment.json', run / 'documentary-evidence.json', cat.CATALOGUE_PATH)
+    current = datetime.now(UTC)
+    assert datetime.fromisoformat(inputs.evidence['generated_at'].replace('Z', '+00:00')) <= current
+    assert datetime.fromisoformat(inputs.assessment['meta']['generated_at'].replace('Z', '+00:00')) <= current
     for name in ('sources', 'acquisitions', 'artifacts', 'locator_catalog', 'observations'):
         assert inputs.evidence[name] == []
     assert all(check['applicability'] == 'UNRESOLVED' and check['coverage'] is None
