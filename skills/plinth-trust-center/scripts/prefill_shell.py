@@ -14,7 +14,7 @@ It copies the v0.3 shell and fills every region marked ``data-fill``:
 - the Executive framework figures and open-evidence partition;
 - the embedded payload.
 
-It also sets ``{{PRODUCT}}`` everywhere and marks pillars whose checks cite no
+It also sets ``{{PRODUCT}}`` in the template and marks pillars whose checks cite no
 observations. Everything else stays a ``{{PLACEHOLDER}}`` for the author: the
 narrative, the citations inside it, and the Executive synthesis. Run
 ``check_morphed_html.py`` once those are written.
@@ -403,6 +403,13 @@ def render_distribution(records: Records) -> str:
 # ---------------------------------------------------------------------------
 def fill(shell: str, records: Records, payload: str, product: str) -> tuple[str, list[str]]:
     shell = executive_shell(shell)
+    snapshot = "Fixed evidence snapshot · " + utc_date(records.campaign["cutoff"])
+    cutoff = "Evidence cutoff: " + cutoff_text(records.campaign["cutoff"])
+    presentation_values = {"{{SNAPSHOT LABEL}}": esc(snapshot),
+                           "{{METHODOLOGY_CAMPAIGN_BOUNDARY}}": esc(cutoff + "; " + records.campaign["declared_scope_note"]),
+                           "{{PRODUCT}}": esc(product)}
+    # Substitute only template text, before any accepted records are rendered or embedded.
+    shell = PLACEHOLDER_RE.sub(lambda match: presentation_values.get(match[0], match[0]), shell)
     notes: list[str] = []
     edits: list[tuple[int, int, str]] = []
     counts = {pillar: Records.counts(records.checks_in(pillar)) for pillar in records.pillar_ids}
@@ -414,9 +421,9 @@ def fill(shell: str, records: Records, payload: str, product: str) -> tuple[str,
         inner = shell[node["inner_start"]:node["inner_end"]]
         kind, _, arg = region.partition(":")
         if kind == "snapshot-date":
-            inner = "Fixed evidence snapshot · " + esc(utc_date(records.campaign["cutoff"]))
+            inner = esc(snapshot)
         elif kind == "cutoff":
-            inner = "Evidence cutoff: " + esc(cutoff_text(records.campaign["cutoff"]))
+            inner = esc(cutoff)
         elif kind == "declared-scope":
             inner = ("Declared scope: public evidence only" if records.campaign["bounded_public_evidence"]
                      else "Declared scope: not limited to public evidence")
@@ -492,10 +499,6 @@ def fill(shell: str, records: Records, payload: str, product: str) -> tuple[str,
         raise RecordError("the shell's payload placeholder was not found exactly once")
     shell = shell.replace(payload_marker,
                           f'<script type="application/json" id="plinth-research-state">{payload}</script>')
-    shell = shell.replace("{{SNAPSHOT LABEL}}", "Fixed evidence snapshot · " + esc(utc_date(records.campaign["cutoff"])))
-    shell = shell.replace("{{CAMPAIGN BOUNDARY}}", esc("Evidence cutoff: " + cutoff_text(records.campaign["cutoff"]) + "; " + records.campaign["declared_scope_note"]))
-    shell = shell.replace("{{METHODOLOGY_CAMPAIGN_BOUNDARY}}", esc("Evidence cutoff: " + cutoff_text(records.campaign["cutoff"]) + "; " + records.campaign["declared_scope_note"]))
-    shell = shell.replace("{{PRODUCT}}", esc(product))
     return shell, notes
 
 

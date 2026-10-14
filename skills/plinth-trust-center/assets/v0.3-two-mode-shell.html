@@ -1394,7 +1394,7 @@ a:focus-visible,button:focus-visible,summary:focus-visible{outline:3px solid rgb
   .v3-top,.analyst-sidebar,.mobile-analyst-nav,.ai-dock,.skip-link{display:none!important}.v3-view,.js .v3-view,.js .v3-view.is-active{display:block!important}.executive-main{max-width:none;padding:0}.analyst-layout{display:block}.analyst-main .panel{display:block!important;padding:28px 0;break-before:page}.analyst-main details,.analyst-main details>*{display:block!important}.analyst-main details>summary{list-style:none}.analyst-footer{padding:24px 0}.exec-block{break-inside:avoid}.open-row{break-inside:avoid}body{background:#fff}
 }
 </style>
-<noscript><style>.v3-view,.panel{display:block!important}.analyst-sidebar{display:none!important}.mobile-analyst-nav{display:block!important;position:static!important}</style></noscript>
+<noscript><style>.v3-view,.panel{display:block!important}.analyst-sidebar{display:none!important}.analyst-layout{grid-template-columns:minmax(0,1fr)}.mobile-analyst-nav{display:block!important;position:static!important}</style></noscript>
 <style data-purpose="shell-fixes">
 /* Below 760px .record-badges is width:100%, and .record>summary does not wrap,
    so every record title collapsed to zero width. Let the badges wrap below it. */
@@ -1423,7 +1423,7 @@ html:not(.js) #v3-executive .rail,html:not(.js) #v3-executive #prog{display:none
 #v3-executive button{font:inherit;cursor:pointer;border:0;background:none;color:inherit}
 #v3-executive a:focus-visible,#v3-executive button:focus-visible,#v3-executive summary:focus-visible{outline:2px solid var(--sage);outline-offset:4px}
 #v3-executive .kiid-col{width:100%;max-width:var(--col);margin-left:auto;margin-right:auto;padding-left:var(--gut);padding-right:var(--gut)}
-#v3-executive .kiid-main{padding-top:66px;padding-bottom:90px}
+#v3-executive .kiid-main{padding-top:66px;padding-bottom:90px;overflow-wrap:anywhere}
 #v3-executive #prog{position:fixed;top:0;left:0;height:2px;width:0;background:var(--ink);z-index:100;transition:width .1s linear}
 #v3-executive .rail{position:fixed;top:50%;transform:translateY(-50%);left:calc(50% - (var(--col) / 2) - 76px);z-index:30;display:flex;flex-direction:column;gap:0}
 #v3-executive .rl{display:flex;align-items:center;gap:11px;height:33px;opacity:.4;transition:opacity .25s;cursor:pointer}

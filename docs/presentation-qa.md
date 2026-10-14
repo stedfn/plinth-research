@@ -8,7 +8,7 @@ Synthetic values remain confined to automated test fixtures.
 
 ## Automated verification
 
-- PASS — full repository tests: 474 tests.
+- PASS — full repository tests: 479 tests.
 - PASS — catalogue build check and verification: unchanged 63 checks.
 - PASS — existing sole HTML verifier checks the actual twelve-question empty-evidence preview.
 - PASS — exact accepted payload, canonical markers, findings, IDs and source links.
@@ -19,6 +19,23 @@ Synthetic values remain confined to automated test fixtures.
 - PASS — static checks find no external runtime assets in the generated page.
 - PASS — new assets and example script contain no reference-product names or protected facts.
 - PASS — request spacing and single-panel width rules preserve the shared interface fixes.
+
+## Follow-up review corrections
+
+The review of head `45dec7e` identified mobile overflow from long Executive addresses
+and a narrow Analyst column when JavaScript is disabled. The Executive reading column
+now wraps unbroken text, and the noscript fallback uses one full-width grid track.
+Both corrections have static regression checks; the original theme skin is unchanged.
+
+Template substitutions run before generated records and the accepted payload are inserted.
+A regression preserves literal template syntax in observation text and the exact payload.
+The default question mappings are checked against the pinned catalogue. Both bibliography
+outputs now retain all stated source limitations, and a missing gap section gives a clean
+verifier failure. Date formatting shares one UTC parser.
+
+The supplied reviewer reported Chromium browser checks on the earlier head. Those results
+are not a fresh browser pass of these corrections or a comparison with the private reference;
+the session's browser acceptance below remains pending.
 
 ## Section-by-section comparison
 

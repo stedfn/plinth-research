@@ -445,7 +445,10 @@ def check_document(raw_html: str, reference_html: str, inputs: Inputs,
 
     check_markers(index, records)
 
-    gap_section = next(e for e in walk(panels_by_role["gaps"]) if e.attrs.get("aria-labelledby") == "gaps-title")
+    gap_section = next((e for e in walk(panels_by_role["gaps"])
+                        if e.attrs.get("aria-labelledby") == "gaps-title"), None)
+    if gap_section is None:
+        fail("gaps panel must contain the evidence gaps section")
     expected_gaps = Index()
     expected_gaps.feed(render_gap_groups(records))
     gap_signature = lambda root: [(e.attrs["data-pillar"], e.attrs["data-gap-count"], visible_text(e),

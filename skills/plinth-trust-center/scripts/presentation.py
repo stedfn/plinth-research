@@ -5,15 +5,18 @@ import re
 from urllib.parse import quote
 from trust_center_records import Records, DOM_PILLAR
 
+
+def _utc(value: str) -> datetime:
+    return datetime.fromisoformat(value).astimezone(timezone.utc)
+
+
 def utc_date(value: str) -> str:
     """A recorded moment's UTC calendar date; never infer dates from source notes."""
-    moment = datetime.fromisoformat(value.replace("Z", "+00:00"))
-    return moment.astimezone(timezone.utc).strftime("%d %b %Y").lstrip("0")
+    return _utc(value).strftime("%d %b %Y").lstrip("0")
 
 
 def cutoff_text(value: str) -> str:
-    moment = datetime.fromisoformat(value.replace("Z", "+00:00"))
-    return moment.astimezone(timezone.utc).strftime("%d %b %Y, %H:%M UTC").lstrip("0")
+    return _utc(value).strftime("%d %b %Y, %H:%M UTC").lstrip("0")
 
 
 def executive_counts(records: Records) -> dict[str, int]:
@@ -66,15 +69,14 @@ def source_reference_entries(records: Records) -> list[dict]:
     for sid, source in records.sources.items():
         if sid not in cited or source.get("disposition", "IN_SCOPE") not in {"IN_SCOPE", "SUPERSEDED"}:
             continue
-        dates = sorted({datetime.fromisoformat(records.acquisitions[aid]["retrieved_at"].replace("Z", "+00:00"))
-                        .astimezone(timezone.utc).date() for aid in cited[sid]
+        dates = sorted({_utc(records.acquisitions[aid]["retrieved_at"]).date() for aid in cited[sid]
                         if records.acquisitions[aid].get("retrieved_at")})
         url = source.get("url")
         entries.append({"source_id": sid, "title": source["title"], "publisher": source.get("publisher"),
                         "url": url if url and re.match(r"https?://", url, re.I) else None,
                         "published": utc_date(source["publication_date"]) if source.get("publication_date") else None,
                         "captured": [day.strftime("%d %b %Y").lstrip("0") for day in dates],
-                        "limitation": next(iter(source.get("stated_limitations", [])), None),
+                        "limitation": " · ".join(source.get("stated_limitations", [])) or None,
                         "superseded_by": source.get("superseded_by_source_id") if source.get("disposition") == "SUPERSEDED" else None})
     return entries
 

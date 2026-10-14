@@ -335,6 +335,19 @@ def test_shell_keeps_record_titles_readable_on_narrow_screens():
     assert SHELL_TEXT.index('data-purpose="shell-fixes"') > SHELL_TEXT.index('<style id="v03-skin">')
 
 
+def test_executive_wraps_long_addresses_across_all_reading_regions():
+    # Inherited by answers, limitation boxes, the claim path and scope boundary.
+    rule = re.search(r'#v3-executive \.kiid-main\{([^}]+)\}', SHELL_TEXT)
+    assert rule and 'overflow-wrap:anywhere' in rule[1]
+
+
+def test_javascript_disabled_analyst_uses_the_full_grid_width():
+    fallback = next(style for style in re.findall(r'<noscript><style>(.*?)</style></noscript>', SHELL_TEXT, re.S)
+                    if '.analyst-sidebar' in style)
+    assert '.analyst-sidebar{display:none!important}' in fallback
+    assert '.analyst-layout{grid-template-columns:minmax(0,1fr)}' in fallback
+
+
 def test_shell_has_every_structure_the_checker_and_router_need():
     index = checker.Index()
     index.feed(COMPLETE_SHELL)
@@ -364,6 +377,24 @@ def test_payload_is_the_accepted_records_with_every_angle_bracket_escaped(varied
     assert "<" not in text and "\\u003c/script>" in text
     assert json.loads(text) == {"assessment": varied.inputs.assessment, "evidence": varied.inputs.evidence}
     checker.check_payload(text, varied.inputs)
+
+
+def test_template_substitutions_never_rewrite_accepted_record_text(varied):
+    import copy
+    inputs = copy.deepcopy(varied.inputs)
+    proposition = 'Literal template syntax: {{PRODUCT}}, {{SNAPSHOT LABEL}}, {{METHODOLOGY_CAMPAIGN_BOUNDARY}}.'
+    inputs.evidence['observations'][0]['proposition'] = proposition
+    records = records_mod.Records(inputs)
+    payload = records_mod.payload_text(inputs)
+    page, _ = prefill.fill(SHELL_TEXT, records, payload, 'Generated product')
+    embedded = checker.PAYLOAD_RE.search(page)[1]
+    assert embedded == payload
+    checker.check_payload(embedded, inputs)
+    index = checker.Index()
+    index.feed(page)
+    record = checker.element_by_id(index, 'observation-OBS-1')
+    assert proposition in checker.visible_text(record)
+    assert '<title>Generated product' in page
 
 
 def _payload(value) -> str:
@@ -561,6 +592,13 @@ def test_twelve_question_guards(tmp_path, varied, mutate, message):
         checker.check_document(changed, SHELL_TEXT, varied.inputs)
 
 
+def test_default_question_mapping_uses_only_pinned_catalogue_checks():
+    catalogue = json.loads(cat.CATALOGUE_PATH.read_bytes())
+    known = {check['check_id'] for check in catalogue['checks']}
+    mapped = {cid for _, _, mapping in checker.QUESTIONS for cid in mapping}
+    assert mapped <= known, f'Question mapping names unknown checks: {sorted(mapped - known)}'
+
+
 def test_question_mapping_warns_for_known_outside_check(tmp_path, varied):
     page = author(prefilled(tmp_path, varied.files), varied.records)
     page = page.replace('data-check-ids="PF-GOV-001 PF-GOV-002 PF-GOV-003"',
@@ -614,7 +652,7 @@ def test_source_references_follow_cited_acquisitions_and_keep_superseded(varied)
                                     publication_date='2026-06-23T00:00:00Z',
                                     stated_limitations=['First complete limitation.', 'Second limitation.'])
     first = records.observations['OBS-1']['supports'][0]['acquisition_id']
-    records.acquisitions[first]['retrieved_at'] = '2026-10-01T23:59:00Z'
+    records.acquisitions[first]['retrieved_at'] = '2026-10-02T07:59:00+08:00'
     records.acquisitions[first]['acquisition_mode'] = 'MANUAL_UPLOAD'
     records.sources['UNCITED'] = {'source_id': 'UNCITED', 'title': 'Uncited in-scope document', 'disposition': 'IN_SCOPE'}
     latest = dict(records.acquisitions[first], acquisition_id='UNCITED-LATEST', retrieved_at='2026-10-09T12:00:00Z')
@@ -628,7 +666,18 @@ def test_source_references_follow_cited_acquisitions_and_keep_superseded(varied)
     assert first_entry['url'] is None
     assert first_entry['published'] == '23 Jun 2026'
     assert first_entry['captured'] == ['1 Oct 2026', '3 Oct 2026']
-    assert first_entry['limitation'] == 'First complete limitation.'
+    assert first_entry['limitation'] == 'First complete limitation. · Second limitation.'
+    from presentation import render_source_references_html, render_source_references_md
+    assert first_entry['limitation'] in render_source_references_html(entries)
+    assert first_entry['limitation'] in render_source_references_md(entries)
+
+
+def test_missing_gaps_section_has_a_clean_failure(tmp_path, varied):
+    page = author(prefilled(tmp_path, varied.files), varied.records)
+    page = page.replace('<div class="panel" data-mode-panel="analyst">\n<section aria-labelledby="gaps-title"',
+                        '<div class="panel" data-mode-panel="analyst" data-panel-role="gaps">\n<section aria-labelledby="executive"', 1)
+    with pytest.raises(AssertionError, match='gaps panel must contain the evidence gaps section'):
+        checker.check_document(page, SHELL_TEXT, varied.inputs)
 
 
 def test_source_reference_renderers_share_entries_and_escape(varied):

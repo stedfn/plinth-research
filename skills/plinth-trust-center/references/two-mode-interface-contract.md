@@ -173,7 +173,7 @@ Uncited and excluded sources remain in the complete registry. Use the unique cap
 of the acquisitions actually cited, never an unrelated source's newest capture.
 
 Each reference gives the title, recorded publisher, safe document URL when available,
-structured publication date when recorded, cited capture dates, the first full limitation
+structured publication date when recorded, cited capture dates, all stated limitations
 and a link to the source record. Null URLs and supplied text have no invented document link.
 Publication dates are not inferred from prose notes. Markdown escapes its punctuation;
 HTML escapes its attributes and text.
