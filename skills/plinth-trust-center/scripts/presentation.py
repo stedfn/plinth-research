@@ -135,4 +135,3 @@ def render_source_references_md(entries: list[dict]) -> str:
     if not entries:
         lines += ["No acquired source supports an observation.", ""]
     return "\n".join(lines)
-
