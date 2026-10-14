@@ -34,7 +34,7 @@ from trust_center_records import (  # noqa: E402
     load_inputs,
 )
 from executive_questions import QUESTIONS, GROUPS, LABELS
-from presentation import executive_counts
+from presentation import executive_counts, source_reference_entries, render_source_references_html
 
 PANEL_ROLE_ORDER = [
     "control",
@@ -82,6 +82,7 @@ REQUIRED_IDS = {
     "pillar-governance-compliance", "pillar-continuity", "chain-of-title",
     "gaps-title", "sources-title", "methodology-title", "technical-appendix",
     "plinth-research-state",
+    "source-references",
 }
 REQUIRED_CLASSES = {
     "v3-top", "mode-tabs", "v3-view", "executive-main", "kiid-main",
@@ -441,6 +442,17 @@ def check_document(raw_html: str, reference_html: str, inputs: Inputs,
     check_payload(payload_match.group(1), inputs)
 
     check_markers(index, records)
+
+    references = element_by_id(index, "source-references")
+    expected_index = Index()
+    expected_index.feed(render_source_references_html(source_reference_entries(records)))
+    actual_entries = [e for e in walk(references) if "data-reference-source" in e.attrs]
+    expected_entries = [e for e in walk(expected_index.root) if "data-reference-source" in e.attrs]
+    signature = lambda entries: [(e.attrs["data-reference-source"], visible_text(e),
+                                  [link.attrs.get("href") for link in walk(e) if link.tag == "a"])
+                                 for e in entries]
+    if signature(actual_entries) != signature(expected_entries):
+        fail("source references differ from the observations' cited acquisitions")
 
     known_checks = set(records.check_order)
     for element in walk(index.root):

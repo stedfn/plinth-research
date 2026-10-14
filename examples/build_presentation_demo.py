@@ -24,6 +24,7 @@ sys.path.insert(0, str(SKILL / 'scripts'))
 import prefill_shell as prefill
 from trust_center_records import Records, load_inputs, payload_text
 from executive_questions import QUESTIONS, LABELS
+from presentation import source_reference_entries, render_source_references_md
 
 # One description per question, wholly synthetic. Context-only descriptions remain unresolved.
 ANSWERS = (
@@ -149,6 +150,7 @@ def build(out: Path) -> None:
         parts[i] = prefill.PLACEHOLDER_RE.sub('The supplied synthetic design does not establish operative records.', part)
     page = ''.join(parts)
     (out / 'index.html').write_text(page)
+    (out / 'source-references.md').write_text(render_source_references_md(source_reference_entries(records)))
     print(f'Demo: {out / "index.html"}')
 
 

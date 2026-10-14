@@ -177,6 +177,17 @@ python3 skills/plinth-trust-center/scripts/check_morphed_html.py /tmp/plinth-dem
   --catalogue inputs/catalogue.json
 ```
 
+The demo also writes `source-references.md`. For an accepted run, prefill can write the
+same bibliography used in HTML as a report section:
+
+```sh
+python3 skills/plinth-trust-center/scripts/prefill_shell.py --product "Example Reserve" \
+  --assessment /tmp/plinth-demo/runs/synthetic-presentation/assessment.json \
+  --evidence /tmp/plinth-demo/runs/synthetic-presentation/documentary-evidence.json \
+  --catalogue inputs/catalogue.json --out /tmp/plinth-demo/prefilled.html \
+  --source-references-md /tmp/plinth-demo/report-references.md
+```
+
 Choose a fresh output directory. Every fact and party in the example is fictional; its
 accepted synthetic run demonstrates the interface, not real research or publication approval.
 

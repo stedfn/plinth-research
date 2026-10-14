@@ -1536,6 +1536,18 @@ html:not(.js) #v3-executive .rail,html:not(.js) #v3-executive #prog{display:none
 #v3-executive .coverage-count{background:var(--panel);border:1px solid var(--line);border-radius:9px;padding:8px 12px;font-size:12px}
 @media print{#v3-executive details,#v3-executive details>*{display:block!important}#v3-executive details>summary{list-style:none}}
 </style>
+
+<style data-purpose="source-references-presentation">
+.source-reference-section{margin:22px 0 26px;padding:20px 23px;background:var(--panel);border-radius:12px}
+.source-reference-section>h3{font-size:20px;font-weight:500;letter-spacing:-.02em;margin:0 0 12px;scroll-margin-top:100px}
+.source-reference-section>p{font-size:12px;line-height:1.65;color:var(--ink-3);margin:0 0 14px}
+.source-reference-list{list-style:disc;padding:0 0 0 20px;margin:0}
+.source-reference-list>li{padding:5px 0;font-size:13px;line-height:1.65;overflow-wrap:anywhere}
+.source-reference-list a{color:var(--ink-2);text-decoration:underline;text-underline-offset:3px}
+.source-reference-detail,.source-reference-note{font-size:10px;line-height:1.6;color:var(--muted);margin-left:9px}
+@media(max-width:760px){.source-reference-section{padding:18px}.source-reference-detail,.source-reference-note{display:block;margin-left:0}}
+@media print{.source-reference-section{background:#fff}.source-reference-list li{break-inside:avoid}}
+</style>
 </head>
 
         <body class="mode-executive">
@@ -1748,7 +1760,7 @@ html:not(.js) #v3-executive .rail,html:not(.js) #v3-executive #prog{display:none
 </div>
 </section>
 </div><div class="panel" data-mode-panel="analyst">
-<section aria-labelledby="sources-title"><div class="section-head"><h2 id="sources-title">Evidence registry</h2><div class="section-tag" data-fill="source-count">{{SOURCE COUNT}} source records</div></div><p class="section-lede">{{SECTION LEDE}}</p><div class="record-stack" data-fill="source-records">
+<section aria-labelledby="sources-title"><div class="section-head"><h2 id="sources-title">Evidence registry</h2><div class="section-tag" data-fill="source-count">{{SOURCE COUNT}} source records</div></div><p class="section-lede">{{SECTION LEDE}}</p><section class="source-reference-section" id="source-references" data-fill="source-references"></section><div class="record-stack" data-fill="source-records">
 <!-- source records filled by scripts/prefill_shell.py -->
 </div></section>
 </div><div class="panel" data-mode-panel="analyst">

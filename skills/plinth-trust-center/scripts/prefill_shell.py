@@ -41,7 +41,8 @@ from trust_center_records import (  # noqa: E402
     payload_text,
 )
 
-from presentation import utc_date, cutoff_text, executive_counts
+from presentation import (utc_date, cutoff_text, executive_counts, source_reference_entries,
+                          render_source_references_html, render_source_references_md)
 
 DEFAULT_SHELL = Path(__file__).resolve().parent.parent / "assets" / "v0.3-two-mode-shell.html"
 EXECUTIVE_FRAGMENT = DEFAULT_SHELL.with_name("executive-questions12.html")
@@ -444,6 +445,8 @@ def fill(shell: str, records: Records, payload: str, product: str) -> tuple[str,
             inner = "\n" + render_requests(records) + "\n"
         elif kind == "source-count":
             inner = f"{len(records.sources)} source records"
+        elif kind == "source-references":
+            inner = render_source_references_html(source_reference_entries(records))
         elif kind == "source-records":
             inner = "\n" + "\n".join(render_source(records, s) for s in records.sources.values()) + "\n"
         elif kind == "locator-records":
@@ -499,9 +502,15 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--out", type=Path, required=True, help="where to write the prefilled page")
     parser.add_argument("--shell", type=Path, default=DEFAULT_SHELL, help="the v0.3 shell (default: bundled)")
     parser.add_argument("--force", action="store_true", help="overwrite --out if it exists")
+    parser.add_argument("--source-references-md", type=Path,
+                        help="also write the same cited-source list as a Markdown report section")
     args = parser.parse_args(argv)
-    if args.out.exists() and not args.force:
-        print(f"FAIL: {args.out} exists; pass --force to overwrite", file=sys.stderr)
+    for target in (args.out, args.source_references_md):
+        if target and target.exists() and not args.force:
+            print(f"FAIL: {target} exists; pass --force to overwrite", file=sys.stderr)
+            return 1
+    if args.source_references_md and args.source_references_md.resolve() == args.out.resolve():
+        print("FAIL: HTML and Markdown outputs must be different paths", file=sys.stderr)
         return 1
     try:
         inputs = load_inputs(args.assessment, args.evidence, args.catalogue)
@@ -512,6 +521,10 @@ def main(argv: list[str] | None = None) -> int:
         return 1
     args.out.parent.mkdir(parents=True, exist_ok=True)
     args.out.write_text(page, encoding="utf-8")
+    if args.source_references_md:
+        args.source_references_md.parent.mkdir(parents=True, exist_ok=True)
+        args.source_references_md.write_text(render_source_references_md(source_reference_entries(Records(inputs))),
+                                            encoding="utf-8")
     remaining = sorted(set(PLACEHOLDER_RE.findall(
         re.sub(r'<script type="application/json" id="plinth-research-state">.*?</script>', "", page, flags=re.S))))
     print(f"wrote {args.out}")

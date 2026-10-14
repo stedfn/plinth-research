@@ -147,6 +147,23 @@ Source pills use consistent horizontal and wrapped-row spacing. Decorative separ
 not be stranded on their own line. Contradiction cards use the same thin perimeter treatment
 as other colored surfaces.
 
+## Source references
+
+The registry starts with a compact cited-source bibliography. One shared entries function
+feeds the HTML and optional `--source-references-md PATH` report section. Integrate that
+section into `report.md`; do not maintain a second hand-written bibliography.
+
+Include only sources reached from observation supports through their actual acquisitions,
+with disposition IN_SCOPE or SUPERSEDED. Cited superseded sources link their successor.
+Uncited and excluded sources remain in the complete registry. Use the unique capture dates
+of the acquisitions actually cited, never an unrelated source's newest capture.
+
+Each reference gives the title, recorded publisher, safe document URL when available,
+structured publication date when recorded, cited capture dates, the first full limitation
+and a link to the source record. Null URLs and supplied text have no invented document link.
+Publication dates are not inferred from prose notes. Markdown escapes its punctuation;
+HTML escapes its attributes and text.
+
 ## Canonical and machine-readable state
 
 Prefill renders every canonical check, observation and source record with these attributes:

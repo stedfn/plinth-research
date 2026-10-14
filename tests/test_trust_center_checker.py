@@ -27,7 +27,7 @@ SHELL = SKILL / "assets" / "v0.3-two-mode-shell.html"
 V03_SKIN_SHA256 = "8792c57c991bd44c40154fa876ea148385d3b6c91a6f50d63983c3df6953d11a"
 PRODUCT_RE = re.compile(r"(?i)(?<![a-z])(ousg|ondo|xauh|qmc|realfi|usdr|aru|acua|vantara|hawkrel|loomis|metlock|redstone|taipei)(?![a-z])")
 FILL_REGIONS = {
-    "framework-strip", "open-row", "evidence-requests", "source-count", "source-records",
+    "framework-strip", "open-row", "evidence-requests", "source-count", "source-records", "source-references",
     "methodology-distribution", "technical-index", "locator-records", "observation-records",
     "check-records", "footer-counts",
     "snapshot-date", "cutoff", "declared-scope", "executive-coverage",
@@ -601,3 +601,69 @@ def test_print_and_disclosure_rules():
     assert 'min-height:48px' in SHELL_TEXT
     assert '@media(prefers-reduced-motion:reduce)' in SHELL_TEXT
     assert '--paper:#F7F5F0' in SHELL_TEXT and '--col:960px' in SHELL_TEXT
+
+
+def test_source_references_follow_cited_acquisitions_and_keep_superseded(varied):
+    import copy
+    from presentation import source_reference_entries
+    records = records_mod.Records(copy.deepcopy(varied.inputs))
+    records.sources['SRC-A'].update(disposition='SUPERSEDED', superseded_by_source_id='src-a', url=None,
+                                    publication_date='2026-06-23T00:00:00Z',
+                                    stated_limitations=['First complete limitation.', 'Second limitation.'])
+    first = records.observations['OBS-1']['supports'][0]['acquisition_id']
+    records.acquisitions[first]['retrieved_at'] = '2026-10-01T23:59:00Z'
+    records.acquisitions[first]['acquisition_mode'] = 'MANUAL_UPLOAD'
+    records.sources['UNCITED'] = {'source_id': 'UNCITED', 'title': 'Uncited in-scope document', 'disposition': 'IN_SCOPE'}
+    latest = dict(records.acquisitions[first], acquisition_id='UNCITED-LATEST', retrieved_at='2026-10-09T12:00:00Z')
+    records.acquisitions['UNCITED-LATEST'] = latest
+    records.acquisitions['CITED-SECOND'] = dict(latest, acquisition_id='CITED-SECOND', retrieved_at='2026-10-03T12:00:00Z')
+    records.observations['OBS-1']['supports'].append({'acquisition_id': 'CITED-SECOND', 'locator_id': 'loc-a'})
+    entries = source_reference_entries(records)
+    assert [e['source_id'] for e in entries] == ['SRC-A', 'src-a']
+    first_entry = entries[0]
+    assert first_entry['superseded_by'] == 'src-a'
+    assert first_entry['url'] is None
+    assert first_entry['published'] == '23 Jun 2026'
+    assert first_entry['captured'] == ['1 Oct 2026', '3 Oct 2026']
+    assert first_entry['limitation'] == 'First complete limitation.'
+
+
+def test_source_reference_renderers_share_entries_and_escape(varied):
+    from presentation import source_reference_entries, render_source_references_html, render_source_references_md, markdown_text
+    entries = source_reference_entries(varied.records)
+    entries[0].update(title='Title <&" |[]*_', publisher='Publisher <&" |[]*_',
+                      limitation='Limit <&" |[]*_', url='https://example.com/report(a)?x=1&y=2',
+                      superseded_by='src-a')
+    html = render_source_references_html(entries)
+    md = render_source_references_md(entries)
+    assert 'Title &lt;&amp;&quot;' in html
+    assert 'Title <&"' not in html
+    assert 'href="https://example.com/report(a)?x=1&amp;y=2"' in html
+    assert 'https://example.com/report(a)?x=1&y=2>' in md
+    for entry in entries:
+        assert markdown_text(entry['title']) in md
+        assert entry['source_id'] in html
+        assert all(date in html and date in md for date in entry['captured'])
+    assert r'\|\[\]\*\_' in md
+    assert 'Superseded by' in md and 'Superseded by' in html
+
+
+def test_optional_markdown_output_is_shared_and_never_overwrites(tmp_path, varied):
+    from presentation import source_reference_entries, render_source_references_md
+    out = tmp_path / 'output.html'
+    md = tmp_path / 'references.md'
+    args = ['--product', 'Generated product', *file_args(varied.files), '--out', str(out), '--source-references-md', str(md)]
+    assert prefill.main(args) == 0
+    assert md.read_text() == render_source_references_md(source_reference_entries(varied.records))
+    assert prefill.main(args) == 1
+    assert prefill.main(args + ['--force']) == 0
+    assert prefill.main(args[:-1] + [str(out), '--force']) == 1
+
+
+def test_source_reference_dates_cannot_drift(tmp_path, varied):
+    page = author(prefilled(tmp_path, varied.files), varied.records)
+    start = page.index('id="source-references"')
+    stop = page.index('</section>', start)
+    changed = page[:start] + page[start:stop].replace('Captured:', 'Published:', 1) + page[stop:]
+    with pytest.raises(AssertionError, match='source references differ'):
+        checker.check_document(changed, SHELL_TEXT, varied.inputs)

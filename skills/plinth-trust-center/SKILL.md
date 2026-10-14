@@ -86,7 +86,11 @@ The former six-block layout is unsupported. The generated regions include:
 - the canonical check, observation, source and locator records;
 - the pillar check registers, evidence requests and methodology counts;
 - the Executive snapshot, scope, framework figures, coverage counts and open-evidence partition;
-- the escaped payload and the product name.
+- the cited-source reference list, escaped payload and product name.
+
+Use `--source-references-md PATH` to write the identical entries as a Markdown section for
+`report.md`. Published and captured dates stay distinct. The list follows observation
+supports; uncited and excluded sources remain in the complete registry.
 
 It marks each pillar whose checks cite no observations with `data-pillar-sources="none"`,
 and it lists the placeholders left for you.
